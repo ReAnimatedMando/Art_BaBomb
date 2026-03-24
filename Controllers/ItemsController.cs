@@ -59,10 +59,28 @@ namespace Art_BaBomb.Web.Controllers
         }
 
         // GET: Items/Create
-        public IActionResult Create(int? projectId)
+        public async Task<IActionResult> Create(int? projectId)
         {
-            ViewData["ProjectId"] = new SelectList(_context.Projects, "Id", "Name", projectId);
-            return View();
+            if (projectId == null)
+            {
+                return NotFound();
+            }
+
+            var project = await _context.Projects.FindAsync(projectId);
+            if (project == null)
+            {
+                return NotFound();
+            }
+
+            var item = new Item
+            {
+                ProjectId = projectId.Value,
+                Status = "Needed"
+            };
+
+            ViewBag.ProjectName = project.Name;
+
+            return View(item);
         }
 
         // POST: Items/Create
@@ -70,15 +88,18 @@ namespace Art_BaBomb.Web.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,ProjectId,Name,ItemNumber,Category,Description,EstimatedCost,ActualCost,Status,ImageUrl")] Item item)
+        public async Task<IActionResult> Create([Bind("ProjectId,Name,ItemNumber,Category,Description,EstimatedCost,ActualCost,Status,ImageUrl")] Item item)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(item);
+                _context.Items.Add(item);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index), new { projectId = item.ProjectId });
+                return RedirectToAction("Details", "Projects", new { id = item.ProjectId });
             }
-            ViewData["ProjectId"] = new SelectList(_context.Projects, "Id", "Name", item.ProjectId);
+
+            var project = await _context.Projects.FindAsync(item.ProjectId);
+            ViewBag.ProjectName = project?.Name;
+
             return View(item);
         }
 
@@ -129,7 +150,7 @@ namespace Art_BaBomb.Web.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("Details", "Projects", new { id = item.ProjectId });
             }
             ViewData["ProjectId"] = new SelectList(_context.Projects, "Id", "Name", item.ProjectId);
             return View(item);

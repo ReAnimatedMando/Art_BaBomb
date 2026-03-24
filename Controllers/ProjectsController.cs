@@ -36,7 +36,9 @@ namespace Art_BaBomb.Web.Controllers
             }
 
             var project = await _context.Projects
+                .Include(p => p.Items)
                 .FirstOrDefaultAsync(m => m.Id == id);
+                
             if (project == null)
             {
                 return NotFound();

@@ -36,5 +36,16 @@ namespace Art_BaBomb.Web.Models
 
         [StringLength(500)]
         public string? ImageUrl { get; set; }
+
+        public bool IsReturnRequired { get; set; } = false;
+
+        public string? ReturnNotes { get; set; }
+
+        public string? ReturnLocation { get; set; }
+
+        public DateTime? ReturnByDate { get; set; }
+        
+        public bool IsReturned { get; set; } = false;
+
     }
 }

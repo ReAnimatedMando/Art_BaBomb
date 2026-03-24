@@ -1,42 +1,161 @@
 @model Art_BaBomb.Web.Models.Project
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Project Details";
+
+    var neededItems = Model.Items
+        .Where(i => string.IsNullOrWhiteSpace(i.Status)
+            || i.Status.Trim().Equals("Needed", StringComparison.OrdinalIgnoreCase))
+        .OrderBy(i => i.ItemNumber)
+        .ToList();
+
+    var acquiredItems = Model.Items
+        .Where(i => (i.Status ?? "").Trim().Equals("Acquired", StringComparison.OrdinalIgnoreCase))
+        .OrderBy(i => i.ItemNumber)
+        .ToList();
+
+    var returnItems = Model.Items
+        .Where(i => (i.Status ?? "").Trim().Equals("To Be Returned", StringComparison.OrdinalIgnoreCase))
+        .OrderBy(i => i.ItemNumber)
+        .ToList();
 }
 
-<h1>Details</h1>
+<h1>@Model.Name</h1>
 
-<div>
-    <h4>Project</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Name)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Name)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Description)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Description)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Budget)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Budget)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.CreatedAt)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.CreatedAt)
-        </dd>
-    </dl>
+<p><strong>Total Items Loaded:</strong> @Model.Items.Count</p>
+
+<div class="mb-4">
+    <p><strong>Description:</strong> @Model.Description</p>
+    <p><strong>Budget:</strong> @Model.Budget.ToString("C")</p>
+    <p><strong>Created:</strong> @Model.CreatedAt.ToLocalTime().ToString("g")</p>
 </div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+
+<div class="mb-3">
+    <a asp-controller="Items"
+       asp-action="Create"
+       asp-route-projectId="@Model.Id"
+       class="btn btn-primary">
+        + Add Item
+    </a>
+
+    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-outline-secondary">
+        Edit Project
+    </a>
+
+    <a asp-action="Index" class="btn btn-outline-dark">
+        Back to Projects
+    </a>
 </div>
+
+<hr />
+
+<h2>Needed Items (@neededItems.Count)</h2>
+@if (neededItems.Any())
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Item #</th>
+                <th>Name</th>
+                <th>Category</th>
+                <th>Est. Cost</th>
+                <th>Actual Cost</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+        @foreach (var item in neededItems)
+        {
+            <tr>
+                <td>@item.ItemNumber</td>
+                <td>@item.Name</td>
+                <td>@item.Category</td>
+                <td>@item.EstimatedCost?.ToString("C")</td>
+                <td>@item.ActualCost?.ToString("C")</td>
+                <td>
+                    <a asp-controller="Items" asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                    <a asp-controller="Items" asp-action="Details" asp-route-id="@item.Id">Details</a>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>No needed items yet.</p>
+}
+
+<h2>Acquired Items (@acquiredItems.Count)</h2>
+@if (acquiredItems.Any())
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Item #</th>
+                <th>Name</th>
+                <th>Category</th>
+                <th>Est. Cost</th>
+                <th>Actual Cost</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+        @foreach (var item in acquiredItems)
+        {
+            <tr>
+                <td>@item.ItemNumber</td>
+                <td>@item.Name</td>
+                <td>@item.Category</td>
+                <td>@item.EstimatedCost?.ToString("C")</td>
+                <td>@item.ActualCost?.ToString("C")</td>
+                <td>
+                    <a asp-controller="Items" asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                    <a asp-controller="Items" asp-action="Details" asp-route-id="@item.Id">Details</a>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>No purchased items yet.</p>
+}
+
+<h2>To Be Returned (@returnItems.Count)</h2>
+@if (returnItems.Any())
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Item #</th>
+                <th>Name</th>
+                <th>Category</th>
+                <th>Est. Cost</th>
+                <th>Actual Cost</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+        @foreach (var item in returnItems)
+        {
+            <tr>
+                <td>@item.ItemNumber</td>
+                <td>@item.Name</td>
+                <td>@item.Category</td>
+                <td>@item.EstimatedCost?.ToString("C")</td>
+                <td>@item.ActualCost?.ToString("C")</td>
+                <td>
+                    <a asp-controller="Items" asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                    <a asp-controller="Items" asp-action="Details" asp-route-id="@item.Id">Details</a>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>No completed items yet.</p>
+}
