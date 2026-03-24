@@ -1,0 +1,74 @@
+@model Art_BaBomb.Web.Models.Item
+
+@{
+    ViewData["Title"] = "Return Info";
+}
+
+<h1>Return Info</h1>
+
+<h4>@Model.Name</h4>
+<p><strong>Project:</strong> @Model.Project?.Name</p>
+<p><strong>Item #:</strong> @Model.ItemNumber</p>
+<p><strong>Category:</strong> @Model.Category</p>
+
+<hr />
+
+<div class="row">
+    <div class="col-md-6">
+        <form asp-action="ReturnInfo">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <input type="hidden" asp-for="Id" />
+            <input type="hidden" asp-for="ProjectId" />
+            <input type="hidden" asp-for="Name" />
+            <input type="hidden" asp-for="ItemNumber" />
+            <input type="hidden" asp-for="Category" />
+            <input type="hidden" asp-for="Description" />
+            <input type="hidden" asp-for="EstimatedCost" />
+            <input type="hidden" asp-for="ActualCost" />
+            <input type="hidden" asp-for="Status" />
+            <input type="hidden" asp-for="ImageUrl" />
+
+            <input type="hidden" asp-for="IsReturnRequired" value="true" />
+
+            <div class="form-group mb-3">
+                <label asp-for="ReturnLocation" class="control-label"></label>
+                <input asp-for="ReturnLocation" class="form-control" />
+                <span asp-validation-for="ReturnLocation" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="ReturnByDate" class="control-label"></label>
+                <input asp-for="ReturnByDate" class="form-control" type="date" />
+                <span asp-validation-for="ReturnByDate" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="ReturnNotes" class="control-label"></label>
+                <textarea asp-for="ReturnNotes" class="form-control" rows="4"></textarea>
+                <span asp-validation-for="ReturnNotes" class="text-danger"></span>
+            </div>
+
+            <div class="form-group form-check mb-3">
+                <input class="form-check-input" asp-for="IsReturned" />
+                <label class="form-check-label" asp-for="IsReturned"></label>
+            </div>
+
+            <div class="form-group">
+                <input type="submit" value="Save Return Info" class="btn btn-primary" />
+                <a asp-controller="Projects"
+                   asp-action="Details"
+                   asp-route-id="@Model.ProjectId"
+                   class="btn btn-secondary">
+                    Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

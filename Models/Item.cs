@@ -47,5 +47,11 @@ namespace Art_BaBomb.Web.Models
         
         public bool IsReturned { get; set; } = false;
 
+        public DateTime? ReturnedAt { get; set; }
+
+        public string? ReturnReceiptFileName { get; set; }
+
+        public string? ReturnReceiptPath { get; set; }
+
     }
 }

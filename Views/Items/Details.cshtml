@@ -4,69 +4,105 @@
     ViewData["Title"] = "Details";
 }
 
-<h1>Details</h1>
+<h1>Item Details</h1>
+
+@if (Model.IsReturned)
+{
+    <div class="alert alert-danger text-center fw-bold fs-4 mb-4">
+        RETURNED
+        @if (Model.ReturnedAt.HasValue)
+        {
+            <div class="fs-6 fw-normal mt-2">
+                Returned on @Model.ReturnedAt.Value.ToLocalTime().ToString("g")
+            </div>
+        }
+    </div>
+}
+else if (Model.IsReturnRequired)
+{
+    <div class="alert alert-warning text-center fw-bold fs-5 mb-4">
+        IN RETURN QUEUE
+    </div>
+}
 
 <div>
-    <h4>Item</h4>
+    <h4>@Model.Name</h4>
     <hr />
     <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Project)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Project.Name)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Name)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Name)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.ItemNumber)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.ItemNumber)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Category)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Category)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Description)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Description)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.EstimatedCost)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.EstimatedCost)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.ActualCost)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.ActualCost)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Status)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Status)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.ImageUrl)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.ImageUrl)
-        </dd>
+        <dt class="col-sm-3">Project</dt>
+        <dd class="col-sm-9">@Model.Project?.Name</dd>
+
+        <dt class="col-sm-3">@Html.DisplayNameFor(model => model.ItemNumber)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(model => model.ItemNumber)</dd>
+
+        <dt class="col-sm-3">@Html.DisplayNameFor(model => model.Category)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(model => model.Category)</dd>
+
+        <dt class="col-sm-3">@Html.DisplayNameFor(model => model.Description)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(model => model.Description)</dd>
+
+        <dt class="col-sm-3">@Html.DisplayNameFor(model => model.Status)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(model => model.Status)</dd>
+
+        <dt class="col-sm-3">@Html.DisplayNameFor(model => model.EstimatedCost)</dt>
+        <dd class="col-sm-9">@Model.EstimatedCost?.ToString("C")</dd>
+
+        <dt class="col-sm-3">@Html.DisplayNameFor(model => model.ActualCost)</dt>
+        <dd class="col-sm-9">@Model.ActualCost?.ToString("C")</dd>
+
+        @if (Model.IsReturnRequired)
+        {
+            <dt class="col-sm-3">Return Location</dt>
+            <dd class="col-sm-9">@Model.ReturnLocation</dd>
+
+            <dt class="col-sm-3">Return By Date</dt>
+            <dd class="col-sm-9">@Model.ReturnByDate?.ToString("d")</dd>
+
+            <dt class="col-sm-3">Return Notes</dt>
+            <dd class="col-sm-9">@Model.ReturnNotes</dd>
+        }
+
+        @if (Model.IsReturned)
+        {
+            <dt class="col-sm-3">Returned At</dt>
+            <dd class="col-sm-9">@Model.ReturnedAt?.ToLocalTime().ToString("g")</dd>   
+        }
+
+        @if (!string.IsNullOrWhiteSpace(Model.ReturnReceiptFileName))
+        {
+            <dt class="col-sm-3">Return Receipt</dt>
+            <dd class="col-sm-9">@Model.ReturnReceiptFileName</dd>
+        }
+
     </dl>
 </div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+
+<div class="mt-4">
+    @if (!Model.IsReturnRequired)
+    {
+        <a asp-action="ReturnInfo" asp-route-id="@Model.Id" class="btn btn-warning">
+            Start Return Workflow
+        </a>
+    }
+    else if (Model.IsReturnRequired && !Model.IsReturned)
+    {
+        <a asp-action="ReturnInfo" asp-route-id="@Model.Id" class="btn btn-outline-warning">
+            Edit Return Info
+        </a>
+
+        <form asp-action="MarkReturned" asp-route-id="@Model.Id" method="post" class="d-inline">
+            @Html.AntiForgeryToken()
+            <button type="submit" class="btn btn-danger">
+                Mark Returned
+            </button>
+        </form>
+    }
+
+    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-outline-secondary">
+        Edit Item
+    </a>
+
+    <a asp-controller="Projects" asp-action="Details" asp-route-id="@Model.ProjectId" class="btn btn-outline-dark">
+        Back to Project
+    </a>
 </div>

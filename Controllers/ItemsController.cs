@@ -50,6 +50,7 @@ namespace Art_BaBomb.Web.Controllers
             var item = await _context.Items
                 .Include(i => i.Project)
                 .FirstOrDefaultAsync(m => m.Id == id);
+                
             if (item == null)
             {
                 return NotFound();
@@ -193,6 +194,81 @@ namespace Art_BaBomb.Web.Controllers
         private bool ItemExists(int id)
         {
             return _context.Items.Any(e => e.Id == id);
+        }
+
+        public async Task<IActionResult> ReturnInfo(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var item = await _context.Items
+                .Include(i => i.Project)
+                .FirstOrDefaultAsync(i => i.Id == id);
+
+            if (item == null)
+            {
+                return NotFound();
+            }
+
+            item.IsReturnRequired = true;
+
+            return View(item);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ReturnInfo(int id, [Bind("Id,ProjectId,Name,ItemNumber,Category,Description,EstimatedCost,ActualCost,Status,ImageUrl,IsReturnRequired,ReturnNotes,ReturnLocation,ReturnByDate,IsReturned")] Item item)
+        {
+            if (id != item.Id)
+            {
+                return NotFound();
+            }
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    item.IsReturnRequired = true;
+                    _context.Update(item);
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!_context.Items.Any(e => e.Id == item.Id))
+                    {
+                        return NotFound();
+                    }
+
+                    throw;
+                }
+
+                return RedirectToAction("Details", "Projects", new { id = item.ProjectId });
+            }
+
+            item.Project = await _context.Projects.FindAsync(item.ProjectId);
+
+            return View(item);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> MarkReturned(int id)
+        {
+            var item = await _context.Items.FindAsync(id);
+
+            if (item == null)
+            {
+                return NotFound();
+            }
+
+            item.IsReturned = true;
+            item.ReturnedAt = DateTime.UtcNow;
+
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Details), new { id = item.Id });
         }
     }
 }

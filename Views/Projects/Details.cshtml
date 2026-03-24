@@ -15,8 +15,9 @@
         .ToList();
 
     var returnItems = Model.Items
-        .Where(i => (i.Status ?? "").Trim().Equals("To Be Returned", StringComparison.OrdinalIgnoreCase))
-        .OrderBy(i => i.ItemNumber)
+        .Where(i => i.IsReturnRequired && !i.IsReturned)
+        .OrderBy(i => i.ReturnByDate)
+        .ThenBy(i => i.ItemNumber)
         .ToList();
 }
 
@@ -123,7 +124,7 @@ else
     <p>No purchased items yet.</p>
 }
 
-<h2>To Be Returned (@returnItems.Count)</h2>
+<h2>Return Queue (@returnItems.Count)</h2>
 @if (returnItems.Any())
 {
     <table class="table table-striped">
@@ -132,8 +133,8 @@ else
                 <th>Item #</th>
                 <th>Name</th>
                 <th>Category</th>
-                <th>Est. Cost</th>
-                <th>Actual Cost</th>
+                <th>Return Location</th>
+                <th>Return By</th>
                 <th></th>
             </tr>
         </thead>
@@ -144,11 +145,21 @@ else
                 <td>@item.ItemNumber</td>
                 <td>@item.Name</td>
                 <td>@item.Category</td>
-                <td>@item.EstimatedCost?.ToString("C")</td>
-                <td>@item.ActualCost?.ToString("C")</td>
+                <td>@item.ReturnLocation</td>
+                <td>@item.ReturnByDate?.ToString("d")</td>
                 <td>
-                    <a asp-controller="Items" asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                    <a asp-controller="Items" asp-action="Details" asp-route-id="@item.Id">Details</a>
+                    <a asp-controller="Items" asp-action="ReturnInfo" asp-route-id="@item.Id" class="btn btn-sm btn-outline-warning">
+                        Return Info
+                    </a>
+
+                    <form asp-controller="Items" asp-action="MarkReturned" asp-route-id="@item.Id" method="post" class="d-inline">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="btn btn-sm btn-danger">Mark Returned</button>
+                    </form>
+
+                    <a asp-controller="Items" asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-secondary">
+                        Details
+                    </a>
                 </td>
             </tr>
         }
@@ -157,5 +168,6 @@ else
 }
 else
 {
-    <p>No completed items yet.</p>
+    <p>No items in the return queue.</p>
 }
+
