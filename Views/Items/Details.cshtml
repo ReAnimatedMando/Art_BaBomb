@@ -50,6 +50,14 @@ else if (Model.IsReturnRequired)
         <dt class="col-sm-3">@Html.DisplayNameFor(model => model.ActualCost)</dt>
         <dd class="col-sm-9">@Model.ActualCost?.ToString("C")</dd>
 
+        @if (!string.IsNullOrWhiteSpace(Model.PurchaseReceiptFileName))
+        {
+            <dt class="col-sm-3">Purchase Receipt</dt>
+            <dd class="col-sm-9">
+                <a href="@Model.PurchaseReceiptPath" target="_blank">@Model.PurchaseReceiptFileName</a>
+            </dd>
+        }
+
         @if (Model.IsReturnRequired)
         {
             <dt class="col-sm-3">Return Location</dt>
@@ -71,7 +79,9 @@ else if (Model.IsReturnRequired)
         @if (!string.IsNullOrWhiteSpace(Model.ReturnReceiptFileName))
         {
             <dt class="col-sm-3">Return Receipt</dt>
-            <dd class="col-sm-9">@Model.ReturnReceiptFileName</dd>
+            <dd class="col-sm-9">
+                <a href="@Model.ReturnReceiptPath" target="_blank">@Model.ReturnReceiptFileName</a>
+            </dd>
         }
 
     </dl>

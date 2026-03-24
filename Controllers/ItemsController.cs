@@ -8,6 +8,9 @@ using Microsoft.EntityFrameworkCore;
 using Art_BaBomb.Web.Data;
 using Art_BaBomb.Web.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using System.IO;
 
 namespace Art_BaBomb.Web.Controllers
 {
@@ -15,10 +18,35 @@ namespace Art_BaBomb.Web.Controllers
     public class ItemsController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly IWebHostEnvironment _environment;
 
-        public ItemsController(ApplicationDbContext context)
+        public ItemsController(ApplicationDbContext context, IWebHostEnvironment environment)
         {
             _context = context;
+            _environment = environment;
+        }
+        
+        // Save files
+        private async Task<(string fileName, string relativePath)?> SaveUploadedFileAsync(IFormFile? file, string folderName)
+        {
+            if (file == null || file.Length == 0)
+            {
+                return null;
+            }
+
+            var uploadsRoot = Path.Combine(_environment.WebRootPath, "uploads", folderName);
+            Directory.CreateDirectory(uploadsRoot);
+
+            var safeFileName = $"{Guid.NewGuid()}{Path.GetExtension(file.FileName)}";
+            var fullPath = Path.Combine(uploadsRoot, safeFileName);
+
+            using (var stream = new FileStream(fullPath, FileMode.Create))
+            {
+                await file.CopyToAsync(stream);
+            }
+
+            var relativePath = $"/uploads/{folderName}/{safeFileName}";
+            return (file.FileName, relativePath);
         }
 
         // GET: Items
@@ -50,7 +78,7 @@ namespace Art_BaBomb.Web.Controllers
             var item = await _context.Items
                 .Include(i => i.Project)
                 .FirstOrDefaultAsync(m => m.Id == id);
-                
+
             if (item == null)
             {
                 return NotFound();
@@ -126,11 +154,32 @@ namespace Art_BaBomb.Web.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,ProjectId,Name,ItemNumber,Category,Description,EstimatedCost,ActualCost,Status,ImageUrl")] Item item)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,ProjectId,Name,ItemNumber,Category,Description,EstimatedCost,ActualCost,Status,ImageUrl,IsReturnRequired,ReturnNotes,ReturnLocation,ReturnByDate,IsReturned,ReturnedAt PurchaseReceiptFileName,PurchaseReceiptPath,ReturnReceiptFileName,ReturnReceiptPath")] Item item, IFormFile? purchaseReceiptFile)
         {
             if (id != item.Id)
             {
                 return NotFound();
+            }
+
+            var existingItem = await _context.Items.AsNoTracking().FirstOrDefaultAsync(i => i.Id == id);
+            if (existingItem == null)
+            {
+                return NotFound();
+            }
+
+            item.PurchaseReceiptFileName = existingItem.PurchaseReceiptFileName;
+            item.PurchaseReceiptPath = existingItem.PurchaseReceiptPath;
+            item.ReturnReceiptFileName = existingItem.ReturnReceiptFileName;
+            item.ReturnReceiptPath = existingItem.ReturnReceiptPath;
+
+            if (purchaseReceiptFile != null)
+            {
+                var savedFile = await SaveUploadedFileAsync(purchaseReceiptFile, "purchases");
+                if (savedFile.HasValue)
+                {
+                    item.PurchaseReceiptFileName = savedFile.Value.fileName;
+                    item.PurchaseReceiptPath = savedFile.Value.relativePath;
+                }
             }
 
             if (ModelState.IsValid)
@@ -219,11 +268,34 @@ namespace Art_BaBomb.Web.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> ReturnInfo(int id, [Bind("Id,ProjectId,Name,ItemNumber,Category,Description,EstimatedCost,ActualCost,Status,ImageUrl,IsReturnRequired,ReturnNotes,ReturnLocation,ReturnByDate,IsReturned")] Item item)
+        public async Task<IActionResult> ReturnInfo(int id, [Bind("Id,ProjectId,Name,ItemNumber,Category,Description,EstimatedCost,ActualCost,Status,ImageUrl,IsReturnRequired,ReturnNotes,ReturnLocation,ReturnByDate,IsReturned,ReturnedAt,PurchaseReceiptFileName,PurchaseReceiptPath,ReturnReceiptFileName,ReturnReceiptPath")] Item item, IFormFile? returnReceiptFile)
         {
             if (id != item.Id)
             {
                 return NotFound();
+            }
+
+            var existingItem = await _context.Items.AsNoTracking().FirstOrDefaultAsync(i => i.Id == id);
+            if (existingItem == null)
+            {
+                return NotFound();
+            }
+
+            item.PurchaseReceiptFileName = existingItem.PurchaseReceiptFileName;
+            item.PurchaseReceiptPath = existingItem.PurchaseReceiptPath;
+            item.ReturnReceiptFileName = existingItem.ReturnReceiptFileName;
+            item.ReturnReceiptPath = existingItem.ReturnReceiptPath;
+
+            item.IsReturnRequired = true;
+
+            if (returnReceiptFile != null)
+            {
+                var savedFile = await SaveUploadedFileAsync(returnReceiptFile, "returns");
+                if (savedFile.HasValue)
+                {
+                    item.ReturnReceiptFileName = savedFile.Value.fileName;
+                    item.ReturnReceiptPath = savedFile.Value.relativePath;
+                }
             }
 
             if (ModelState.IsValid)

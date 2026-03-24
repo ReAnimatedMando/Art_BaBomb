@@ -37,6 +37,10 @@ namespace Art_BaBomb.Web.Models
         [StringLength(500)]
         public string? ImageUrl { get; set; }
 
+        public string? PurchaseReceiptFileName { get; set; }
+
+        public string? PurchaseReceiptPath { get; set; }
+
         public bool IsReturnRequired { get; set; } = false;
 
         public string? ReturnNotes { get; set; }
