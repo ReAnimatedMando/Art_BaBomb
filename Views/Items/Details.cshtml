@@ -2,6 +2,22 @@
 
 @{
     ViewData["Title"] = "Item Details";
+
+    bool hasPurchaseReceipt = !string.IsNullOrWhiteSpace(Model.PurchaseReceiptPath);
+    bool purchaseReceiptIsImage =
+        hasPurchaseReceipt &&
+        (Model.PurchaseReceiptPath.EndsWith(".jpg", StringComparison.OrdinalIgnoreCase)
+        || Model.PurchaseReceiptPath.EndsWith(".jpeg", StringComparison.OrdinalIgnoreCase)
+        || Model.PurchaseReceiptPath.EndsWith(".png", StringComparison.OrdinalIgnoreCase)
+        || Model.PurchaseReceiptPath.EndsWith(".webp", StringComparison.OrdinalIgnoreCase));
+
+    bool hasReturnReceipt = !string.IsNullOrWhiteSpace(Model.ReturnReceiptPath);
+    bool returnReceiptIsImage =
+        hasReturnReceipt &&
+        (Model.ReturnReceiptPath.EndsWith(".jpg", StringComparison.OrdinalIgnoreCase)
+        || Model.ReturnReceiptPath.EndsWith(".jpeg", StringComparison.OrdinalIgnoreCase)
+        || Model.ReturnReceiptPath.EndsWith(".png", StringComparison.OrdinalIgnoreCase)
+        || Model.ReturnReceiptPath.EndsWith(".webp", StringComparison.OrdinalIgnoreCase));
 }
 
 <div class="d-flex justify-content-between align-items-start mb-3">
@@ -45,6 +61,13 @@
             </div>
         }
     </div>
+
+    @if (string.IsNullOrWhiteSpace(Model.ReturnReceiptPath))
+    {
+        <div class="alert alert-warning text-center fw-bold mb-4 shadow-sm">
+            Returned item is missing a return receipt.
+        </div>
+    }
 }
 else if (Model.IsReturnRequired)
 {
@@ -77,6 +100,14 @@ else if (Model.IsReturnRequired)
 
                     <dt class="col-sm-4">Actual Cost</dt>
                     <dd class="col-sm-8">@Model.ActualCost?.ToString("C")</dd>
+
+                    @if (!string.IsNullOrWhiteSpace(Model.ImageUrl))
+                    {
+                        <dt class="col-sm-4">Image URL</dt>
+                        <dd class="col-sm-8">
+                            <a href="@Model.ImageUrl" target="_blank">@Model.ImageUrl</a>
+                        </dd>
+                    }
                 </dl>
             </div>
         </div>
@@ -89,13 +120,19 @@ else if (Model.IsReturnRequired)
 
                     <dl class="row mb-0">
                         <dt class="col-sm-4">Return Location</dt>
-                        <dd class="col-sm-8">@Model.ReturnLocation</dd>
+                        <dd class="col-sm-8">
+                            @(string.IsNullOrWhiteSpace(Model.ReturnLocation) ? "—" : Model.ReturnLocation)
+                        </dd>
 
                         <dt class="col-sm-4">Return By Date</dt>
-                        <dd class="col-sm-8">@Model.ReturnByDate?.ToString("d")</dd>
+                        <dd class="col-sm-8">
+                            @(Model.ReturnByDate?.ToString("d") ?? "—")
+                        </dd>
 
                         <dt class="col-sm-4">Return Notes</dt>
-                        <dd class="col-sm-8">@Model.ReturnNotes</dd>
+                        <dd class="col-sm-8">
+                            @(string.IsNullOrWhiteSpace(Model.ReturnNotes) ? "—" : Model.ReturnNotes)
+                        </dd>
 
                         @if (Model.IsReturned)
                         {
@@ -111,39 +148,61 @@ else if (Model.IsReturnRequired)
     <div class="col-lg-5">
         <div class="card shadow-sm">
             <div class="card-body">
-                <h5 class="card-title mb-3">Receipts</h5>
+                <h5 class="card-title mb-3">Purchase Receipt</h5>
 
-                <div class="mb-3">
-                    <div class="fw-semibold mb-2">Purchase Receipt</div>
-                    @if (!string.IsNullOrWhiteSpace(Model.PurchaseReceiptFileName))
+                @if (hasPurchaseReceipt)
+                {
+                    @if (purchaseReceiptIsImage)
                     {
-                        <a href="@Model.PurchaseReceiptPath" target="_blank" class="btn btn-sm btn-outline-primary">
-                            View Purchase Receipt
+                        <a href="@Model.PurchaseReceiptPath" target="_blank">
+                            <img src="@Model.PurchaseReceiptPath"
+                                 alt="Purchase Receipt"
+                                 class="img-fluid rounded border mb-3" />
                         </a>
-                        <div class="small text-muted mt-2">@Model.PurchaseReceiptFileName</div>
                     }
-                    else
-                    {
-                        <div class="text-muted">No purchase receipt uploaded.</div>
-                    }
-                </div>
 
-                <hr />
+                    <a href="@Model.PurchaseReceiptPath" target="_blank" class="btn btn-sm btn-outline-primary">
+                        View Purchase Receipt
+                    </a>
 
-                <div>
-                    <div class="fw-semibold mb-2">Return Receipt</div>
-                    @if (!string.IsNullOrWhiteSpace(Model.ReturnReceiptFileName))
+                    <div class="small text-muted mt-2">
+                        @Model.PurchaseReceiptFileName
+                    </div>
+                }
+                else
+                {
+                    <p class="text-muted mb-0">No purchase receipt uploaded.</p>
+                }
+            </div>
+        </div>
+
+        <div class="card shadow-sm mt-4">
+            <div class="card-body">
+                <h5 class="card-title mb-3">Return Receipt</h5>
+
+                @if (hasReturnReceipt)
+                {
+                    @if (returnReceiptIsImage)
                     {
-                        <a href="@Model.ReturnReceiptPath" target="_blank" class="btn btn-sm btn-outline-danger">
-                            View Return Receipt
+                        <a href="@Model.ReturnReceiptPath" target="_blank">
+                            <img src="@Model.ReturnReceiptPath"
+                                 alt="Return Receipt"
+                                 class="img-fluid rounded border mb-3" />
                         </a>
-                        <div class="small text-muted mt-2">@Model.ReturnReceiptFileName</div>
                     }
-                    else
-                    {
-                        <div class="text-muted">No return receipt uploaded.</div>
-                    }
-                </div>
+
+                    <a href="@Model.ReturnReceiptPath" target="_blank" class="btn btn-sm btn-outline-danger">
+                        View Return Receipt
+                    </a>
+
+                    <div class="small text-muted mt-2">
+                        @Model.ReturnReceiptFileName
+                    </div>
+                }
+                else
+                {
+                    <p class="text-muted mb-0">No return receipt uploaded.</p>
+                }
             </div>
         </div>
 

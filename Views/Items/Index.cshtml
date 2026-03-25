@@ -7,6 +7,13 @@
 @{
     var projectName = ViewBag.ProjectName as string;
     var projectId = ViewBag.ProjectId as int?;
+
+    bool IsImageReceipt(string? path) =>
+        !string.IsNullOrWhiteSpace(path) &&
+        (path.EndsWith(".jpg", StringComparison.OrdinalIgnoreCase)
+        || path.EndsWith(".jpeg", StringComparison.OrdinalIgnoreCase)
+        || path.EndsWith(".png", StringComparison.OrdinalIgnoreCase)
+        || path.EndsWith(".webp", StringComparison.OrdinalIgnoreCase));
 }
 
 <h1>
@@ -24,7 +31,7 @@
     <a asp-action="Create" asp-route-projectId="@projectId" class="btn btn-primary">Create New Item</a>
 </p>
 
-<table class="table">
+<table class="table table-striped align-middle">
     <thead>
         <tr>
             <th>
@@ -64,7 +71,63 @@
                 @Html.DisplayFor(modelItem => item.Project.Name)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Name)
+                <div class="d-flex align-items-start gap-2">
+                    @{
+                        var previewPath = !string.IsNullOrWhiteSpace(item.PurchaseReceiptPath)
+                            ? item.PurchaseReceiptPath
+                            : item.ReturnReceiptPath;
+                    }
+
+                    @if (IsImageReceipt(previewPath))
+                    {
+                        <a href="@previewPath" target="_blank">
+                            <img src="@previewPath"
+                                alt="Receipt"
+                                style="width: 42px; height: 42px; object-fit: cover;"
+                                class="rounded border" />
+                        </a>
+                    }
+
+                    <div>
+                        <div>@item.Name</div>
+
+                        <div class="mt-1">
+                            @if (!string.IsNullOrWhiteSpace(item.PurchaseReceiptPath) && !IsImageReceipt(item.PurchaseReceiptPath))
+                            {
+                                <a href="@item.PurchaseReceiptPath" target="_blank" class="btn btn-sm btn-outline-primary me-1">
+                                    Purchase Receipt
+                                </a>
+                            }
+
+                            @if (!string.IsNullOrWhiteSpace(item.ReturnReceiptPath) && !IsImageReceipt(item.ReturnReceiptPath))
+                            {
+                                <a href="@item.ReturnReceiptPath" target="_blank" class="btn btn-sm btn-outline-danger me-1">
+                                    Return Receipt
+                                </a>
+                            }
+
+                            @if (!string.IsNullOrWhiteSpace(item.PurchaseReceiptPath))
+                            {
+                                <span class="badge bg-info text-dark me-1">Purchase Receipt</span>
+                            }
+
+                            @if (!string.IsNullOrWhiteSpace(item.ReturnReceiptPath))
+                            {
+                                <span class="badge bg-danger me-1">Return Receipt</span>
+                            }
+
+                            @if (item.IsReturnRequired && !item.IsReturned)
+                            {
+                                <span class="badge bg-warning text-dark me-1">Return Queue</span>
+                            }
+
+                            @if (item.IsReturned)
+                            {
+                                <span class="badge bg-danger me-1">Returned</span>
+                            }
+                        </div>
+                    </div>
+                </div>
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.ItemNumber)

@@ -154,7 +154,11 @@ namespace Art_BaBomb.Web.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,ProjectId,Name,ItemNumber,Category,Description,EstimatedCost,ActualCost,Status,ImageUrl,IsReturnRequired,ReturnNotes,ReturnLocation,ReturnByDate,IsReturned,ReturnedAt PurchaseReceiptFileName,PurchaseReceiptPath,ReturnReceiptFileName,ReturnReceiptPath")] Item item, IFormFile? purchaseReceiptFile)
+        public async Task<IActionResult> Edit(
+            int id,
+            [Bind("Id,ProjectId,Name,ItemNumber,Category,Description,EstimatedCost,ActualCost,Status,ImageUrl,IsReturnRequired,ReturnNotes,ReturnLocation,ReturnByDate,IsReturned,ReturnedAt,PurchaseReceiptFileName,PurchaseReceiptPath,ReturnReceiptFileName,ReturnReceiptPath")] Item item,
+            IFormFile? purchaseReceiptFile,
+            IFormFile? returnReceiptFile)
         {
             if (id != item.Id)
             {
@@ -164,12 +168,13 @@ namespace Art_BaBomb.Web.Controllers
             var existingItem = await _context.Items
                 .AsNoTracking()
                 .FirstOrDefaultAsync(i => i.Id == id);
-                
+
             if (existingItem == null)
             {
                 return NotFound();
             }
 
+            // Preserve existing receipt values unless a new file is uploaded
             item.PurchaseReceiptFileName = existingItem.PurchaseReceiptFileName;
             item.PurchaseReceiptPath = existingItem.PurchaseReceiptPath;
             item.ReturnReceiptFileName = existingItem.ReturnReceiptFileName;
@@ -177,11 +182,21 @@ namespace Art_BaBomb.Web.Controllers
 
             if (purchaseReceiptFile != null)
             {
-                var savedFile = await SaveUploadedFileAsync(purchaseReceiptFile, "purchases");
-                if (savedFile.HasValue)
+                var savedPurchaseFile = await SaveUploadedFileAsync(purchaseReceiptFile, "purchases");
+                if (savedPurchaseFile.HasValue)
                 {
-                    item.PurchaseReceiptFileName = savedFile.Value.fileName;
-                    item.PurchaseReceiptPath = savedFile.Value.relativePath;
+                    item.PurchaseReceiptFileName = savedPurchaseFile.Value.fileName;
+                    item.PurchaseReceiptPath = savedPurchaseFile.Value.relativePath;
+                }
+            }
+
+            if (returnReceiptFile != null)
+            {
+                var savedReturnFile = await SaveUploadedFileAsync(returnReceiptFile, "returns");
+                if (savedReturnFile.HasValue)
+                {
+                    item.ReturnReceiptFileName = savedReturnFile.Value.fileName;
+                    item.ReturnReceiptPath = savedReturnFile.Value.relativePath;
                 }
             }
 
@@ -198,13 +213,13 @@ namespace Art_BaBomb.Web.Controllers
                     {
                         return NotFound();
                     }
-                    else
-                    {
-                        throw;
-                    }
+
+                    throw;
                 }
+
                 return RedirectToAction("Details", "Projects", new { id = item.ProjectId });
             }
+
             ViewData["ProjectId"] = new SelectList(_context.Projects, "Id", "Name", item.ProjectId);
             return View(item);
         }

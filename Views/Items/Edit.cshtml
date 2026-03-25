@@ -1,88 +1,182 @@
 @model Art_BaBomb.Web.Models.Item
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Edit Item";
+
+    bool hasPurchaseReceipt = !string.IsNullOrWhiteSpace(Model.PurchaseReceiptPath);
+    bool purchaseIsImage =
+        hasPurchaseReceipt &&
+        (Model.PurchaseReceiptPath.EndsWith(".jpg", StringComparison.OrdinalIgnoreCase)
+        || Model.PurchaseReceiptPath.EndsWith(".jpeg", StringComparison.OrdinalIgnoreCase)
+        || Model.PurchaseReceiptPath.EndsWith(".png", StringComparison.OrdinalIgnoreCase)
+        || Model.PurchaseReceiptPath.EndsWith(".webp", StringComparison.OrdinalIgnoreCase));
+
+    bool hasReturnReceipt = !string.IsNullOrWhiteSpace(Model.ReturnReceiptPath);
+    bool returnIsImage =
+        hasReturnReceipt &&
+        (Model.ReturnReceiptPath.EndsWith(".jpg", StringComparison.OrdinalIgnoreCase)
+        || Model.ReturnReceiptPath.EndsWith(".jpeg", StringComparison.OrdinalIgnoreCase)
+        || Model.ReturnReceiptPath.EndsWith(".png", StringComparison.OrdinalIgnoreCase)
+        || Model.ReturnReceiptPath.EndsWith(".webp", StringComparison.OrdinalIgnoreCase));
 }
 
-<h1>Edit</h1>
-
-<h4>Item</h4>
+<h1>Edit Item</h1>
+<h4 class="text-muted">@Model.Name</h4>
 <hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Edit" enctype="multipart/form-data">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="Id" />
-            <div class="form-group">
-                <label asp-for="ProjectId" class="control-label"></label>
-                <select asp-for="ProjectId" class="form-control" asp-items="ViewBag.ProjectId"></select>
-                <span asp-validation-for="ProjectId" class="text-danger"></span>
+
+<div class="row g-4">
+
+    <!-- LEFT SIDE: FORM -->
+    <div class="col-lg-7">
+        <div class="card shadow-sm">
+            <div class="card-body">
+
+                <form asp-action="Edit" enctype="multipart/form-data">
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                    <input type="hidden" asp-for="Id" />
+
+                    <div class="mb-3">
+                        <label asp-for="ProjectId" class="form-label"></label>
+                        <select asp-for="ProjectId" class="form-select" asp-items="ViewBag.ProjectId"></select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Name" class="form-label"></label>
+                        <input asp-for="Name" class="form-control" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="ItemNumber" class="form-label"></label>
+                        <input asp-for="ItemNumber" class="form-control" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Category" class="form-label"></label>
+                        <input asp-for="Category" class="form-control" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Description" class="form-label"></label>
+                        <textarea asp-for="Description" class="form-control" rows="4"></textarea>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="EstimatedCost" class="form-label"></label>
+                            <input asp-for="EstimatedCost" class="form-control" />
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="ActualCost" class="form-label"></label>
+                            <input asp-for="ActualCost" class="form-control" />
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Status" class="form-label"></label>
+                        <select asp-for="Status" class="form-select">
+                            <option value="Needed">Needed</option>
+                            <option value="Acquired">Acquired</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="ImageUrl" class="form-label"></label>
+                        <input asp-for="ImageUrl" class="form-control" />
+                    </div>
+
+                    <div class="d-flex gap-2 mt-4">
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                        <a asp-controller="Projects"
+                           asp-action="Details"
+                           asp-route-id="@Model.ProjectId"
+                           class="btn btn-outline-dark">
+                            Back to Project
+                        </a>
+                    </div>
+
+                </form>
             </div>
-            <div class="form-group">
-                <label asp-for="Name" class="control-label"></label>
-                <input asp-for="Name" class="form-control" />
-                <span asp-validation-for="Name" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="ItemNumber" class="control-label"></label>
-                <input asp-for="ItemNumber" class="form-control" />
-                <span asp-validation-for="ItemNumber" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Category" class="control-label"></label>
-                <input asp-for="Category" class="form-control" />
-                <span asp-validation-for="Category" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Description" class="control-label"></label>
-                <input asp-for="Description" class="form-control" />
-                <span asp-validation-for="Description" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="EstimatedCost" class="control-label"></label>
-                <input asp-for="EstimatedCost" class="form-control" />
-                <span asp-validation-for="EstimatedCost" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="ActualCost" class="control-label"></label>
-                <input asp-for="ActualCost" class="form-control" />
-                <span asp-validation-for="ActualCost" class="text-danger"></span>
-            </div>
-            <div class="form-group mb-3">
-                <label asp-for="Status" class="control-label"></label>
-                <select asp-for="Status" class="form-control">
-                    <option value="Needed">Needed</option>
-                    <option value="Purchased">Purchased</option>
-                    <option value="Completed">Completed</option>
-                </select>
-                <span asp-validation-for="Status" class="text-danger"></span>
-            </div>
-            <div class="form-group mb-3">
-                <label class="control-label">Purchase Receipt</label>
-                <input type="file" name="purchaseReceiptFile" class="form-control" />
-                @if (!string.IsNullOrWhiteSpace(Model.PurchaseReceiptPath))
+        </div>
+    </div>
+
+    <!-- RIGHT SIDE: RECEIPTS -->
+    <div class="col-lg-5">
+
+        <!-- PURCHASE RECEIPT -->
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title mb-3">Purchase Receipt</h5>
+
+                <div class="mb-3">
+                    <input type="file" name="purchaseReceiptFile" class="form-control" />
+                    <div class="form-text">Upload purchase receipt (image or PDF)</div>
+                </div>
+
+                @if (hasPurchaseReceipt)
                 {
-                    <div class="mt-2">
-                        <a href="@Model.PurchaseReceiptPath" target="_blank">View Current Purchase Receipt</a>
+                    @if (purchaseIsImage)
+                    {
+                        <a href="@Model.PurchaseReceiptPath" target="_blank">
+                            <img src="@Model.PurchaseReceiptPath"
+                                 class="img-fluid rounded border mb-3" />
+                        </a>
+                    }
+
+                    <a href="@Model.PurchaseReceiptPath" target="_blank" class="btn btn-sm btn-outline-primary">
+                        View Receipt
+                    </a>
+
+                    <div class="small text-muted mt-2">
+                        @Model.PurchaseReceiptFileName
                     </div>
                 }
+                else
+                {
+                    <p class="text-muted mb-0">No purchase receipt uploaded.</p>
+                }
             </div>
-            <div class="form-group">
-                <label asp-for="ImageUrl" class="control-label"></label>
-                <input asp-for="ImageUrl" class="form-control" />
-                <span asp-validation-for="ImageUrl" class="text-danger"></span>
+        </div>
+
+        <!-- RETURN RECEIPT -->
+        <div class="card shadow-sm mt-4">
+            <div class="card-body">
+                <h5 class="card-title mb-3">Return Receipt</h5>
+
+                <div class="mb-3">
+                    <input type="file" name="returnReceiptFile" class="form-control" />
+                    <div class="form-text">Upload return receipt (image or PDF)</div>
+                </div>
+
+                @if (hasReturnReceipt)
+                {
+                    @if (returnIsImage)
+                    {
+                        <a href="@Model.ReturnReceiptPath" target="_blank">
+                            <img src="@Model.ReturnReceiptPath"
+                                 class="img-fluid rounded border mb-3" />
+                        </a>
+                    }
+
+                    <a href="@Model.ReturnReceiptPath" target="_blank" class="btn btn-sm btn-outline-danger">
+                        View Receipt
+                    </a>
+
+                    <div class="small text-muted mt-2">
+                        @Model.ReturnReceiptFileName
+                    </div>
+                }
+                else
+                {
+                    <p class="text-muted mb-0">No return receipt uploaded.</p>
+                }
             </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
-            </div>
-        </form>
+        </div>
+
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
-
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
 }
