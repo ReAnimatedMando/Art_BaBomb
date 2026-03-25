@@ -1,14 +1,42 @@
 @model Art_BaBomb.Web.Models.Item
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Item Details";
 }
 
-<h1>Item Details</h1>
+<div class="d-flex justify-content-between align-items-start mb-3">
+    <div>
+        <h1 class="mb-1">@Model.Name</h1>
+        <div class="text-muted">
+            Project: <strong>@Model.Project?.Name</strong>
+        </div>
+    </div>
+
+    <div class="text-end">
+        @if (string.IsNullOrWhiteSpace(Model.Status) || Model.Status.Trim().Equals("Needed", StringComparison.OrdinalIgnoreCase))
+        {
+            <span class="badge bg-secondary fs-6">Needed</span>
+        }
+        else if ((Model.Status ?? "").Trim().Equals("Acquired", StringComparison.OrdinalIgnoreCase))
+        {
+            <span class="badge bg-success fs-6">Acquired</span>
+        }
+
+        @if (Model.IsReturnRequired && !Model.IsReturned)
+        {
+            <span class="badge bg-warning text-dark fs-6 ms-1">In Return Queue</span>
+        }
+
+        @if (Model.IsReturned)
+        {
+            <span class="badge bg-danger fs-6 ms-1">Returned</span>
+        }
+    </div>
+</div>
 
 @if (Model.IsReturned)
 {
-    <div class="alert alert-danger text-center fw-bold fs-4 mb-4">
+    <div class="alert alert-danger text-center fw-bold fs-4 mb-4 shadow-sm">
         RETURNED
         @if (Model.ReturnedAt.HasValue)
         {
@@ -20,99 +48,139 @@
 }
 else if (Model.IsReturnRequired)
 {
-    <div class="alert alert-warning text-center fw-bold fs-5 mb-4">
+    <div class="alert alert-warning text-center fw-bold fs-5 mb-4 shadow-sm">
         IN RETURN QUEUE
     </div>
 }
 
-<div>
-    <h4>@Model.Name</h4>
-    <hr />
-    <dl class="row">
-        <dt class="col-sm-3">Project</dt>
-        <dd class="col-sm-9">@Model.Project?.Name</dd>
+<div class="row g-4">
+    <div class="col-lg-7">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title mb-3">Item Information</h5>
 
-        <dt class="col-sm-3">@Html.DisplayNameFor(model => model.ItemNumber)</dt>
-        <dd class="col-sm-9">@Html.DisplayFor(model => model.ItemNumber)</dd>
+                <dl class="row mb-0">
+                    <dt class="col-sm-4">Item Number</dt>
+                    <dd class="col-sm-8">@Model.ItemNumber</dd>
 
-        <dt class="col-sm-3">@Html.DisplayNameFor(model => model.Category)</dt>
-        <dd class="col-sm-9">@Html.DisplayFor(model => model.Category)</dd>
+                    <dt class="col-sm-4">Category</dt>
+                    <dd class="col-sm-8">@Model.Category</dd>
 
-        <dt class="col-sm-3">@Html.DisplayNameFor(model => model.Description)</dt>
-        <dd class="col-sm-9">@Html.DisplayFor(model => model.Description)</dd>
+                    <dt class="col-sm-4">Description</dt>
+                    <dd class="col-sm-8">@Model.Description</dd>
 
-        <dt class="col-sm-3">@Html.DisplayNameFor(model => model.Status)</dt>
-        <dd class="col-sm-9">@Html.DisplayFor(model => model.Status)</dd>
+                    <dt class="col-sm-4">Status</dt>
+                    <dd class="col-sm-8">@Model.Status</dd>
 
-        <dt class="col-sm-3">@Html.DisplayNameFor(model => model.EstimatedCost)</dt>
-        <dd class="col-sm-9">@Model.EstimatedCost?.ToString("C")</dd>
+                    <dt class="col-sm-4">Estimated Cost</dt>
+                    <dd class="col-sm-8">@Model.EstimatedCost?.ToString("C")</dd>
 
-        <dt class="col-sm-3">@Html.DisplayNameFor(model => model.ActualCost)</dt>
-        <dd class="col-sm-9">@Model.ActualCost?.ToString("C")</dd>
+                    <dt class="col-sm-4">Actual Cost</dt>
+                    <dd class="col-sm-8">@Model.ActualCost?.ToString("C")</dd>
+                </dl>
+            </div>
+        </div>
 
-        @if (!string.IsNullOrWhiteSpace(Model.PurchaseReceiptFileName))
+        @if (Model.IsReturnRequired || Model.IsReturned)
         {
-            <dt class="col-sm-3">Purchase Receipt</dt>
-            <dd class="col-sm-9">
-                <a href="@Model.PurchaseReceiptPath" target="_blank">@Model.PurchaseReceiptFileName</a>
-            </dd>
+            <div class="card shadow-sm mt-4">
+                <div class="card-body">
+                    <h5 class="card-title mb-3">Return Information</h5>
+
+                    <dl class="row mb-0">
+                        <dt class="col-sm-4">Return Location</dt>
+                        <dd class="col-sm-8">@Model.ReturnLocation</dd>
+
+                        <dt class="col-sm-4">Return By Date</dt>
+                        <dd class="col-sm-8">@Model.ReturnByDate?.ToString("d")</dd>
+
+                        <dt class="col-sm-4">Return Notes</dt>
+                        <dd class="col-sm-8">@Model.ReturnNotes</dd>
+
+                        @if (Model.IsReturned)
+                        {
+                            <dt class="col-sm-4">Returned At</dt>
+                            <dd class="col-sm-8">@Model.ReturnedAt?.ToLocalTime().ToString("g")</dd>
+                        }
+                    </dl>
+                </div>
+            </div>
         }
+    </div>
 
-        @if (Model.IsReturnRequired)
-        {
-            <dt class="col-sm-3">Return Location</dt>
-            <dd class="col-sm-9">@Model.ReturnLocation</dd>
+    <div class="col-lg-5">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title mb-3">Receipts</h5>
 
-            <dt class="col-sm-3">Return By Date</dt>
-            <dd class="col-sm-9">@Model.ReturnByDate?.ToString("d")</dd>
+                <div class="mb-3">
+                    <div class="fw-semibold mb-2">Purchase Receipt</div>
+                    @if (!string.IsNullOrWhiteSpace(Model.PurchaseReceiptFileName))
+                    {
+                        <a href="@Model.PurchaseReceiptPath" target="_blank" class="btn btn-sm btn-outline-primary">
+                            View Purchase Receipt
+                        </a>
+                        <div class="small text-muted mt-2">@Model.PurchaseReceiptFileName</div>
+                    }
+                    else
+                    {
+                        <div class="text-muted">No purchase receipt uploaded.</div>
+                    }
+                </div>
 
-            <dt class="col-sm-3">Return Notes</dt>
-            <dd class="col-sm-9">@Model.ReturnNotes</dd>
-        }
+                <hr />
 
-        @if (Model.IsReturned)
-        {
-            <dt class="col-sm-3">Returned At</dt>
-            <dd class="col-sm-9">@Model.ReturnedAt?.ToLocalTime().ToString("g")</dd>   
-        }
+                <div>
+                    <div class="fw-semibold mb-2">Return Receipt</div>
+                    @if (!string.IsNullOrWhiteSpace(Model.ReturnReceiptFileName))
+                    {
+                        <a href="@Model.ReturnReceiptPath" target="_blank" class="btn btn-sm btn-outline-danger">
+                            View Return Receipt
+                        </a>
+                        <div class="small text-muted mt-2">@Model.ReturnReceiptFileName</div>
+                    }
+                    else
+                    {
+                        <div class="text-muted">No return receipt uploaded.</div>
+                    }
+                </div>
+            </div>
+        </div>
 
-        @if (!string.IsNullOrWhiteSpace(Model.ReturnReceiptFileName))
-        {
-            <dt class="col-sm-3">Return Receipt</dt>
-            <dd class="col-sm-9">
-                <a href="@Model.ReturnReceiptPath" target="_blank">@Model.ReturnReceiptFileName</a>
-            </dd>
-        }
+        <div class="card shadow-sm mt-4">
+            <div class="card-body">
+                <h5 class="card-title mb-3">Actions</h5>
 
-    </dl>
-</div>
+                <div class="d-grid gap-2">
+                    @if (!Model.IsReturnRequired)
+                    {
+                        <a asp-action="ReturnInfo" asp-route-id="@Model.Id" class="btn btn-warning">
+                            Start Return Workflow
+                        </a>
+                    }
+                    else if (Model.IsReturnRequired && !Model.IsReturned)
+                    {
+                        <a asp-action="ReturnInfo" asp-route-id="@Model.Id" class="btn btn-outline-warning">
+                            Edit Return Info
+                        </a>
 
-<div class="mt-4">
-    @if (!Model.IsReturnRequired)
-    {
-        <a asp-action="ReturnInfo" asp-route-id="@Model.Id" class="btn btn-warning">
-            Start Return Workflow
-        </a>
-    }
-    else if (Model.IsReturnRequired && !Model.IsReturned)
-    {
-        <a asp-action="ReturnInfo" asp-route-id="@Model.Id" class="btn btn-outline-warning">
-            Edit Return Info
-        </a>
+                        <form asp-action="MarkReturned" asp-route-id="@Model.Id" method="post">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn btn-danger w-100">
+                                Mark Returned
+                            </button>
+                        </form>
+                    }
 
-        <form asp-action="MarkReturned" asp-route-id="@Model.Id" method="post" class="d-inline">
-            @Html.AntiForgeryToken()
-            <button type="submit" class="btn btn-danger">
-                Mark Returned
-            </button>
-        </form>
-    }
+                    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-outline-secondary">
+                        Edit Item
+                    </a>
 
-    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-outline-secondary">
-        Edit Item
-    </a>
-
-    <a asp-controller="Projects" asp-action="Details" asp-route-id="@Model.ProjectId" class="btn btn-outline-dark">
-        Back to Project
-    </a>
+                    <a asp-controller="Projects" asp-action="Details" asp-route-id="@Model.ProjectId" class="btn btn-outline-dark">
+                        Back to Project
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>

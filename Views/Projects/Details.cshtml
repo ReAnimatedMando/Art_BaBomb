@@ -19,16 +19,55 @@
         .OrderBy(i => i.ReturnByDate)
         .ThenBy(i => i.ItemNumber)
         .ToList();
+
+    var totalEstimated = Model.Items.Sum(i => i.EstimatedCost ?? 0);
+    var totalActual = Model.Items.Sum(i => i.ActualCost ?? 0);
+    var remainingBudget = Model.Budget - totalActual;
 }
 
 <h1>@Model.Name</h1>
 
-<p><strong>Total Items Loaded:</strong> @Model.Items.Count</p>
-
 <div class="mb-4">
     <p><strong>Description:</strong> @Model.Description</p>
-    <p><strong>Budget:</strong> @Model.Budget.ToString("C")</p>
     <p><strong>Created:</strong> @Model.CreatedAt.ToLocalTime().ToString("g")</p>
+</div>
+
+<!-- 🔷 Budget Summary Cards -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h6 class="text-muted">Budget</h6>
+                <div class="fw-bold">@Model.Budget.ToString("C")</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h6 class="text-muted">Estimated</h6>
+                <div class="fw-bold">@totalEstimated.ToString("C")</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h6 class="text-muted">Actual</h6>
+                <div class="fw-bold">@totalActual.ToString("C")</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card shadow-sm @(remainingBudget < 0 ? "border-danger" : "")">
+            <div class="card-body">
+                <h6 class="text-muted">Remaining</h6>
+                <div class="fw-bold @(remainingBudget < 0 ? "text-danger" : "")">
+                    @remainingBudget.ToString("C")
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 <div class="mb-3">
@@ -50,17 +89,18 @@
 
 <hr />
 
+<!-- ===================== NEEDED ===================== -->
 <h2>Needed Items (@neededItems.Count)</h2>
 @if (neededItems.Any())
 {
-    <table class="table table-striped">
+    <table class="table table-striped align-middle">
         <thead>
             <tr>
                 <th>Item #</th>
                 <th>Name</th>
                 <th>Category</th>
-                <th>Est. Cost</th>
-                <th>Actual Cost</th>
+                <th>Est.</th>
+                <th>Actual</th>
                 <th></th>
             </tr>
         </thead>
@@ -69,13 +109,33 @@
         {
             <tr>
                 <td>@item.ItemNumber</td>
-                <td>@item.Name</td>
+
+                <td>
+                    @item.Name
+
+                    @if (!string.IsNullOrWhiteSpace(item.PurchaseReceiptPath))
+                    {
+                        <span class="badge bg-info text-dark ms-1">Receipt</span>
+                    }
+
+                    @if (item.IsReturnRequired && !item.IsReturned)
+                    {
+                        <span class="badge bg-warning text-dark ms-1">Return</span>
+                    }
+
+                    @if (item.IsReturned)
+                    {
+                        <span class="badge bg-danger ms-1">Returned</span>
+                    }
+                </td>
+
                 <td>@item.Category</td>
                 <td>@item.EstimatedCost?.ToString("C")</td>
                 <td>@item.ActualCost?.ToString("C")</td>
+
                 <td>
-                    <a asp-controller="Items" asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                    <a asp-controller="Items" asp-action="Details" asp-route-id="@item.Id">Details</a>
+                    <a asp-controller="Items" asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary">Edit</a>
+                    <a asp-controller="Items" asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-secondary">Details</a>
                 </td>
             </tr>
         }
@@ -87,17 +147,18 @@ else
     <p>No needed items yet.</p>
 }
 
+<!-- ===================== ACQUIRED ===================== -->
 <h2>Acquired Items (@acquiredItems.Count)</h2>
 @if (acquiredItems.Any())
 {
-    <table class="table table-striped">
+    <table class="table table-striped align-middle">
         <thead>
             <tr>
                 <th>Item #</th>
                 <th>Name</th>
                 <th>Category</th>
-                <th>Est. Cost</th>
-                <th>Actual Cost</th>
+                <th>Est.</th>
+                <th>Actual</th>
                 <th></th>
             </tr>
         </thead>
@@ -106,13 +167,33 @@ else
         {
             <tr>
                 <td>@item.ItemNumber</td>
-                <td>@item.Name</td>
+
+                <td>
+                    @item.Name
+
+                    @if (!string.IsNullOrWhiteSpace(item.PurchaseReceiptPath))
+                    {
+                        <span class="badge bg-info text-dark ms-1">Receipt</span>
+                    }
+
+                    @if (item.IsReturnRequired && !item.IsReturned)
+                    {
+                        <span class="badge bg-warning text-dark ms-1">Return</span>
+                    }
+
+                    @if (item.IsReturned)
+                    {
+                        <span class="badge bg-danger ms-1">Returned</span>
+                    }
+                </td>
+
                 <td>@item.Category</td>
                 <td>@item.EstimatedCost?.ToString("C")</td>
                 <td>@item.ActualCost?.ToString("C")</td>
+
                 <td>
-                    <a asp-controller="Items" asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                    <a asp-controller="Items" asp-action="Details" asp-route-id="@item.Id">Details</a>
+                    <a asp-controller="Items" asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary">Edit</a>
+                    <a asp-controller="Items" asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-secondary">Details</a>
                 </td>
             </tr>
         }
@@ -121,13 +202,14 @@ else
 }
 else
 {
-    <p>No purchased items yet.</p>
+    <p>No acquired items yet.</p>
 }
 
+<!-- ===================== RETURN QUEUE ===================== -->
 <h2>Return Queue (@returnItems.Count)</h2>
 @if (returnItems.Any())
 {
-    <table class="table table-striped">
+    <table class="table table-striped align-middle">
         <thead>
             <tr>
                 <th>Item #</th>
@@ -143,10 +225,20 @@ else
         {
             <tr>
                 <td>@item.ItemNumber</td>
-                <td>@item.Name</td>
+
+                <td>
+                    @item.Name
+
+                    @if (!string.IsNullOrWhiteSpace(item.ReturnReceiptPath))
+                    {
+                        <span class="badge bg-info text-dark ms-1">Receipt</span>
+                    }
+                </td>
+
                 <td>@item.Category</td>
                 <td>@item.ReturnLocation</td>
                 <td>@item.ReturnByDate?.ToString("d")</td>
+
                 <td>
                     <a asp-controller="Items" asp-action="ReturnInfo" asp-route-id="@item.Id" class="btn btn-sm btn-outline-warning">
                         Return Info

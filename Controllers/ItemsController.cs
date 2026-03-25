@@ -161,7 +161,10 @@ namespace Art_BaBomb.Web.Controllers
                 return NotFound();
             }
 
-            var existingItem = await _context.Items.AsNoTracking().FirstOrDefaultAsync(i => i.Id == id);
+            var existingItem = await _context.Items
+                .AsNoTracking()
+                .FirstOrDefaultAsync(i => i.Id == id);
+                
             if (existingItem == null)
             {
                 return NotFound();
