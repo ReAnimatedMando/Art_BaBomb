@@ -145,6 +145,13 @@ namespace Art_BaBomb.Web.Controllers
             {
                 return NotFound();
             }
+
+            if (item.IsReturnRequired || item.IsReturned)
+            {
+                TempData["ErrorMessage"] = "Items in the return workflow must be updated from return info.";
+                return RedirectToAction(nameof(ReturnInfo), new { id = item.Id });
+            }
+
             ViewData["ProjectId"] = new SelectList(_context.Projects, "Id", "Name", item.ProjectId);
             return View(item);
         }
@@ -172,6 +179,12 @@ namespace Art_BaBomb.Web.Controllers
             if (existingItem == null)
             {
                 return NotFound();
+            }
+
+            if (existingItem.IsReturnRequired || existingItem.IsReturned)
+            {
+                TempData["ErrorMessage"] = "Items in the return workflow must be updated from return info.";
+                return RedirectToAction(nameof(ReturnInfo), new { id = existingItem.Id });
             }
 
             // Preserve existing receipt values unless a new file is uploaded
@@ -263,6 +276,8 @@ namespace Art_BaBomb.Web.Controllers
             return _context.Items.Any(e => e.Id == id);
         }
 
+        // GET: ReturnInfo
+
         public async Task<IActionResult> ReturnInfo(int? id)
         {
             if (id == null)
@@ -279,11 +294,10 @@ namespace Art_BaBomb.Web.Controllers
                 return NotFound();
             }
 
-            item.IsReturnRequired = true;
-
             return View(item);
         }
 
+        // POST: ReturnInfo
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ReturnInfo(int id, [Bind("Id,ProjectId,Name,ItemNumber,Category,Description,EstimatedCost,ActualCost,Status,ImageUrl,IsReturnRequired,ReturnNotes,ReturnLocation,ReturnByDate,IsReturned,ReturnedAt,PurchaseReceiptFileName,PurchaseReceiptPath,ReturnReceiptFileName,ReturnReceiptPath")] Item item, IFormFile? returnReceiptFile)
@@ -303,8 +317,6 @@ namespace Art_BaBomb.Web.Controllers
             item.PurchaseReceiptPath = existingItem.PurchaseReceiptPath;
             item.ReturnReceiptFileName = existingItem.ReturnReceiptFileName;
             item.ReturnReceiptPath = existingItem.ReturnReceiptPath;
-
-            item.IsReturnRequired = true;
 
             if (returnReceiptFile != null)
             {
@@ -353,6 +365,7 @@ namespace Art_BaBomb.Web.Controllers
                 return NotFound();
             }
 
+            item.IsReturnRequired = true;
             item.IsReturned = true;
             item.ReturnedAt = DateTime.UtcNow;
 

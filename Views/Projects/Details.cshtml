@@ -384,15 +384,6 @@ else
                             <div class="mt-1">
                                 <span class="badge bg-danger me-1">Returned</span>
 
-                                @if (!string.IsNullOrWhiteSpace(item.ReturnReceiptPath))
-                                {
-                                    <span class="badge bg-success me-1">Receipt Uploaded</span>
-                                }
-                                else
-                                {
-                                    <span class="badge bg-warning text-dark me-1">Missing Receipt</span>
-                                }
-
                                 @if (!string.IsNullOrWhiteSpace(item.ReturnReceiptPath) && !IsImageReceipt(item.ReturnReceiptPath))
                                 {
                                     <a href="@item.ReturnReceiptPath" target="_blank" class="btn btn-sm btn-outline-danger me-1">
@@ -418,9 +409,12 @@ else
                 </td>
 
                 <td>
-                    <a asp-controller="Items" asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary">
+                    @if (!item.IsReturnRequired && !item.IsReturned)
+                    {
+                        <a asp-controller="Items" asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary">
                         Edit
-                    </a>
+                        </a>
+                    }
                     <a asp-controller="Items" asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-secondary">
                         Details
                     </a>
