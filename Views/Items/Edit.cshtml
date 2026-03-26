@@ -24,14 +24,15 @@
 <h4 class="text-muted">@Model.Name</h4>
 <hr />
 
-<div class="row g-4">
+<form asp-action="Edit" enctype="multipart/form-data">
 
-    <!-- LEFT SIDE: FORM -->
-    <div class="col-lg-7">
-        <div class="card shadow-sm">
-            <div class="card-body">
+    <div class="row g-4">
 
-                <form asp-action="Edit" enctype="multipart/form-data">
+        <!-- LEFT SIDE: FORM -->
+        <div class="col-lg-7">
+            <div class="card shadow-sm">
+                <div class="card-body">
+
                     <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
                     <input type="hidden" asp-for="Id" />
@@ -42,8 +43,7 @@
                     </div>
 
                     <div class="mb-3">
-                        <label asp-for="Name" class="form-label"></label>
-                        <input asp-for="Name" class="form-control" />
+                        <label asp-for="Name" class="form-label"></label>                            <input asp-for="Name" class="form-control" />
                     </div>
 
                     <div class="mb-3">
@@ -96,87 +96,87 @@
                         </a>
                     </div>
 
-                </form>
+                </div>
             </div>
         </div>
-    </div>
 
-    <!-- RIGHT SIDE: RECEIPTS -->
-    <div class="col-lg-5">
+        <!-- RIGHT SIDE: RECEIPTS -->
+        <div class="col-lg-5">
 
-        <!-- PURCHASE RECEIPT -->
-        <div class="card shadow-sm">
-            <div class="card-body">
-                <h5 class="card-title mb-3">Purchase Receipt</h5>
+            <!-- PURCHASE RECEIPT -->
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title mb-3">Purchase Receipt</h5>
 
-                <div class="mb-3">
-                    <input type="file" name="purchaseReceiptFile" class="form-control" />
-                    <div class="form-text">Upload purchase receipt (image or PDF)</div>
-                </div>
-
-                @if (hasPurchaseReceipt)
-                {
-                    @if (purchaseIsImage)
-                    {
-                        <a href="@Model.PurchaseReceiptPath" target="_blank">
-                            <img src="@Model.PurchaseReceiptPath"
-                                 class="img-fluid rounded border mb-3" />
-                        </a>
-                    }
-
-                    <a href="@Model.PurchaseReceiptPath" target="_blank" class="btn btn-sm btn-outline-primary">
-                        View Receipt
-                    </a>
-
-                    <div class="small text-muted mt-2">
-                        @Model.PurchaseReceiptFileName
+                    <div class="mb-3">
+                        <input type="file" name="purchaseReceiptFile" class="form-control" />
+                        <div class="form-text">Upload purchase receipt (image or PDF)</div>
                     </div>
-                }
-                else
-                {
-                    <p class="text-muted mb-0">No purchase receipt uploaded.</p>
-                }
-            </div>
-        </div>
 
-        <!-- RETURN RECEIPT -->
-        <div class="card shadow-sm mt-4">
-            <div class="card-body">
-                <h5 class="card-title mb-3">Return Receipt</h5>
-
-                <div class="mb-3">
-                    <input type="file" name="returnReceiptFile" class="form-control" />
-                    <div class="form-text">Upload return receipt (image or PDF)</div>
-                </div>
-
-                @if (hasReturnReceipt)
-                {
-                    @if (returnIsImage)
+                    @if (hasPurchaseReceipt)
                     {
-                        <a href="@Model.ReturnReceiptPath" target="_blank">
+                        @if (purchaseIsImage)
+                        {
+                            <a href="@Model.PurchaseReceiptPath" target="_blank">
+                                <img src="@Model.PurchaseReceiptPath"
+                                 class="img-fluid rounded border mb-3" />
+                            </a>
+                        }
+
+                        <a href="@Model.PurchaseReceiptPath" target="_blank" class="btn btn-sm btn-outline-primary">
+                            View Receipt
+                        </a>
+
+                        <div class="small text-muted mt-2">
+                            @Model.PurchaseReceiptFileName
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-muted mb-0">No purchase receipt uploaded.</p>
+                    }
+                </div>
+            </div>
+
+            <!-- RETURN RECEIPT -->
+            <div class="card shadow-sm mt-4">
+                <div class="card-body">
+                    <h5 class="card-title mb-3">Return Receipt</h5>
+
+                    <div class="mb-3">
+                        <input type="file" name="returnReceiptFile" class="form-control" />
+                        <div class="form-text">Upload return receipt (image or PDF)</div>
+                    </div>
+
+                    @if (hasReturnReceipt)
+                    {
+                        @if (returnIsImage)
+                        {
+                            <a href="@Model.ReturnReceiptPath" target="_blank">
                             <img src="@Model.ReturnReceiptPath"
                                  class="img-fluid rounded border mb-3" />
+                            </a>
+                        }
+
+                        <a href="@Model.ReturnReceiptPath" target="_blank" class="btn btn-sm btn-outline-danger">
+                            View Receipt
                         </a>
+
+                        <div class="small text-muted mt-2">
+                            @Model.ReturnReceiptFileName
+                        </div>
                     }
-
-                    <a href="@Model.ReturnReceiptPath" target="_blank" class="btn btn-sm btn-outline-danger">
-                        View Receipt
-                    </a>
-
-                    <div class="small text-muted mt-2">
-                        @Model.ReturnReceiptFileName
-                    </div>
-                }
-                else
-                {
-                    <p class="text-muted mb-0">No return receipt uploaded.</p>
-                }
+                    else
+                    {
+                        <p class="text-muted mb-0">No return receipt uploaded.</p>
+                    }
+                </div>
             </div>
+
         </div>
-
     </div>
-</div>
 
+</form>
 @section Scripts {
     @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
 }

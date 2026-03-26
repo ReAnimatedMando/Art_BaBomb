@@ -1,0 +1,63 @@
+@model Art_BaBomb.Web.Models.Item
+
+@{
+    ViewData["Title"] = "Manage Purchase Receipt";
+
+    bool hasPurchaseReceipt = !string.IsNullOrWhiteSpace(Model.PurchaseReceiptPath);
+    bool purchaseReceiptIsImage =
+        hasPurchaseReceipt &&
+        (Model.PurchaseReceiptPath.EndsWith(".jpg", StringComparison.OrdinalIgnoreCase)
+        || Model.PurchaseReceiptPath.EndsWith(".jpeg", StringComparison.OrdinalIgnoreCase)
+        || Model.PurchaseReceiptPath.EndsWith(".png", StringComparison.OrdinalIgnoreCase)
+        || Model.PurchaseReceiptPath.EndsWith(".webp", StringComparison.OrdinalIgnoreCase));
+}
+
+<h1>Manage Purchase Receipt</h1>
+<h4 class="text-muted">@Model.Name</h4>
+<hr />
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        <form asp-action="PurchaseReceipt" asp-route-id="@Model.Id" method="post" enctype="multipart/form-data">
+            @Html.AntiForgeryToken()
+
+            <div class="mb-3">
+                <label class="form-label">Upload Purchase Receipt</label>
+                <input type="file" name="purchaseReceiptFile" class="form-control" />
+                <div class="form-text">Upload purchase receipt image or PDF.</div>
+            </div>
+
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-primary">Save Purchase Receipt</button>
+                <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-outline-secondary">Back to Item</a>
+            </div>
+        </form>
+
+        @if (hasPurchaseReceipt)
+        {
+            <hr />
+
+            @if (purchaseReceiptIsImage)
+            {
+                <a href="@Model.PurchaseReceiptPath" target="_blank">
+                    <img src="@Model.PurchaseReceiptPath"
+                         alt="Purchase Receipt"
+                         class="img-fluid rounded border mb-3" />
+                </a>
+            }
+
+            <a href="@Model.PurchaseReceiptPath" target="_blank" class="btn btn-sm btn-outline-primary">
+                View Current Receipt
+            </a>
+
+            <div class="small text-muted mt-2">
+                @Model.PurchaseReceiptFileName
+            </div>
+        }
+        else
+        {
+            <hr />
+            <p class="text-muted mb-0">No purchase receipt uploaded.</p>
+        }
+    </div>
+</div>

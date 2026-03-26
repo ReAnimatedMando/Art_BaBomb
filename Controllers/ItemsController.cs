@@ -276,6 +276,54 @@ namespace Art_BaBomb.Web.Controllers
             return _context.Items.Any(e => e.Id == id);
         }
 
+        // GET: Items/PurchaseReceipt/5
+        public async Task<IActionResult> PurchaseReceipt(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var item = await _context.Items
+                .Include(i => i.Project)
+                .FirstOrDefaultAsync(i => i.Id == id);
+
+            if (item == null)
+            {
+                return NotFound();
+            }
+
+            return View(item);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> PurchaseReceipt(int id, IFormFile? purchaseReceiptFile)
+        {
+            var item = await _context.Items.FindAsync(id);
+
+            if (item == null)
+            {
+                return NotFound();
+            }
+
+            if (purchaseReceiptFile != null && purchaseReceiptFile.Length > 0)
+            {
+                var uploadResult = await SaveUploadedFileAsync(purchaseReceiptFile, "receipts");
+
+                if (uploadResult.HasValue)
+                {
+                    item.PurchaseReceiptFileName = uploadResult.Value.fileName;
+                    item.PurchaseReceiptPath = uploadResult.Value.relativePath;
+                }
+            }
+
+            await _context.SaveChangesAsync();
+
+            TempData["SuccessMessage"] = "Purchase receipt updated successfully.";
+            return RedirectToAction(nameof(Details), new { id = item.Id });
+        }
+
         // GET: ReturnInfo
 
         public async Task<IActionResult> ReturnInfo(int? id)

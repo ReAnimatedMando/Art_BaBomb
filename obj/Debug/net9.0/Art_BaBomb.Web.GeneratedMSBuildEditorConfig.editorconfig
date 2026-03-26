@@ -218,6 +218,10 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSXRlbXNcSW5kZXguY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
+[C:/DEV/Repos/Art_BaBomb/Art_BaBomb.Web/Views/Items/PurchaseReceipt.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSXRlbXNcUHVyY2hhc2VSZWNlaXB0LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
 [C:/DEV/Repos/Art_BaBomb/Art_BaBomb.Web/Views/Items/ReturnInfo.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSXRlbXNcUmV0dXJuSW5mby5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
