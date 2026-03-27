@@ -1,5 +1,16 @@
 @model Art_BaBomb.Web.Models.Item
 
+
+@functions {
+    string FormatFileSize(long? bytes)
+    {
+        if (!bytes.HasValue) return "";
+        if (bytes.Value < 1024) return $"{bytes.Value} B";
+        if (bytes.Value < 1024 * 1024) return $"{bytes.Value / 1024.0:F1} KB";
+        return $"{bytes.Value / (1024.0 * 1024.0):F1} MB";
+    }
+}
+
 @{
     ViewData["Title"] = "Return Info";
 
@@ -162,6 +173,10 @@
 
                     <div class="small text-muted mt-2">
                         @Model.ReturnReceiptFileName
+                        @if (Model.ReturnReceiptSizeBytes.HasValue)
+                        {
+                            <span>• @FormatFileSize(Model.ReturnReceiptSizeBytes)</span>
+                        }
                     </div>
                 }
                 else

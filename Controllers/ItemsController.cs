@@ -189,6 +189,7 @@ namespace Art_BaBomb.Web.Controllers
             // Preserve existing receipt values unless a new file is uploaded
             item.PurchaseReceiptFileName = existingItem.PurchaseReceiptFileName;
             item.PurchaseReceiptPath = existingItem.PurchaseReceiptPath;
+            item.PurchaseReceiptSizeBytes = existingItem.PurchaseReceiptSizeBytes;
 
             if (!IsValidReceiptFile(purchaseReceiptFile, out var purchaseReceiptError))
             {
@@ -206,6 +207,7 @@ namespace Art_BaBomb.Web.Controllers
                     {
                         item.PurchaseReceiptFileName = savedPurchaseFile.Value.fileName;
                         item.PurchaseReceiptPath = savedPurchaseFile.Value.relativePath;
+                        item.PurchaseReceiptSizeBytes = purchaseReceiptFile.Length;
                     }
                 }
 
@@ -290,6 +292,7 @@ namespace Art_BaBomb.Web.Controllers
             return View(item);
         }
 
+        // POST: Purchase Receipt
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> PurchaseReceipt(int id, IFormFile? purchaseReceiptFile)
@@ -317,12 +320,13 @@ namespace Art_BaBomb.Web.Controllers
             {
                 DeleteUploadedFile(item.PurchaseReceiptPath);
 
-                var uploadResult = await SaveUploadedFileAsync(purchaseReceiptFile, "receipts");
+                var uploadResult = await SaveUploadedFileAsync(purchaseReceiptFile, "purchases");
 
                 if (uploadResult.HasValue)
                 {
                     item.PurchaseReceiptFileName = uploadResult.Value.fileName;
                     item.PurchaseReceiptPath = uploadResult.Value.relativePath;
+                    item.PurchaseReceiptSizeBytes = purchaseReceiptFile.Length;
                 }
             }
 
@@ -381,6 +385,7 @@ namespace Art_BaBomb.Web.Controllers
 
             item.PurchaseReceiptFileName = null;
             item.PurchaseReceiptPath = null;
+            item.PurchaseReceiptSizeBytes = null;
 
             await _context.SaveChangesAsync();
 
@@ -454,8 +459,10 @@ namespace Art_BaBomb.Web.Controllers
 
             item.PurchaseReceiptFileName = existingItem.PurchaseReceiptFileName;
             item.PurchaseReceiptPath = existingItem.PurchaseReceiptPath;
+            item.PurchaseReceiptSizeBytes = existingItem.PurchaseReceiptSizeBytes;
             item.ReturnReceiptFileName = existingItem.ReturnReceiptFileName;
             item.ReturnReceiptPath = existingItem.ReturnReceiptPath;
+            item.ReturnReceiptSizeBytes = existingItem.ReturnReceiptSizeBytes;
 
             if (!IsValidReceiptFile(returnReceiptFile, out var receiptError))
             {
@@ -469,7 +476,9 @@ namespace Art_BaBomb.Web.Controllers
                     if (removeReturnReceipt)
                     {
                         DeleteUploadedFile(existingItem.ReturnReceiptPath);
+
                         item.ReturnReceiptFileName = null;
+                        item.ReturnReceiptPath = null;
                         item.ReturnReceiptPath = null;
                     }
 
@@ -482,6 +491,7 @@ namespace Art_BaBomb.Web.Controllers
                         {
                             item.ReturnReceiptFileName = savedFile.Value.fileName;
                             item.ReturnReceiptPath = savedFile.Value.relativePath;
+                            item.ReturnReceiptSizeBytes = returnReceiptFile.Length;
                         }
                     }
 
