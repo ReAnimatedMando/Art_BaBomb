@@ -163,9 +163,8 @@ namespace Art_BaBomb.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(
             int id,
-            [Bind("Id,ProjectId,Name,ItemNumber,Category,Description,EstimatedCost,ActualCost,Status,ImageUrl,IsReturnRequired,ReturnNotes,ReturnLocation,ReturnByDate,IsReturned,ReturnedAt,PurchaseReceiptFileName,PurchaseReceiptPath,ReturnReceiptFileName,ReturnReceiptPath")] Item item,
-            IFormFile? purchaseReceiptFile,
-            IFormFile? returnReceiptFile)
+            [Bind("Id,ProjectId,Name,ItemNumber,Category,Description,EstimatedCost,ActualCost,Status,ImageUrl,PurchaseReceiptFileName,PurchaseReceiptPath")] Item item,
+            IFormFile? purchaseReceiptFile)
         {
             if (id != item.Id)
             {
@@ -190,31 +189,26 @@ namespace Art_BaBomb.Web.Controllers
             // Preserve existing receipt values unless a new file is uploaded
             item.PurchaseReceiptFileName = existingItem.PurchaseReceiptFileName;
             item.PurchaseReceiptPath = existingItem.PurchaseReceiptPath;
-            item.ReturnReceiptFileName = existingItem.ReturnReceiptFileName;
-            item.ReturnReceiptPath = existingItem.ReturnReceiptPath;
 
-            if (purchaseReceiptFile != null)
+            if (!IsValidReceiptFile(purchaseReceiptFile, out var purchaseReceiptError))
             {
-                var savedPurchaseFile = await SaveUploadedFileAsync(purchaseReceiptFile, "purchases");
-                if (savedPurchaseFile.HasValue)
-                {
-                    item.PurchaseReceiptFileName = savedPurchaseFile.Value.fileName;
-                    item.PurchaseReceiptPath = savedPurchaseFile.Value.relativePath;
-                }
-            }
-
-            if (returnReceiptFile != null)
-            {
-                var savedReturnFile = await SaveUploadedFileAsync(returnReceiptFile, "returns");
-                if (savedReturnFile.HasValue)
-                {
-                    item.ReturnReceiptFileName = savedReturnFile.Value.fileName;
-                    item.ReturnReceiptPath = savedReturnFile.Value.relativePath;
-                }
+                ModelState.AddModelError("purchaseReceiptFile", purchaseReceiptError);
             }
 
             if (ModelState.IsValid)
             {
+                if (purchaseReceiptFile != null && purchaseReceiptFile.Length > 0)
+                {
+                    DeleteUploadedFile(existingItem.PurchaseReceiptPath);
+
+                    var savedPurchaseFile = await SaveUploadedFileAsync(purchaseReceiptFile, "purchases");
+                    if (savedPurchaseFile.HasValue)
+                    {
+                        item.PurchaseReceiptFileName = savedPurchaseFile.Value.fileName;
+                        item.PurchaseReceiptPath = savedPurchaseFile.Value.relativePath;
+                    }
+                }
+
                 try
                 {
                     _context.Update(item);
@@ -300,15 +294,29 @@ namespace Art_BaBomb.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> PurchaseReceipt(int id, IFormFile? purchaseReceiptFile)
         {
-            var item = await _context.Items.FindAsync(id);
+            var item = await _context.Items
+                .Include(i => i.Project)
+                .FirstOrDefaultAsync(i => i.Id == id);
 
             if (item == null)
             {
                 return NotFound();
             }
 
+            if (!IsValidReceiptFile(purchaseReceiptFile, out var purchaseReceiptError))
+            {
+                ModelState.AddModelError("purchaseReceiptFile", purchaseReceiptError);
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return View(item);
+            }
+
             if (purchaseReceiptFile != null && purchaseReceiptFile.Length > 0)
             {
+                DeleteUploadedFile(item.PurchaseReceiptPath);
+
                 var uploadResult = await SaveUploadedFileAsync(purchaseReceiptFile, "receipts");
 
                 if (uploadResult.HasValue)
@@ -322,6 +330,80 @@ namespace Art_BaBomb.Web.Controllers
 
             TempData["SuccessMessage"] = "Purchase receipt updated successfully.";
             return RedirectToAction(nameof(Details), new { id = item.Id });
+        }
+
+        private static readonly string[] AllowedReceiptExtensions = 
+        {
+            ".jpg", ".jpeg", ".png", ".webp", ".pdf"
+        };
+
+        private const long MaxReceiptFileSizeBytes = 10 * 1024 * 1024; // 10 MB
+
+        private bool IsValidReceiptFile(IFormFile? file, out string errorMessage)
+        {
+            errorMessage = string.Empty;
+
+            if (file == null || file.Length == 0)
+            {
+                return true;
+            }
+
+            var extension = Path.GetExtension(file.FileName);
+
+            if (string.IsNullOrWhiteSpace(extension) ||
+                !AllowedReceiptExtensions.Contains(extension, StringComparer.OrdinalIgnoreCase))
+            {
+                errorMessage = "Only JPG, JPEG, PNG, WEBP, and PDF files are allowed.";
+                return false;
+            }
+
+            if (file.Length > MaxReceiptFileSizeBytes)
+            {
+                errorMessage = "Receipt files must be 10 MB or smaller.";
+                return false;
+            }
+
+            return true;
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeletePurchaseReceipt(int id)
+        {
+            var item = await _context.Items.FindAsync(id);
+
+            if (item == null)
+            {
+                return NotFound();
+            }
+
+            DeleteUploadedFile(item.PurchaseReceiptPath);
+
+            item.PurchaseReceiptFileName = null;
+            item.PurchaseReceiptPath = null;
+
+            await _context.SaveChangesAsync();
+
+            TempData["SuccessMessage"] = "Purchase receipt deleted successfully.";
+            return RedirectToAction(nameof(Details), new { id = item.Id });
+        }
+
+        private void DeleteUploadedFile(string? relativePath)
+        {
+            if (string.IsNullOrWhiteSpace(relativePath))
+            {
+                return;
+            }
+
+            var trimmedPath = relativePath.TrimStart('/')
+                .Replace('/', Path.DirectorySeparatorChar);
+
+            var fullPath = Path.Combine(_environment.WebRootPath, trimmedPath);
+
+            if (System.IO.File.Exists(fullPath))
+            {
+                System.IO.File.Delete(fullPath);
+            }
         }
 
         // GET: ReturnInfo
@@ -348,14 +430,23 @@ namespace Art_BaBomb.Web.Controllers
         // POST: ReturnInfo
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> ReturnInfo(int id, [Bind("Id,ProjectId,Name,ItemNumber,Category,Description,EstimatedCost,ActualCost,Status,ImageUrl,IsReturnRequired,ReturnNotes,ReturnLocation,ReturnByDate,IsReturned,ReturnedAt,PurchaseReceiptFileName,PurchaseReceiptPath,ReturnReceiptFileName,ReturnReceiptPath")] Item item, IFormFile? returnReceiptFile)
+        public async Task<IActionResult> ReturnInfo(
+            int id,
+            [Bind("Id,ProjectId,Name,ItemNumber,Category,Description,EstimatedCost,ActualCost,Status,ImageUrl,IsReturnRequired,ReturnNotes,ReturnLocation,ReturnByDate,IsReturned,ReturnedAt,PurchaseReceiptFileName,PurchaseReceiptPath,ReturnReceiptFileName,ReturnReceiptPath")]
+            Item item,
+            IFormFile? returnReceiptFile,
+            bool removeReturnReceipt = false,
+            bool removeFromReturnWorkflow = false)
         {
             if (id != item.Id)
             {
                 return NotFound();
             }
 
-            var existingItem = await _context.Items.AsNoTracking().FirstOrDefaultAsync(i => i.Id == id);
+            var existingItem = await _context.Items
+                .AsNoTracking()
+                .FirstOrDefaultAsync(i => i.Id == id);
+
             if (existingItem == null)
             {
                 return NotFound();
@@ -366,23 +457,62 @@ namespace Art_BaBomb.Web.Controllers
             item.ReturnReceiptFileName = existingItem.ReturnReceiptFileName;
             item.ReturnReceiptPath = existingItem.ReturnReceiptPath;
 
-            if (returnReceiptFile != null)
+            if (!IsValidReceiptFile(returnReceiptFile, out var receiptError))
             {
-                var savedFile = await SaveUploadedFileAsync(returnReceiptFile, "returns");
-                if (savedFile.HasValue)
-                {
-                    item.ReturnReceiptFileName = savedFile.Value.fileName;
-                    item.ReturnReceiptPath = savedFile.Value.relativePath;
-                }
+                ModelState.AddModelError("returnReceiptFile", receiptError);
             }
 
             if (ModelState.IsValid)
             {
                 try
                 {
-                    item.IsReturnRequired = true;
+                    if (removeReturnReceipt)
+                    {
+                        DeleteUploadedFile(existingItem.ReturnReceiptPath);
+                        item.ReturnReceiptFileName = null;
+                        item.ReturnReceiptPath = null;
+                    }
+
+                    if (returnReceiptFile != null && returnReceiptFile.Length > 0)
+                    {
+                        DeleteUploadedFile(existingItem.ReturnReceiptPath);
+
+                        var savedFile = await SaveUploadedFileAsync(returnReceiptFile, "returns");
+                        if (savedFile.HasValue)
+                        {
+                            item.ReturnReceiptFileName = savedFile.Value.fileName;
+                            item.ReturnReceiptPath = savedFile.Value.relativePath;
+                        }
+                    }
+
+                    if (removeFromReturnWorkflow)
+                    {
+                        item.IsReturnRequired = false;
+                        item.IsReturned = false;
+                        item.ReturnedAt = null;
+                        item.ReturnLocation = null;
+                        item.ReturnByDate = null;
+                        item.ReturnNotes = null;
+                    }
+                    else
+                    {
+                        item.IsReturnRequired = true;
+
+                        if (item.IsReturned)
+                        {
+                            item.ReturnedAt ??= DateTime.UtcNow;
+                        }   
+                        else
+                        {
+                            item.ReturnedAt = null;
+                        }
+                    }
+
                     _context.Update(item);
                     await _context.SaveChangesAsync();
+
+                    TempData["SuccessMessage"] = "Return info updated successfully.";
+                    return RedirectToAction(nameof(Details), new { id = item.Id });
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -393,12 +523,9 @@ namespace Art_BaBomb.Web.Controllers
 
                     throw;
                 }
-
-                return RedirectToAction("Details", "Projects", new { id = item.ProjectId });
             }
 
             item.Project = await _context.Projects.FindAsync(item.ProjectId);
-
             return View(item);
         }
 

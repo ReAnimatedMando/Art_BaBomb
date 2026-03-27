@@ -135,6 +135,9 @@ namespace Art_BaBomb.Web.Migrations
                     b.Property<string>("PurchaseReceiptPath")
                         .HasColumnType("longtext");
 
+                    b.Property<long?>("PurchaseReceiptSizeBytes")
+                        .HasColumnType("bigint");
+
                     b.Property<DateTime?>("ReturnByDate")
                         .HasColumnType("datetime(6)");
 
@@ -149,6 +152,9 @@ namespace Art_BaBomb.Web.Migrations
 
                     b.Property<string>("ReturnReceiptPath")
                         .HasColumnType("longtext");
+
+                    b.Property<long?>("ReturnReceiptSizeBytes")
+                        .HasColumnType("bigint");
 
                     b.Property<DateTime?>("ReturnedAt")
                         .HasColumnType("datetime(6)");

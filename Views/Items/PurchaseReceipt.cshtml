@@ -23,7 +23,8 @@
 
             <div class="mb-3">
                 <label class="form-label">Upload Purchase Receipt</label>
-                <input type="file" name="purchaseReceiptFile" class="form-control" />
+                <input type="file" name="purchaseReceiptFile" class="form-control" accept=".jpg,.jpeg,.png,.webp,.pdf" />
+                @Html.ValidationMessage("purchaseReceiptFile", new { @class = "text-danger d-block mt-1" })
                 <div class="form-text">Upload purchase receipt image or PDF.</div>
             </div>
 
@@ -49,6 +50,14 @@
             <a href="@Model.PurchaseReceiptPath" target="_blank" class="btn btn-sm btn-outline-primary">
                 View Current Receipt
             </a>
+
+            <form asp-action="DeletePurchaseReceipt" asp-route-id="@Model.Id" method="post" class="mt-2">@Html.AntiForgeryToken()
+                <button type="submit"
+                        class="btn btn-sm btn-outline-danger"
+                        onclick="return confirm('Delete this purchase receipt?');">
+                    Delete Receipt
+                </button>
+            </form>
 
             <div class="small text-muted mt-2">
                 @Model.PurchaseReceiptFileName

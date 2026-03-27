@@ -57,5 +57,8 @@ namespace Art_BaBomb.Web.Models
 
         public string? ReturnReceiptPath { get; set; }
 
+        public long? PurchaseReceiptSizeBytes { get; set; }
+
+        public long? ReturnReceiptSizeBytes { get; set; }
     }
 }
