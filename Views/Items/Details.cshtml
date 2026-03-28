@@ -97,10 +97,10 @@ else if (Model.IsReturnRequired)
                     <dd class="col-sm-8">@Model.Status</dd>
 
                     <dt class="col-sm-4">Estimated Cost</dt>
-                    <dd class="col-sm-8">@Model.EstimatedCost?.ToString("C")</dd>
+                    <dd class="col-sm-8 text-end">@Model.EstimatedCost?.ToString("C")</dd>
 
                     <dt class="col-sm-4">Actual Cost</dt>
-                    <dd class="col-sm-8">@Model.ActualCost?.ToString("C")</dd>
+                    <dd class="col-sm-8 text-end">@Model.ActualCost?.ToString("C")</dd>
 
                     @if (!string.IsNullOrWhiteSpace(Model.ImageUrl))
                     {
@@ -210,7 +210,7 @@ else if (Model.IsReturnRequired)
                         @Model.ReturnReceiptFileName
                         @if (Model.ReturnReceiptSizeBytes.HasValue)
                         {
-                            <span>• @FormatFileSize(Model.ReturnReceiptSizeBytes)</span>
+                            <span>• @FileSizeHelper.FormatFileSize(Model.ReturnReceiptSizeBytes)</span>
                         }
                     </div>
                 }

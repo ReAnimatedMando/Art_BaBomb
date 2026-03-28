@@ -10,7 +10,10 @@
         .ToList();
 
     var acquiredItems = Model.Items
-        .Where(i => (i.Status ?? "").Trim().Equals("Acquired", StringComparison.OrdinalIgnoreCase) && !i.IsReturned)
+        .Where(i =>
+            (i.Status ?? "").Trim().Equals("Acquired", StringComparison.OrdinalIgnoreCase)
+            && !i.IsReturnRequired
+            && !i.IsReturned)
         .OrderBy(i => i.ItemNumber)
         .ToList();
 
@@ -51,31 +54,40 @@
         <div class="card shadow-sm">
             <div class="card-body">
                 <h6 class="text-muted">Budget</h6>
-                <div class="fw-bold">@Model.Budget.ToString("C")</div>
+                <div class="fw-bold text-end">
+                    @Model.Budget.ToString("C")
+                </div>
             </div>
         </div>
     </div>
+
     <div class="col-md-3">
         <div class="card shadow-sm">
             <div class="card-body">
                 <h6 class="text-muted">Estimated</h6>
-                <div class="fw-bold">@totalEstimated.ToString("C")</div>
+                <div class="fw-bold text-end">
+                    @totalEstimated.ToString("C")
+                </div>
             </div>
         </div>
     </div>
+
     <div class="col-md-3">
         <div class="card shadow-sm">
             <div class="card-body">
                 <h6 class="text-muted">Actual</h6>
-                <div class="fw-bold">@totalActual.ToString("C")</div>
+                <div class="fw-bold text-end">
+                    @totalActual.ToString("C")
+                </div>
             </div>
         </div>
     </div>
+
     <div class="col-md-3">
         <div class="card shadow-sm @(remainingBudget < 0 ? "border-danger" : "")">
             <div class="card-body">
                 <h6 class="text-muted">Remaining</h6>
-                <div class="fw-bold @(remainingBudget < 0 ? "text-danger" : "")">
+                <div class="fw-bold text-end @(remainingBudget < 0 ? "text-danger" : "")">
                     @remainingBudget.ToString("C")
                 </div>
             </div>
@@ -166,12 +178,21 @@
                 </td>
 
                 <td>@item.Category</td>
-                <td>@item.EstimatedCost?.ToString("C")</td>
-                <td>@item.ActualCost?.ToString("C")</td>
+                <td class="text-end">@item.EstimatedCost?.ToString("C")</td>
+                <td class="text-end">@item.ActualCost?.ToString("C")</td>
 
                 <td>
-                    <a asp-controller="Items" asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary">Edit</a>
-                    <a asp-controller="Items" asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-secondary">Details</a>
+                    <div class="d-flex flex-wrap gap-1">
+                        <form asp-controller="Items" asp-action="MarkAcquired" asp-route-id="@item.Id" method="post" class="d-inline">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn btn-sm btn-success">
+                                +
+                            </button>
+                        </form>
+
+                        <a asp-controller="Items" asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary">Edit</a>
+                        <a asp-controller="Items" asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-secondary">Details</a>
+                    </div>
                 </td>
             </tr>
         }
@@ -247,12 +268,21 @@ else
                 </td>
 
                 <td>@item.Category</td>
-                <td>@item.EstimatedCost?.ToString("C")</td>
-                <td>@item.ActualCost?.ToString("C")</td>
+                <td class="text-end">@item.EstimatedCost?.ToString("C")</td>
+                <td class="text-end">@item.ActualCost?.ToString("C")</td>
 
                 <td>
-                    <a asp-controller="Items" asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary">Edit</a>
-                    <a asp-controller="Items" asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-secondary">Details</a>
+                    <div class="d-flex flex-wrap gap-1">
+                        <form asp-controller="Items" asp-action="MarkNeeded" asp-route-id="@item.Id" method="post" class="d-inline">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn btn-sm btn-outline-warning">
+                                -
+                            </button>
+                        </form>
+
+                        <a asp-controller="Items" asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary">Edit</a>
+                        <a asp-controller="Items" asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-secondary">Details</a>
+                    </div>
                 </td>
             </tr>
         }

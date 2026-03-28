@@ -233,6 +233,44 @@ namespace Art_BaBomb.Web.Controllers
             return View(item);
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> MarkAcquired(int id)
+        {
+            var item = await _context.Items.FindAsync(id);
+
+            if (item == null)
+            {
+                return NotFound();
+            }
+
+            item.Status = "Acquired";
+
+            await _context.SaveChangesAsync();
+
+            TempData["SuccessMessage"] = $"Marked \"{item.Name}\" as acquired.";
+            return RedirectToAction("Details", "Projects", new { id = item.ProjectId });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> MarkNeeded(int id)
+        {
+            var item = await _context.Items.FindAsync(id);
+
+            if (item == null)
+            {
+                return NotFound();
+            }
+
+            item.Status = "Needed";
+
+            await _context.SaveChangesAsync();
+
+            TempData["SuccessMessage"] = $"Moved \"{item.Name}\" back to needed.";
+            return RedirectToAction("Details", "Projects", new { id = item.ProjectId });
+        }
+
         // GET: Items/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
@@ -479,7 +517,7 @@ namespace Art_BaBomb.Web.Controllers
 
                         item.ReturnReceiptFileName = null;
                         item.ReturnReceiptPath = null;
-                        item.ReturnReceiptPath = null;
+                        item.ReturnReceiptSizeBytes = null;
                     }
 
                     if (returnReceiptFile != null && returnReceiptFile.Length > 0)

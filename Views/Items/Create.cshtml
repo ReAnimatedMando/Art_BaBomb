@@ -41,13 +41,13 @@
 
             <div class="form-group mb-3">
                 <label asp-for="EstimatedCost" class="control-label"></label>
-                <input asp-for="EstimatedCost" class="form-control" />
+                <input asp-for="EstimatedCost" class="form-control" type="number" step="0.01" min="0" />
                 <span asp-validation-for="EstimatedCost" class="text-danger"></span>
             </div>
 
             <div class="form-group mb-3">
                 <label asp-for="ActualCost" class="control-label"></label>
-                <input asp-for="ActualCost" class="form-control" />
+                <input asp-for="ActualCost" class="form-control" type="number" step="0.01" min="0" />
                 <span asp-validation-for="ActualCost" class="text-danger"></span>
             </div>
 

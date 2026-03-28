@@ -75,15 +75,15 @@
 
                     <div class="mb-3">
                         <label class="form-label">Return Receipt</label>
-                        <input type="file" name="returnReceiptFile" class="form-control" accept=".jpg,.jpeg,.png,.webp,.pdf" />
+                        <input type="file" id="returnReceiptFile" name="returnReceiptFile" class="form-control" accept=".jpg,.jpeg,.png,.webp,.pdf" />
                         @Html.ValidationMessage("returnReceiptFile", new { @class = "text-danger d-block mt-1" })
-                        <div class="form-text">Upload a return receipt image or PDF. Max file size: 10 MB.</div>
+                        <div id="returnReceiptSelectedFile" class="form-text">Upload a return receipt image or PDF. Max file size: 10 MB.</div>
                     </div>
 
                     @if (hasReturnReceipt)
                     {
                         <div class="form-check mb-3">
-                            <input class="form-check-input" type="checkbox" id="removeReturnReceipt"                    name="removeReturnReceipt" value="true" />
+                            <input class="form-check-input" type="checkbox" id="removeReturnReceipt" name="removeReturnReceipt" value="true" />
                             <label class="form-check-label" for="removeReturnReceipt">
                                 Delete current return receipt
                             </label>
@@ -165,7 +165,7 @@
                         @Model.ReturnReceiptFileName
                         @if (Model.ReturnReceiptSizeBytes.HasValue)
                         {
-                            <span>• @FileSizeHelper.FormatFileSize(Model.PurchaseReceiptSizeBytes)</span>
+                            <span>• @FileSizeHelper.FormatFileSize(Model.ReturnReceiptSizeBytes)</span>
                         }
                     </div>
                 }
@@ -182,4 +182,17 @@
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
+
+    <script>
+        const returnInput = document.getElementById('returnReceiptFile');
+        const returnLabel = document.getElementById('returnReceiptSelectedFile');
+
+        if (returnInput && returnLabel) {
+            returnInput.addEventListener('change', function () {
+                returnLabel.textContent = this.files.length > 0
+                    ? `Selected: ${this.files[0].name}`
+                    : 'Upload a return receipt image or PDF. Max file size: 10 MB.';
+            });
+        }
+    </script>
 }
