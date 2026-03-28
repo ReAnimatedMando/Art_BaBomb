@@ -1,15 +1,5 @@
 @model Art_BaBomb.Web.Models.Item
-
-
-@functions {
-    string FormatFileSize(long? bytes)
-    {
-        if (!bytes.HasValue) return "";
-        if (bytes.Value < 1024) return $"{bytes.Value} B";
-        if (bytes.Value < 1024 * 1024) return $"{bytes.Value / 1024.0:F1} KB";
-        return $"{bytes.Value / (1024.0 * 1024.0):F1} MB";
-    }
-}
+@using Art_BaBomb.Web.Helpers
 
 @{
     ViewData["Title"] = "Return Info";
@@ -112,25 +102,25 @@
                         </div>
                     }
 
-                    <div class="d-flex gap-2 flex-wrap">
+                    <div class="d-flex gap-2 flex-wrap mt-4">
                         <button type="submit" class="btn btn-primary">Save Return Info</button>
 
                         @if (Model.IsReturnRequired || Model.IsReturned)
                         {
                             <button type="submit"
-                                    name="removeFromReturnWorkflow"
-                                    value="true"
-                                    class="btn btn-outline-secondary"
-                                    onclick="return confirm('Remove this item from the return workflow?');">
-                                Remove From Return Workflow
-                            </button>
+                                name="removeFromReturnWorkflow"
+                                value="true"
+                                class="btn btn-outline-secondary"
+                                onclick="return confirm('This will remove the item from the return workflow and clear return details. Continue?');">
+                            Undo Return Workflow
+                        </button>
                         }
 
-                        <a asp-controller="Projects"
+                        <a 
                             asp-action="Details"
-                            asp-route-id="@Model.ProjectId"
+                            asp-route-id="@Model.Id"
                             class="btn btn-outline-dark">
-                            Back to Project
+                            Back to Item
                         </a>
                     </div>
                 </form>
@@ -145,6 +135,17 @@
 
                 @if (hasReturnReceipt)
                 {
+                    <div class="mb-3">
+                        @if (Model.IsReturned)
+                        {
+                            <span class="badge bg-danger">Returned</span>
+                        }
+                        else if (Model.IsReturnRequired)
+                        {
+                            <span class="badge bg-warning text-dark">In Return Queue</span>
+                        }
+                    </div>
+
                     @if (returnReceiptIsImage)
                     {
                         <a href="@Model.ReturnReceiptPath" target="_blank">
@@ -160,22 +161,11 @@
                         </a>
                     </div>
 
-                    <div class="mb-3">
-                        @if (Model.IsReturned)
-                        {
-                            <span class="badge bg-danger">Returned</span>
-                        }
-                        else if (Model.IsReturnRequired)
-                        {
-                            <span class="badge bg-warning text-dark">In Return Queue</span>
-                        }
-                    </div>
-
                     <div class="small text-muted mt-2">
                         @Model.ReturnReceiptFileName
                         @if (Model.ReturnReceiptSizeBytes.HasValue)
                         {
-                            <span>• @FormatFileSize(Model.ReturnReceiptSizeBytes)</span>
+                            <span>• @FileSizeHelper.FormatFileSize(Model.PurchaseReceiptSizeBytes)</span>
                         }
                     </div>
                 }

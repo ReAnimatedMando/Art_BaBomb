@@ -1,14 +1,5 @@
 @model Art_BaBomb.Web.Models.Item
-
-@functions {
-    string FormatFileSize(long? bytes)
-    {
-        if (!bytes.HasValue) return "";
-        if (bytes.Value < 1024) return $"{bytes.Value} B";
-        if (bytes.Value < 1024 * 1024) return $"{bytes.Value / 1024.0:F1} KB";
-        return $"{bytes.Value / (1024.0 * 1024.0):F1} MB";
-    }
-}
+@using Art_BaBomb.Web.Helpers
 
 @{
     ViewData["Title"] = "Manage Purchase Receipt";
@@ -38,7 +29,7 @@
                 <div class="form-text">Upload purchase receipt image or PDF.</div>
             </div>
 
-            <div class="d-flex gap-2">
+            <div class="d-flex gap-2 mt-3">
                 <button type="submit" class="btn btn-primary">Save Purchase Receipt</button>
                 <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-outline-secondary">Back to Item</a>
             </div>
@@ -61,7 +52,7 @@
                 View Current Receipt
             </a>
 
-            <form asp-action="DeletePurchaseReceipt" asp-route-id="@Model.Id" method="post" class="mt-2">@Html.AntiForgeryToken()
+            <form asp-action="DeletePurchaseReceipt" asp-route-id="@Model.Id" method="post" class="mt-3">@Html.AntiForgeryToken()
                 <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Delete this purchase receipt?');">
                     Delete Receipt
                 </button>
@@ -71,7 +62,7 @@
                 @Model.PurchaseReceiptFileName
                 @if (Model.PurchaseReceiptSizeBytes.HasValue)
                 {
-                    <span>• @FormatFileSize(Model.PurchaseReceiptSizeBytes)</span>
+                    <span>• @FileSizeHelper.FormatFileSize(Model.PurchaseReceiptSizeBytes)</span>
                 }
             </div>
         }
