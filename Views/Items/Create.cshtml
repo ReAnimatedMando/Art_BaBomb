@@ -21,10 +21,10 @@
                 <span asp-validation-for="Name" class="text-danger"></span>
             </div>
 
-            <div class="form-group mb-3">
-                <label asp-for="ItemNumber" class="control-label"></label>
-                <input asp-for="ItemNumber" class="form-control" />
-                <span asp-validation-for="ItemNumber" class="text-danger"></span>
+            <div class="mb-3">
+                <label asp-for="Quantity" class="form-label"></label>
+                <input asp-for="Quantity" class="form-control" type="number" min="1" max="9999" />
+                <span asp-validation-for="Quantity" class="text-danger"></span>
             </div>
 
             <div class="form-group mb-3">

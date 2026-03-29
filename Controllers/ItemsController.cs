@@ -117,7 +117,7 @@ namespace Art_BaBomb.Web.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ProjectId,Name,ItemNumber,Category,Description,EstimatedCost,ActualCost,Status,ImageUrl")] Item item)
+        public async Task<IActionResult> Create([Bind("ProjectId,Name,Quantity,Category,Description,EstimatedCost,ActualCost,Status,ImageUrl")] Item item)
         {
             if (ModelState.IsValid)
             {
@@ -163,7 +163,7 @@ namespace Art_BaBomb.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(
             int id,
-            [Bind("Id,ProjectId,Name,ItemNumber,Category,Description,EstimatedCost,ActualCost,Status,ImageUrl,PurchaseReceiptFileName,PurchaseReceiptPath")] Item item,
+            [Bind("Id,ProjectId,Name,Quantity,Category,Description,EstimatedCost,ActualCost,Status,ImageUrl,PurchaseReceiptFileName,PurchaseReceiptPath")] Item item,
             IFormFile? purchaseReceiptFile)
         {
             if (id != item.Id)
@@ -475,7 +475,7 @@ namespace Art_BaBomb.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ReturnInfo(
             int id,
-            [Bind("Id,ProjectId,Name,ItemNumber,Category,Description,EstimatedCost,ActualCost,Status,ImageUrl,IsReturnRequired,ReturnNotes,ReturnLocation,ReturnByDate,IsReturned,ReturnedAt,PurchaseReceiptFileName,PurchaseReceiptPath,ReturnReceiptFileName,ReturnReceiptPath")]
+            [Bind("Id,ProjectId,Name,Category,Description,EstimatedCost,ActualCost,Status,ImageUrl,IsReturnRequired,ReturnNotes,ReturnLocation,ReturnByDate,IsReturned,ReturnedAt,PurchaseReceiptFileName,PurchaseReceiptPath,ReturnReceiptFileName,ReturnReceiptPath")]
             Item item,
             IFormFile? returnReceiptFile,
             bool removeReturnReceipt = false,

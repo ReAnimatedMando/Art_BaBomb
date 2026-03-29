@@ -20,13 +20,10 @@
     <div class="text-muted">
         Project: <strong>@Model.Project?.Name</strong>
     </div>
-    <div class="text-muted">
-        Item #@Model.ItemNumber
-        @if (!string.IsNullOrWhiteSpace(Model.Category))
-        {
-            <span>• @Model.Category</span>
-        }
-    </div>
+    @if (!string.IsNullOrWhiteSpace(Model.Category))
+    {
+        <div class="text-muted">@Model.Category</div>
+    }
 </div>
 
 @if (Model.IsReturned && string.IsNullOrWhiteSpace(Model.ReturnReceiptPath))
@@ -46,7 +43,6 @@
                     <input type="hidden" asp-for="Id" />
                     <input type="hidden" asp-for="ProjectId" />
                     <input type="hidden" asp-for="Name" />
-                    <input type="hidden" asp-for="ItemNumber" />
                     <input type="hidden" asp-for="Category" />
                     <input type="hidden" asp-for="Description" />
                     <input type="hidden" asp-for="EstimatedCost" />

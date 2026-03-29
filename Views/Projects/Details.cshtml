@@ -6,7 +6,7 @@
     var neededItems = Model.Items
         .Where(i => string.IsNullOrWhiteSpace(i.Status)
             || i.Status.Trim().Equals("Needed", StringComparison.OrdinalIgnoreCase))
-        .OrderBy(i => i.ItemNumber)
+        .OrderBy(i => i.Name)
         .ToList();
 
     var acquiredItems = Model.Items
@@ -14,19 +14,19 @@
             (i.Status ?? "").Trim().Equals("Acquired", StringComparison.OrdinalIgnoreCase)
             && !i.IsReturnRequired
             && !i.IsReturned)
-        .OrderBy(i => i.ItemNumber)
+        .OrderBy(i => i.Name)
         .ToList();
 
     var returnItems = Model.Items
         .Where(i => i.IsReturnRequired && !i.IsReturned)
         .OrderBy(i => i.ReturnByDate)
-        .ThenBy(i => i.ItemNumber)
+        .ThenBy(i => i.Name)
         .ToList();
 
     var returnedItems = Model.Items
         .Where(i => i.IsReturned)
         .OrderByDescending(i => i.ReturnedAt)
-        .ThenBy(i => i.ItemNumber)
+        .ThenBy(i => i.Name)
         .ToList();
 
     var totalEstimated = Model.Items.Sum(i => i.EstimatedCost ?? 0);
@@ -118,14 +118,15 @@
 <h2>Needed Items (@neededItems.Count)</h2>
 @if (neededItems.Any())
 {
-    <table class="table table-striped align-middle">
+    <table class="table table-striped table-hover align-middle">
         <thead>
             <tr>
-                <th>Item #</th>
                 <th>Name</th>
+                <th>Qty</th>
                 <th>Category</th>
                 <th>Est.</th>
                 <th>Actual</th>
+                <th>Receipt</th>
                 <th></th>
             </tr>
         </thead>
@@ -133,36 +134,20 @@
         @foreach (var item in neededItems)
         {
             <tr>
-                <td>@item.ItemNumber</td>
-
                 <td>
                     <div class="d-flex align-items-start gap-2">
-                        @if (IsImageReceipt(item.PurchaseReceiptPath))
+                        @if (!string.IsNullOrWhiteSpace(item.ImageUrl))
                         {
-                            <a href="@item.PurchaseReceiptPath" target="_blank">
-                                <img src="@item.PurchaseReceiptPath"
-                                    alt="Receipt"
-                                    style="width: 42px; height: 42px; object-fit: cover;"
-                                    class="rounded border" />
-                            </a>
+                            <img src="@item.ImageUrl"
+                                 alt="@item.Name"
+                                 style="width: 48px; height: 48px; object-fit: cover;"
+                                 class="rounded border" />
                         }
 
                         <div>
                             <div>@item.Name</div>
 
                             <div class="mt-1">
-                                @if (!string.IsNullOrWhiteSpace(item.PurchaseReceiptPath) && !IsImageReceipt(item.PurchaseReceiptPath))
-                                {
-                                    <a href="@item.PurchaseReceiptPath" target="_blank" class="btn btn-sm btn-outline-primary me-1">
-                                        Receipt
-                                    </a>
-                                }
-
-                                @if (!string.IsNullOrWhiteSpace(item.PurchaseReceiptPath))
-                                {
-                                    <span class="badge bg-info text-dark me-1">Receipt</span>
-                                }
-
                                 @if (item.IsReturnRequired && !item.IsReturned)
                                 {
                                     <span class="badge bg-warning text-dark me-1">Return</span>
@@ -177,9 +162,37 @@
                     </div>
                 </td>
 
+                <td>@item.Quantity</td>
                 <td>@item.Category</td>
-                <td class="text-end">@item.EstimatedCost?.ToString("C")</td>
-                <td class="text-end">@item.ActualCost?.ToString("C")</td>
+                <td class="text-end text-nowrap">@item.EstimatedCost?.ToString("C")</td>
+                <td class="text-end text-nowrap">@item.ActualCost?.ToString("C")</td>
+
+                <td>
+                    @if (IsImageReceipt(item.PurchaseReceiptPath))
+                    {
+                        <a href="#"
+                            data-bs-toggle="modal"
+                            data-bs-target="#receiptPreviewModal"
+                            data-receipt-src="@item.PurchaseReceiptPath"
+                            data-receipt-title="@item.Name - Receipt"
+                            class="receipt-preview-trigger">
+                                <img src="@item.PurchaseReceiptPath"
+                                    alt="Receipt"
+                                    style="width: 48px; height: 48px; object-fit: cover;"
+                                    class="rounded border" />
+                        </a>
+                    }
+                    else if (!string.IsNullOrWhiteSpace(item.PurchaseReceiptPath))
+                    {
+                        <a href="@item.PurchaseReceiptPath" target="_blank" class="btn btn-sm btn-outline-primary">
+                            Receipt
+                        </a>
+                    }
+                    else
+                    {
+                        <span class="text-muted">—</span>
+                    }
+                </td>
 
                 <td>
                     <div class="d-flex flex-wrap gap-1">
@@ -208,14 +221,15 @@ else
 <h2>Acquired Items (@acquiredItems.Count)</h2>
 @if (acquiredItems.Any())
 {
-    <table class="table table-striped align-middle">
+    <table class="table table-striped table-hover align-middle">
         <thead>
             <tr>
-                <th>Item #</th>
                 <th>Name</th>
+                <th>Qty</th>
                 <th>Category</th>
                 <th>Est.</th>
                 <th>Actual</th>
+                <th>Receipt</th>
                 <th></th>
             </tr>
         </thead>
@@ -223,36 +237,20 @@ else
         @foreach (var item in acquiredItems)
         {
             <tr>
-                <td>@item.ItemNumber</td>
-
                 <td>
                     <div class="d-flex align-items-start gap-2">
-                        @if (IsImageReceipt(item.PurchaseReceiptPath))
+                        @if (!string.IsNullOrWhiteSpace(item.ImageUrl))
                         {
-                            <a href="@item.PurchaseReceiptPath" target="_blank">
-                                <img src="@item.PurchaseReceiptPath"
-                                    alt="Receipt"
-                                    style="width: 42px; height: 42px; object-fit: cover;"
-                                    class="rounded border" />
-                            </a>
+                            <img src="@item.ImageUrl"
+                                 alt="@item.Name"
+                                 style="width: 48px; height: 48px; object-fit: cover;"
+                                 class="rounded border" />
                         }
 
                         <div>
                             <div>@item.Name</div>
 
                             <div class="mt-1">
-                                @if (!string.IsNullOrWhiteSpace(item.PurchaseReceiptPath) && !IsImageReceipt(item.PurchaseReceiptPath))
-                                {
-                                    <a href="@item.PurchaseReceiptPath" target="_blank" class="btn btn-sm btn-outline-primary me-1">
-                                        Receipt
-                                    </a>
-                                }
-
-                                @if (!string.IsNullOrWhiteSpace(item.PurchaseReceiptPath))
-                                {
-                                    <span class="badge bg-info text-dark me-1">Receipt</span>
-                                }
-
                                 @if (item.IsReturnRequired && !item.IsReturned)
                                 {
                                     <span class="badge bg-warning text-dark me-1">Return</span>
@@ -267,9 +265,37 @@ else
                     </div>
                 </td>
 
+                <td>@item.Quantity</td>
                 <td>@item.Category</td>
-                <td class="text-end">@item.EstimatedCost?.ToString("C")</td>
-                <td class="text-end">@item.ActualCost?.ToString("C")</td>
+                <td class="text-end text-nowrap">@item.EstimatedCost?.ToString("C")</td>
+                <td class="text-end text-nowrap">@item.ActualCost?.ToString("C")</td>
+
+                <td>
+                    @if (IsImageReceipt(item.PurchaseReceiptPath))
+                    {
+                        <a href="#"
+                            data-bs-toggle="modal"
+                            data-bs-target="#receiptPreviewModal"
+                            data-receipt-src="@item.PurchaseReceiptPath"
+                            data-receipt-title="@item.Name - Receipt"
+                            class="receipt-preview-trigger">
+                                <img src="@item.PurchaseReceiptPath"
+                                    alt="Receipt"
+                                    style="width: 48px; height: 48px; object-fit: cover;"
+                                    class="rounded border" />
+                        </a>
+                    }
+                    else if (!string.IsNullOrWhiteSpace(item.PurchaseReceiptPath))
+                    {
+                        <a href="@item.PurchaseReceiptPath" target="_blank" class="btn btn-sm btn-outline-primary">
+                            Receipt
+                        </a>
+                    }
+                    else
+                    {
+                        <span class="text-muted">—</span>
+                    }
+                </td>
 
                 <td>
                     <div class="d-flex flex-wrap gap-1">
@@ -298,14 +324,15 @@ else
 <h2>Return Queue (@returnItems.Count)</h2>
 @if (returnItems.Any())
 {
-    <table class="table table-striped align-middle">
+    <table class="table table-striped table-hover align-middle">
         <thead>
             <tr>
-                <th>Item #</th>
                 <th>Name</th>
+                <th>Qty</th>
                 <th>Category</th>
                 <th>Return Location</th>
                 <th>Return By</th>
+                <th>Receipt</th>
                 <th></th>
             </tr>
         </thead>
@@ -313,57 +340,73 @@ else
         @foreach (var item in returnItems)
         {
             <tr>
-                <td>@item.ItemNumber</td>
-
                 <td>
                     <div class="d-flex align-items-start gap-2">
-                        @if (IsImageReceipt(item.ReturnReceiptPath))
+                        @if (!string.IsNullOrWhiteSpace(item.ImageUrl))
                         {
-                            <a href="@item.ReturnReceiptPath" target="_blank">
-                                <img src="@item.ReturnReceiptPath"
-                                    alt="Return Receipt"
-                                    style="width: 42px; height: 42px; object-fit: cover;"
-                                    class="rounded border" />
-                            </a>
+                            <img src="@item.ImageUrl"
+                                 alt="@item.Name"
+                                 style="width: 48px; height: 48px; object-fit: cover;"
+                                 class="rounded border" />
                         }
 
                         <div>
                             <div>@item.Name</div>
 
                             <div class="mt-1">
-                                @if (!string.IsNullOrWhiteSpace(item.ReturnReceiptPath) && !IsImageReceipt(item.ReturnReceiptPath))
-                                {
-                                    <a href="@item.ReturnReceiptPath" target="_blank" class="btn btn-sm btn-outline-danger me-1">
-                                        Receipt
-                                    </a>
-                                }
-
-                                @if (!string.IsNullOrWhiteSpace(item.ReturnReceiptPath))
-                                {
-                                    <span class="badge bg-info text-dark me-1">Receipt</span>
-                                }
+                                <span class="badge bg-warning text-dark me-1">Return</span>
                             </div>
                         </div>
                     </div>
                 </td>
 
+                <td>@item.Quantity</td>
                 <td>@item.Category</td>
                 <td>@item.ReturnLocation</td>
-                <td>@item.ReturnByDate?.ToString("d")</td>
+                <td class="text-nowrap">@item.ReturnByDate?.ToString("d")</td>
 
                 <td>
-                    <a asp-controller="Items" asp-action="ReturnInfo" asp-route-id="@item.Id" class="btn btn-sm btn-outline-warning">
-                        Return Info
-                    </a>
+                    @if (IsImageReceipt(item.ReturnReceiptPath))
+                    {
+                        <a href="#"
+                        data-bs-toggle="modal"
+                        data-bs-target="#receiptPreviewModal"
+                        data-receipt-src="@item.ReturnReceiptPath"
+                        data-receipt-title="@item.Name - Return Receipt"
+                        class="receipt-preview-trigger">
+                            <img src="@item.ReturnReceiptPath"
+                                alt="Return Receipt"
+                                style="width: 48px; height: 48px; object-fit: cover;"
+                                class="rounded border" />
+                        </a>
+                    }
+                    else if (!string.IsNullOrWhiteSpace(item.ReturnReceiptPath))
+                    {
+                        <a href="@item.ReturnReceiptPath" target="_blank" class="btn btn-sm btn-outline-danger">
+                            Receipt
+                        </a>
+                    }
+                    else
+                    {
+                        <span class="text-muted">—</span>
+                    }
+                </td>
 
-                    <form asp-controller="Items" asp-action="MarkReturned" asp-route-id="@item.Id" method="post" class="d-inline">
-                        @Html.AntiForgeryToken()
-                        <button type="submit" class="btn btn-sm btn-danger">Mark Returned</button>
-                    </form>
+                <td>
+                    <div class="d-flex flex-wrap gap-1">
+                        <a asp-controller="Items" asp-action="ReturnInfo" asp-route-id="@item.Id" class="btn btn-sm btn-outline-warning">
+                            Return Info
+                        </a>
 
-                    <a asp-controller="Items" asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-secondary">
-                        Details
-                    </a>
+                        <form asp-controller="Items" asp-action="MarkReturned" asp-route-id="@item.Id" method="post" class="d-inline">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn btn-sm btn-danger">Mark Returned</button>
+                        </form>
+
+                        <a asp-controller="Items" asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-secondary">
+                            Details
+                        </a>
+                    </div>
                 </td>
             </tr>
         }
@@ -379,13 +422,14 @@ else
 <h2>Returned Items (@returnedItems.Count)</h2>
 @if (returnedItems.Any())
 {
-    <table class="table table-striped align-middle">
+    <table class="table table-striped table-hover align-middle">
         <thead>
             <tr>
-                <th>Item #</th>
                 <th>Name</th>
+                <th>Qty</th>
                 <th>Category</th>
                 <th>Returned At</th>
+                <th>Receipt</th>
                 <th>Receipt Status</th>
                 <th></th>
             </tr>
@@ -394,18 +438,14 @@ else
         @foreach (var item in returnedItems)
         {
             <tr>
-                <td>@item.ItemNumber</td>
-
                 <td>
                     <div class="d-flex align-items-start gap-2">
-                        @if (IsImageReceipt(item.ReturnReceiptPath))
+                        @if (!string.IsNullOrWhiteSpace(item.ImageUrl))
                         {
-                            <a href="@item.ReturnReceiptPath" target="_blank">
-                                <img src="@item.ReturnReceiptPath"
-                                     alt="Return Receipt"
-                                     style="width: 42px; height: 42px; object-fit: cover;"
-                                     class="rounded border" />
-                            </a>
+                            <img src="@item.ImageUrl"
+                                 alt="@item.Name"
+                                 style="width: 48px; height: 48px; object-fit: cover;"
+                                 class="rounded border" />
                         }
 
                         <div>
@@ -413,21 +453,43 @@ else
 
                             <div class="mt-1">
                                 <span class="badge bg-danger me-1">Returned</span>
-
-                                @if (!string.IsNullOrWhiteSpace(item.ReturnReceiptPath) && !IsImageReceipt(item.ReturnReceiptPath))
-                                {
-                                    <a href="@item.ReturnReceiptPath" target="_blank" class="btn btn-sm btn-outline-danger me-1">
-                                        Receipt
-                                    </a>
-                                }
                             </div>
                         </div>
                     </div>
                 </td>
 
+                <td>@item.Quantity</td>
                 <td>@item.Category</td>
-                <td>@item.ReturnedAt?.ToLocalTime().ToString("g")</td>
-                <td>
+                <td class="text-nowrap">@item.ReturnedAt?.ToLocalTime().ToString("g")</td>
+
+                <td class="text-nowrap">
+                    @if (IsImageReceipt(item.ReturnReceiptPath))
+                    {
+                        <a href="@item.ReturnReceiptPath" target="_blank">
+                            <img src="@item.ReturnReceiptPath"
+                                 alt="Return Receipt"
+                                 style="width: 48px; height: 48px; object-fit: cover;"
+                                 class="rounded border" />
+                        </a>
+                    }
+                    else if (!string.IsNullOrWhiteSpace(item.ReturnReceiptPath))
+                    {
+                        <a href="#"
+                            data-bs-toggle="modal"
+                            data-bs-target="#receiptPreviewModal"
+                            data-receipt-src="@item.ReturnReceiptPath"
+                            data-receipt-title="@item.Name - Return Receipt"
+                            class="receipt-preview-trigger">
+                            Receipt
+                        </a>
+                    }
+                    else
+                    {
+                        <span class="text-muted">—</span>
+                    }
+                </td>
+
+                <td class="text-nowrap">
                     @if (!string.IsNullOrWhiteSpace(item.ReturnReceiptPath))
                     {
                         <span class="text-success fw-semibold">Uploaded</span>
@@ -439,18 +501,15 @@ else
                 </td>
 
                 <td>
-                    @if (!item.IsReturnRequired && !item.IsReturned)
-                    {
-                        <a asp-controller="Items" asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary">
-                        Edit
+                    <div class="d-flex flex-wrap gap-1">
+                        <a asp-controller="Items" asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-secondary">
+                            Details
                         </a>
-                    }
-                    <a asp-controller="Items" asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-secondary">
-                        Details
-                    </a>
-                    <a asp-controller="Items" asp-action="ReturnInfo" asp-route-id="@item.Id" class="btn btn-sm btn-outline-warning">
-                        Return Info
-                    </a>
+
+                        <a asp-controller="Items" asp-action="ReturnInfo" asp-route-id="@item.Id" class="btn btn-sm btn-outline-warning">
+                            Return Info
+                        </a>
+                    </div>
                 </td>
             </tr>
         }
@@ -462,3 +521,41 @@ else
     <p>No returned items yet.</p>
 }
 
+<div class="modal fade" id="receiptPreviewModal" tabindex="-1" aria-labelledby="receiptPreviewModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="receiptPreviewModalLabel">Receipt Preview</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center">
+                <img id="receiptPreviewImage"
+                     src=""
+                     alt="Receipt Preview"
+                     class="img-fluid rounded border"
+                     style="max-height: 75vh;" />
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const receiptModal = document.getElementById("receiptPreviewModal");
+            const receiptImage = document.getElementById("receiptPreviewImage");
+            const receiptTitle = document.getElementById("receiptPreviewModalLabel");
+
+            if (receiptModal) {
+                receiptModal.addEventListener("show.bs.modal", function (event) {
+                    const trigger = event.relatedTarget;
+                    const src = trigger.getAttribute("data-receipt-src");
+                    const title = trigger.getAttribute("data-receipt-title") || "Receipt Preview";
+
+                    receiptImage.src = src;
+                    receiptTitle.textContent = title;
+                });
+            }
+        });
+    </script>
+}

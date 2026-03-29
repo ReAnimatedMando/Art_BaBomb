@@ -16,7 +16,8 @@ namespace Art_BaBomb.Web.Models
         [StringLength(200)]
         public string Name { get; set; } = string.Empty;
 
-        public int ItemNumber { get; set; }
+        [Range(1, 9999)]
+        public int Quantity { get; set; } = 1;
 
         [StringLength(100)]
         public string? Category { get; set; }
