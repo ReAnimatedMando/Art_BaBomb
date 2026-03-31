@@ -246,11 +246,14 @@ namespace Art_BaBomb.Web.Controllers
             }
 
             var newQuantity = item.Quantity + delta;
-
-            // Keep quantity at 1 minimum
             item.Quantity = Math.Max(1, newQuantity);
 
             await _context.SaveChangesAsync();
+
+            if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+            {
+                return Json(new { success = true, itemId = item.Id, quantity = item.Quantity });
+            }
 
             return RedirectToAction("Details", "Projects", new { id = item.ProjectId });
         }

@@ -114,6 +114,10 @@
 
 <hr />
 
+<form id="antiForgeryForm" style="display:none;">
+    @Html.AntiForgeryToken()
+</form>
+
 <!-- ===================== NEEDED ===================== -->
 <h2>Needed Items (@neededItems.Count)</h2>
 @if (neededItems.Any())
@@ -122,12 +126,12 @@
         <thead>
             <tr>
                 <th>Name</th>
-                <th>Qty</th>
+                <th class="text-center">Qty</th>
                 <th>Category</th>
-                <th>Est.</th>
-                <th>Actual</th>
-                <th>Receipt</th>
-                <th></th>
+                <th class="text-end">Est.</th>
+                <th class="text-end">Actual</th>
+                <th class="text-nowrap">Receipt</th>
+                <th class="text-nowrap"></th>
             </tr>
         </thead>
         <tbody>
@@ -140,8 +144,8 @@
                         {
                             <img src="@item.ImageUrl"
                                  alt="@item.Name"
-                                 style="width: 48px; height: 48px; object-fit: cover;"
-                                 class="rounded border" />
+                                 style="width: 44px; height: 44px; object-fit: cover;"
+                                 class="rounded border bg-light" />
                         }
 
                         <div>
@@ -163,29 +167,30 @@
                 </td>
 
                 <td class="text-center">
-                    <div class="d-flex align-items-center gap-1 border rounded px-1 py-1">
-                        <form asp-controller="Items" asp-action="AdjustQuantity" method="post" class="d-inline">
-                            @Html.AntiForgeryToken()
-                            <input type="hidden" name="id" value="@item.Id" />
-                            <input type="hidden" name="delta" value="-1" />
-                            <button type="submit" class="btn btn-sm btn-link text-decoration-none px-1 py-0">-</button>
-                        </form>
+                    <div class="qty-stepper" data-item-id="@item.Id">
+                        <button type="button"
+                                class="qty-btn qty-adjust-btn"
+                                data-id="@item.Id"
+                                data-delta="-1"
+                                @(item.Quantity <= 1 ? "disabled=\"disabled\"" : "")>
+                            −
+                        </button>
 
-                        <span class="fw-semibold text-center" style="min-width: 2rem;">@item.Quantity</span>
+                        <span class="qty-value" id="qty-value-@item.Id">@item.Quantity</span>
 
-                        <form asp-controller="Items" asp-action="AdjustQuantity" method="post" class="d-inline">
-                            @Html.AntiForgeryToken()
-                            <input type="hidden" name="id" value="@item.Id" />
-                            <input type="hidden" name="delta" value="1" />
-                            <button type="submit" class="btn btn-sm btn-link text-decoration-none px-1 py-0">+</button>
-                        </form>
+                        <button type="button"
+                                class="qty-btn qty-adjust-btn"
+                                data-id="@item.Id"
+                                data-delta="1">
+                            +
+                        </button>
                     </div>
                 </td>
                 <td>@item.Category</td>
                 <td class="text-end text-nowrap">@item.EstimatedCost?.ToString("C")</td>
                 <td class="text-end text-nowrap">@item.ActualCost?.ToString("C")</td>
 
-                <td>
+                <td class="text-nowrap">
                     @if (IsImageReceipt(item.PurchaseReceiptPath))
                     {
                         <a href="#"
@@ -196,8 +201,8 @@
                             class="receipt-preview-trigger">
                                 <img src="@item.PurchaseReceiptPath"
                                     alt="Receipt"
-                                    style="width: 48px; height: 48px; object-fit: cover;"
-                                    class="rounded border" />
+                                    style="width: 44px; height: 44px; object-fit: cover;"
+                                    class="rounded border bg-light" />
                         </a>
                     }
                     else if (!string.IsNullOrWhiteSpace(item.PurchaseReceiptPath))
@@ -212,8 +217,8 @@
                     }
                 </td>
 
-                <td>
-                    <div class="d-flex flex-wrap gap-1">
+                <td class="text-nowrap">
+                    <div class="d-inline-flex gap-1">
                         <form asp-controller="Items" asp-action="MarkAcquired" asp-route-id="@item.Id" method="post" class="d-inline">
                             @Html.AntiForgeryToken()
                             <button type="submit" class="btn btn-sm btn-success">
@@ -261,8 +266,8 @@ else
                         {
                             <img src="@item.ImageUrl"
                                  alt="@item.Name"
-                                 style="width: 48px; height: 48px; object-fit: cover;"
-                                 class="rounded border" />
+                                 style="width: 44px; height: 44px; object-fit: cover;"
+                                 class="rounded border bg-light" />
                         }
 
                         <div>
@@ -284,29 +289,30 @@ else
                 </td>
 
                 <td class="text-center">
-                    <div class="d-flex align-items-center gap-1 border rounded px-1 py-1">
-                        <form asp-controller="Items" asp-action="AdjustQuantity" method="post" class="d-inline">
-                            @Html.AntiForgeryToken()
-                            <input type="hidden" name="id" value="@item.Id" />
-                            <input type="hidden" name="delta" value="-1" />
-                            <button type="submit" class="btn btn-sm btn-link text-decoration-none px-1 py-0">-</button>
-                        </form>
+                    <div class="qty-stepper" data-item-id="@item.Id">
+                        <button type="button"
+                                class="qty-btn qty-adjust-btn"
+                                data-id="@item.Id"
+                                data-delta="-1"
+                                @(item.Quantity <= 1 ? "disabled=\"disabled\"" : "")>
+                            −
+                        </button>
 
-                        <span class="fw-semibold text-center" style="min-width: 2rem;">@item.Quantity</span>
+                        <span class="qty-value" id="qty-value-@item.Id">@item.Quantity</span>
 
-                        <form asp-controller="Items" asp-action="AdjustQuantity" method="post" class="d-inline">
-                            @Html.AntiForgeryToken()
-                            <input type="hidden" name="id" value="@item.Id" />
-                            <input type="hidden" name="delta" value="1" />
-                            <button type="submit" class="btn btn-sm btn-link text-decoration-none px-1 py-0">+</button>
-                        </form>
+                        <button type="button"
+                                class="qty-btn qty-adjust-btn"
+                                data-id="@item.Id"
+                                data-delta="1">
+                            +
+                        </button>
                     </div>
                 </td>
                 <td>@item.Category</td>
                 <td class="text-end text-nowrap">@item.EstimatedCost?.ToString("C")</td>
                 <td class="text-end text-nowrap">@item.ActualCost?.ToString("C")</td>
 
-                <td>
+                <td class="text-nowrap">
                     @if (IsImageReceipt(item.PurchaseReceiptPath))
                     {
                         <a href="#"
@@ -317,8 +323,8 @@ else
                             class="receipt-preview-trigger">
                                 <img src="@item.PurchaseReceiptPath"
                                     alt="Receipt"
-                                    style="width: 48px; height: 48px; object-fit: cover;"
-                                    class="rounded border" />
+                                    style="width: 44px; height: 44px; object-fit: cover;"
+                                    class="rounded border bg-light" />
                         </a>
                     }
                     else if (!string.IsNullOrWhiteSpace(item.PurchaseReceiptPath))
@@ -333,8 +339,8 @@ else
                     }
                 </td>
 
-                <td>
-                    <div class="d-flex flex-wrap gap-1">
+                <td class="text-nowrap">
+                    <div class="d-inline-flex gap-1">
                         <form asp-controller="Items" asp-action="MarkNeeded" asp-route-id="@item.Id" method="post" class="d-inline">
                             @Html.AntiForgeryToken()
                             <button type="submit" class="btn btn-sm btn-outline-warning">
@@ -382,8 +388,8 @@ else
                         {
                             <img src="@item.ImageUrl"
                                  alt="@item.Name"
-                                 style="width: 48px; height: 48px; object-fit: cover;"
-                                 class="rounded border" />
+                                 style="width: 44px; height: 44px; object-fit: cover;"
+                                 class="rounded border bg-light" />
                         }
 
                         <div>
@@ -397,29 +403,30 @@ else
                 </td>
 
                 <td class="text-center">
-                    <div class="d-flex align-items-center gap-1 border rounded px-1 py-1">
-                        <form asp-controller="Items" asp-action="AdjustQuantity" method="post" class="d-inline">
-                            @Html.AntiForgeryToken()
-                            <input type="hidden" name="id" value="@item.Id" />
-                            <input type="hidden" name="delta" value="-1" />
-                            <button type="submit" class="btn btn-sm btn-link text-decoration-none px-1 py-0">-</button>
-                        </form>
+                    <div class="qty-stepper" data-item-id="@item.Id">
+                        <button type="button"
+                                class="qty-btn qty-adjust-btn"
+                                data-id="@item.Id"
+                                data-delta="-1"
+                                @(item.Quantity <= 1 ? "disabled=\"disabled\"" : "")>
+                            −
+                        </button>
 
-                        <span class="fw-semibold text-center" style="min-width: 2rem;">@item.Quantity</span>
+                        <span class="qty-value" id="qty-value-@item.Id">@item.Quantity</span>
 
-                        <form asp-controller="Items" asp-action="AdjustQuantity" method="post" class="d-inline">
-                            @Html.AntiForgeryToken()
-                            <input type="hidden" name="id" value="@item.Id" />
-                            <input type="hidden" name="delta" value="1" />
-                            <button type="submit" class="btn btn-sm btn-link text-decoration-none px-1 py-0">+</button>
-                        </form>
+                        <button type="button"
+                                class="qty-btn qty-adjust-btn"
+                                data-id="@item.Id"
+                                data-delta="1">
+                            +
+                        </button>
                     </div>
                 </td>
                 <td>@item.Category</td>
                 <td>@item.ReturnLocation</td>
                 <td class="text-nowrap">@item.ReturnByDate?.ToString("d")</td>
 
-                <td>
+                <td class="text-nowrap">
                     @if (IsImageReceipt(item.ReturnReceiptPath))
                     {
                         <a href="#"
@@ -430,8 +437,8 @@ else
                         class="receipt-preview-trigger">
                             <img src="@item.ReturnReceiptPath"
                                 alt="Return Receipt"
-                                style="width: 48px; height: 48px; object-fit: cover;"
-                                class="rounded border" />
+                                style="width: 44px; height: 44px; object-fit: cover;"
+                                class="rounded border bg-light" />
                         </a>
                     }
                     else if (!string.IsNullOrWhiteSpace(item.ReturnReceiptPath))
@@ -446,8 +453,8 @@ else
                     }
                 </td>
 
-                <td>
-                    <div class="d-flex flex-wrap gap-1">
+                <td class="text-nowrap">
+                    <div class="d-inline-flex gap-1">
                         <a asp-controller="Items" asp-action="ReturnInfo" asp-route-id="@item.Id" class="btn btn-sm btn-outline-warning">
                             Return Info
                         </a>
@@ -498,8 +505,8 @@ else
                         {
                             <img src="@item.ImageUrl"
                                  alt="@item.Name"
-                                 style="width: 48px; height: 48px; object-fit: cover;"
-                                 class="rounded border" />
+                                 style="width: 44px; height: 44px; object-fit: cover;"
+                                 class="rounded border bg-light" />
                         }
 
                         <div>
@@ -522,8 +529,8 @@ else
                         <a href="@item.ReturnReceiptPath" target="_blank">
                             <img src="@item.ReturnReceiptPath"
                                  alt="Return Receipt"
-                                 style="width: 48px; height: 48px; object-fit: cover;"
-                                 class="rounded border" />
+                                 style="width: 44px; height: 44px; object-fit: cover;"
+                                 class="rounded border bg-light" />
                         </a>
                     }
                     else if (!string.IsNullOrWhiteSpace(item.ReturnReceiptPath))
@@ -555,7 +562,7 @@ else
                 </td>
 
                 <td>
-                    <div class="d-flex flex-wrap gap-1">
+                    <div class="d-inline-flex gap-1">
                         <a asp-controller="Items" asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-secondary">
                             Details
                         </a>
@@ -610,6 +617,58 @@ else
                     receiptTitle.textContent = title;
                 });
             }
+
+            const tokenInput = document.querySelector('#antiForgeryForm input[name="__RequestVerificationToken"]');
+
+            document.querySelectorAll(".qty-adjust-btn").forEach(button => {
+                button.addEventListener("click", async function () {
+                    const itemId = this.dataset.id;
+                    const delta = this.dataset.delta;
+                    const qtyValue = document.getElementById(`qty-value-${itemId}`);
+
+                    if (!tokenInput || !qtyValue) {
+                        return;
+                    }
+
+                    try {
+                        const response = await fetch('@Url.Action("AdjustQuantity", "Items")', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+                                'RequestVerificationToken': tokenInput.value,
+                                'X-Requested-With': 'XMLHttpRequest'
+                            },
+                            body: new URLSearchParams({
+                                id: itemId,
+                                delta: delta
+                            })
+                        });
+
+                        if (!response.ok) {
+                            throw new Error("Quantity update failed.");
+                        }
+
+                        const result = await response.json();
+
+                        if (result.success) {
+                            qtyValue.textContent = result.quantity;
+
+                            const stepper = this.closest(".qty-stepper");
+                            const minusBtn = stepper?.querySelector('.qty-adjust-btn[data-delta="-1"]');
+
+                            qtyValue.classList.add("text-success");
+                            setTimeout(() => qtyValue.classList.remove("text-success"), 200);
+
+                            if (minusBtn) {
+                                minusBtn.disabled = result.quantity <= 1;
+                            }
+                        }
+                    } catch (error) {
+                        console.error(error);
+                        alert("Could not update quantity. Please try again.");
+                    }
+                });
+            });
         });
     </script>
 }

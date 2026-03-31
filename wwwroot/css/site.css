@@ -29,3 +29,38 @@ body {
 .form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
   text-align: start;
 }
+
+.qty-stepper {
+    display: inline-flex;
+    align-items: center;
+    border: 1px solid #dee2e6;
+    border-radius: 0.375rem;
+    overflow: hidden;
+    background: #fff;
+}
+
+.qty-btn {
+    border: none;
+    background: #f8f9fa;
+    padding: 0.25rem 0.5rem;
+    font-size: 1rem;
+    line-height: 1;
+    cursor: pointer;
+    transition: background 0.15s ease;
+}
+
+.qty-btn:hover {
+    background: #e9ecef;
+}
+
+.qty-value {
+    min-width: 2rem;
+    text-align: center;
+    font-weight: 600;
+    padding: 0 0.4rem;
+}
+
+.qty-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
