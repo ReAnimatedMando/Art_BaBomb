@@ -233,6 +233,29 @@ namespace Art_BaBomb.Web.Controllers
             return View(item);
         }
 
+        // POST: Adjust Quantity
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AdjustQuantity(int id, int delta)
+        {
+            var item = await _context.Items.FindAsync(id);
+
+            if (item == null)
+            {
+                return NotFound();
+            }
+
+            var newQuantity = item.Quantity + delta;
+
+            // Keep quantity at 1 minimum
+            item.Quantity = Math.Max(1, newQuantity);
+
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("Details", "Projects", new { id = item.ProjectId });
+        }
+
+        // POST: Mark as Acquired / Mark as Needed
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> MarkAcquired(int id)
@@ -252,6 +275,7 @@ namespace Art_BaBomb.Web.Controllers
             return RedirectToAction("Details", "Projects", new { id = item.ProjectId });
         }
 
+        // POST: Mark as Needed
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> MarkNeeded(int id)

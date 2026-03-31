@@ -13,5 +13,14 @@ namespace Art_BaBomb.Web.Data
 
         public DbSet<Project> Projects { get; set; }
         public DbSet<Item> Items { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<Item>()
+                .Property(i => i.Quantity)
+                .HasDefaultValue(1);
+        }
     }
 }

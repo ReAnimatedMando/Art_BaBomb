@@ -162,7 +162,25 @@
                     </div>
                 </td>
 
-                <td>@item.Quantity</td>
+                <td class="text-center">
+                    <div class="d-flex align-items-center gap-1 border rounded px-1 py-1">
+                        <form asp-controller="Items" asp-action="AdjustQuantity" method="post" class="d-inline">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="id" value="@item.Id" />
+                            <input type="hidden" name="delta" value="-1" />
+                            <button type="submit" class="btn btn-sm btn-link text-decoration-none px-1 py-0">-</button>
+                        </form>
+
+                        <span class="fw-semibold text-center" style="min-width: 2rem;">@item.Quantity</span>
+
+                        <form asp-controller="Items" asp-action="AdjustQuantity" method="post" class="d-inline">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="id" value="@item.Id" />
+                            <input type="hidden" name="delta" value="1" />
+                            <button type="submit" class="btn btn-sm btn-link text-decoration-none px-1 py-0">+</button>
+                        </form>
+                    </div>
+                </td>
                 <td>@item.Category</td>
                 <td class="text-end text-nowrap">@item.EstimatedCost?.ToString("C")</td>
                 <td class="text-end text-nowrap">@item.ActualCost?.ToString("C")</td>
@@ -265,7 +283,25 @@ else
                     </div>
                 </td>
 
-                <td>@item.Quantity</td>
+                <td class="text-center">
+                    <div class="d-flex align-items-center gap-1 border rounded px-1 py-1">
+                        <form asp-controller="Items" asp-action="AdjustQuantity" method="post" class="d-inline">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="id" value="@item.Id" />
+                            <input type="hidden" name="delta" value="-1" />
+                            <button type="submit" class="btn btn-sm btn-link text-decoration-none px-1 py-0">-</button>
+                        </form>
+
+                        <span class="fw-semibold text-center" style="min-width: 2rem;">@item.Quantity</span>
+
+                        <form asp-controller="Items" asp-action="AdjustQuantity" method="post" class="d-inline">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="id" value="@item.Id" />
+                            <input type="hidden" name="delta" value="1" />
+                            <button type="submit" class="btn btn-sm btn-link text-decoration-none px-1 py-0">+</button>
+                        </form>
+                    </div>
+                </td>
                 <td>@item.Category</td>
                 <td class="text-end text-nowrap">@item.EstimatedCost?.ToString("C")</td>
                 <td class="text-end text-nowrap">@item.ActualCost?.ToString("C")</td>
@@ -360,7 +396,25 @@ else
                     </div>
                 </td>
 
-                <td>@item.Quantity</td>
+                <td class="text-center">
+                    <div class="d-flex align-items-center gap-1 border rounded px-1 py-1">
+                        <form asp-controller="Items" asp-action="AdjustQuantity" method="post" class="d-inline">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="id" value="@item.Id" />
+                            <input type="hidden" name="delta" value="-1" />
+                            <button type="submit" class="btn btn-sm btn-link text-decoration-none px-1 py-0">-</button>
+                        </form>
+
+                        <span class="fw-semibold text-center" style="min-width: 2rem;">@item.Quantity</span>
+
+                        <form asp-controller="Items" asp-action="AdjustQuantity" method="post" class="d-inline">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="id" value="@item.Id" />
+                            <input type="hidden" name="delta" value="1" />
+                            <button type="submit" class="btn btn-sm btn-link text-decoration-none px-1 py-0">+</button>
+                        </form>
+                    </div>
+                </td>
                 <td>@item.Category</td>
                 <td>@item.ReturnLocation</td>
                 <td class="text-nowrap">@item.ReturnByDate?.ToString("d")</td>
