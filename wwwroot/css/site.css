@@ -64,3 +64,11 @@ body {
     opacity: 0.4;
     cursor: not-allowed;
 }
+
+.item-row:focus {
+    outline: none;
+}
+
+.item-row.table-active {
+    background-color: rgba(0, 123, 255, 0.08);
+}

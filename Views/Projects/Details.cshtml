@@ -137,7 +137,7 @@
         <tbody>
         @foreach (var item in neededItems)
         {
-            <tr>
+            <tr tabindex="0" class="item-row" data-item-id="@item.Id">
                 <td>
                     <div class="d-flex align-items-start gap-2">
                         @if (!string.IsNullOrWhiteSpace(item.ImageUrl))
@@ -259,7 +259,7 @@ else
         <tbody>
         @foreach (var item in acquiredItems)
         {
-            <tr>
+            <tr tabindex="0" class="item-row" data-item-id="@item.Id">
                 <td>
                     <div class="d-flex align-items-start gap-2">
                         @if (!string.IsNullOrWhiteSpace(item.ImageUrl))
@@ -381,7 +381,7 @@ else
         <tbody>
         @foreach (var item in returnItems)
         {
-            <tr>
+            <tr tabindex="0" class="item-row" data-item-id="@item.Id">
                 <td>
                     <div class="d-flex align-items-start gap-2">
                         @if (!string.IsNullOrWhiteSpace(item.ImageUrl))
@@ -498,7 +498,7 @@ else
         <tbody>
         @foreach (var item in returnedItems)
         {
-            <tr>
+            <tr tabindex="0" class="item-row" data-item-id="@item.Id">
                 <td>
                     <div class="d-flex align-items-start gap-2">
                         @if (!string.IsNullOrWhiteSpace(item.ImageUrl))
@@ -618,56 +618,98 @@ else
                 });
             }
 
-            const tokenInput = document.querySelector('#antiForgeryForm input[name="__RequestVerificationToken"]');
+            let activeItemId = null;
+
+            async function triggerQtyUpdate(itemId, delta) {
+                const tokenInput = document.querySelector('#antiForgeryForm input[name="__RequestVerificationToken"]');
+                const qtyValue = document.getElementById(`qty-value-${itemId}`);
+
+                if (!tokenInput || !qtyValue) {
+                    return;
+                }
+
+                try {
+                    const response = await fetch('@Url.Action("AdjustQuantity", "Items")', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+                            'RequestVerificationToken': tokenInput.value,
+                            'X-Requested-With': 'XMLHttpRequest'
+                        },
+                        body: new URLSearchParams({
+                            id: itemId,
+                            delta: delta
+                        })
+                    });
+
+                    if (!response.ok) {
+                        throw new Error("Quantity update failed.");
+                    }
+
+                    const result = await response.json();
+
+                    if (result.success) {
+                        qtyValue.textContent = result.quantity;
+
+                        const stepper = document.querySelector(`.qty-stepper[data-item-id="${itemId}"]`);
+                        const minusBtn = stepper?.querySelector('.qty-adjust-btn[data-delta="-1"]');
+
+                        qtyValue.classList.add("text-success");
+                        setTimeout(() => qtyValue.classList.remove("text-success"), 200);
+
+                        if (minusBtn) {
+                            minusBtn.disabled = result.quantity <= 1;
+                        }
+                    }
+                } catch (error) {
+                    console.error(error);
+                    alert("Could not update quantity. Please try again.");
+                }
+            }
 
             document.querySelectorAll(".qty-adjust-btn").forEach(button => {
-                button.addEventListener("click", async function () {
+                button.addEventListener("click", function () {
                     const itemId = this.dataset.id;
                     const delta = this.dataset.delta;
-                    const qtyValue = document.getElementById(`qty-value-${itemId}`);
 
-                    if (!tokenInput || !qtyValue) {
-                        return;
-                    }
-
-                    try {
-                        const response = await fetch('@Url.Action("AdjustQuantity", "Items")', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
-                                'RequestVerificationToken': tokenInput.value,
-                                'X-Requested-With': 'XMLHttpRequest'
-                            },
-                            body: new URLSearchParams({
-                                id: itemId,
-                                delta: delta
-                            })
-                        });
-
-                        if (!response.ok) {
-                            throw new Error("Quantity update failed.");
-                        }
-
-                        const result = await response.json();
-
-                        if (result.success) {
-                            qtyValue.textContent = result.quantity;
-
-                            const stepper = this.closest(".qty-stepper");
-                            const minusBtn = stepper?.querySelector('.qty-adjust-btn[data-delta="-1"]');
-
-                            qtyValue.classList.add("text-success");
-                            setTimeout(() => qtyValue.classList.remove("text-success"), 200);
-
-                            if (minusBtn) {
-                                minusBtn.disabled = result.quantity <= 1;
-                            }
-                        }
-                    } catch (error) {
-                        console.error(error);
-                        alert("Could not update quantity. Please try again.");
-                    }
+                    triggerQtyUpdate(itemId, delta);
                 });
+            });
+
+            document.querySelectorAll(".item-row").forEach(row => {
+                row.addEventListener("mouseenter", () => {
+                    activeItemId = row.dataset.itemId;
+                    row.classList.add("table-active");
+                });
+
+                row.addEventListener("mouseleave", () => {
+                    activeItemId = null;
+                    row.classList.remove("table-active");
+                });
+
+                row.addEventListener("focus", () => {
+                    activeItemId = row.dataset.itemId;
+                    row.classList.add("table-active");
+                });
+
+                row.addEventListener("blur", () => {
+                    activeItemId = null;
+                    row.classList.remove("table-active");
+                });
+            });
+
+            document.addEventListener("keydown", function (e) {
+                if (!activeItemId) return;
+
+                if (e.key === "+" || e.key === "=") {
+                    triggerQtyUpdate(activeItemId, 1);
+                    e.preventDefault();
+                }
+
+                if (e.key === "-" || e.key === "_") {
+                    triggerQtyUpdate(activeItemId, -1);
+                    e.preventDefault();
+                }
             });
         });
     </script>
