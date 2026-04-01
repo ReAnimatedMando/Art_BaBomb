@@ -29,6 +29,26 @@
         .ThenBy(i => i.Name)
         .ToList();
 
+    var neededGroups = neededItems
+        .GroupBy(i => string.IsNullOrWhiteSpace(i.Category) ? "Uncategorized" : i.Category.Trim())
+        .OrderBy(g => g.Key)
+        .ToList();
+
+    var acquiredGroups = acquiredItems
+        .GroupBy(i => string.IsNullOrWhiteSpace(i.Category) ? "Uncategorized" : i.Category.Trim())
+        .OrderBy(g => g.Key)
+        .ToList();
+
+    var returnGroups = returnItems
+        .GroupBy(i => string.IsNullOrWhiteSpace(i.Category) ? "Uncategorized" : i.Category.Trim())
+        .OrderBy(g => g.Key)
+        .ToList();
+
+    var returnedGroups = returnedItems
+        .GroupBy(i => string.IsNullOrWhiteSpace(i.Category) ? "Uncategorized" : i.Category.Trim())
+        .OrderBy(g => g.Key)
+        .ToList();
+
     var totalEstimated = Model.Items.Sum(i => i.EstimatedCost ?? 0);
     var totalActual = Model.Items.Sum(i => i.ActualCost ?? 0);
     var remainingBudget = Model.Budget - totalActual;
@@ -120,120 +140,131 @@
 
 <!-- ===================== NEEDED ===================== -->
 <h2>Needed Items (@neededItems.Count)</h2>
-@if (neededItems.Any())
+@if (neededGroups.Any())
 {
-    <table class="table table-striped table-hover align-middle">
-        <thead>
-            <tr>
-                <th>Name</th>
-                <th class="text-center">Qty</th>
-                <th>Category</th>
-                <th class="text-end">Est.</th>
-                <th class="text-end">Actual</th>
-                <th class="text-nowrap">Receipt</th>
-                <th class="text-nowrap"></th>
-            </tr>
-        </thead>
-        <tbody>
-        @foreach (var item in neededItems)
-        {
-            <tr tabindex="0" class="item-row" data-item-id="@item.Id">
-                <td>
-                    <div class="d-flex align-items-start gap-2">
-                        @if (!string.IsNullOrWhiteSpace(item.ImageUrl))
-                        {
-                            <img src="@item.ImageUrl"
-                                 alt="@item.Name"
-                                 style="width: 44px; height: 44px; object-fit: cover;"
-                                 class="rounded border bg-light" />
-                        }
+    @foreach (var group in neededGroups)
+    {
+        <div class="card shadow-sm mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">@group.Key</h5>
+                <span class="badge bg-secondary">@group.Count()</span>
+            </div>
 
-                        <div>
-                            <div>@item.Name</div>
+            <div class="card-body p-0">
+                <table class="table table-striped table-hover align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th class="text-center">Qty</th>
+                            <th>Category</th>
+                            <th class="text-end">Est.</th>
+                            <th class="text-end">Actual</th>
+                            <th class="text-nowrap">Receipt</th>
+                            <th class="text-nowrap"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    @foreach (var item in group)
+                    {
+                        <tr tabindex="0" class="item-row" data-item-id="@item.Id">
+                            <td>
+                                <div class="d-flex align-items-start gap-2">
+                                    @if (!string.IsNullOrWhiteSpace(item.ImageUrl))
+                                    {
+                                        <img src="@item.ImageUrl"
+                                             alt="@item.Name"
+                                             style="width: 44px; height: 44px; object-fit: cover;"
+                                             class="rounded border bg-light" />
+                                    }
 
-                            <div class="mt-1">
-                                @if (item.IsReturnRequired && !item.IsReturned)
+                                    <div>
+                                        <div>@item.Name</div>
+
+                                        <div class="mt-1">
+                                            @if (item.IsReturnRequired && !item.IsReturned)
+                                            {
+                                                <span class="badge bg-warning text-dark me-1">Return</span>
+                                            }
+
+                                            @if (item.IsReturned)
+                                            {
+                                                <span class="badge bg-danger me-1">Returned</span>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+
+                            <td class="text-center">
+                                <div class="qty-stepper" data-item-id="@item.Id">
+                                    <button type="button"
+                                            class="qty-btn qty-adjust-btn"
+                                            data-id="@item.Id"
+                                            data-delta="-1"
+                                            @(item.Quantity <= 1 ? "disabled=\"disabled\"" : "")>
+                                        −
+                                    </button>
+
+                                    <span class="qty-value" id="qty-value-@item.Id">@item.Quantity</span>
+
+                                    <button type="button"
+                                            class="qty-btn qty-adjust-btn"
+                                            data-id="@item.Id"
+                                            data-delta="1">
+                                        +
+                                    </button>
+                                </div>
+                            </td>
+
+                            <td>@item.Category</td>
+                            <td class="text-end text-nowrap">@item.EstimatedCost?.ToString("C")</td>
+                            <td class="text-end text-nowrap">@item.ActualCost?.ToString("C")</td>
+
+                            <td class="text-nowrap">
+                                @if (IsImageReceipt(item.PurchaseReceiptPath))
                                 {
-                                    <span class="badge bg-warning text-dark me-1">Return</span>
+                                    <a href="#"
+                                       data-bs-toggle="modal"
+                                       data-bs-target="#receiptPreviewModal"
+                                       data-receipt-src="@item.PurchaseReceiptPath"
+                                       data-receipt-title="@item.Name - Receipt"
+                                       class="receipt-preview-trigger">
+                                        <img src="@item.PurchaseReceiptPath"
+                                             alt="Receipt"
+                                             style="width: 44px; height: 44px; object-fit: cover;"
+                                             class="rounded border bg-light" />
+                                    </a>
                                 }
-
-                                @if (item.IsReturned)
+                                else if (!string.IsNullOrWhiteSpace(item.PurchaseReceiptPath))
                                 {
-                                    <span class="badge bg-danger me-1">Returned</span>
+                                    <a href="@item.PurchaseReceiptPath" target="_blank" class="btn btn-sm btn-outline-primary">
+                                        Receipt
+                                    </a>
                                 }
-                            </div>
-                        </div>
-                    </div>
-                </td>
+                                else
+                                {
+                                    <span class="text-muted">—</span>
+                                }
+                            </td>
 
-                <td class="text-center">
-                    <div class="qty-stepper" data-item-id="@item.Id">
-                        <button type="button"
-                                class="qty-btn qty-adjust-btn"
-                                data-id="@item.Id"
-                                data-delta="-1"
-                                @(item.Quantity <= 1 ? "disabled=\"disabled\"" : "")>
-                            −
-                        </button>
+                            <td class="text-nowrap">
+                                <div class="d-inline-flex gap-1">
+                                    <form asp-controller="Items" asp-action="MarkAcquired" asp-route-id="@item.Id" method="post" class="d-inline">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="btn btn-sm btn-success">+</button>
+                                    </form>
 
-                        <span class="qty-value" id="qty-value-@item.Id">@item.Quantity</span>
-
-                        <button type="button"
-                                class="qty-btn qty-adjust-btn"
-                                data-id="@item.Id"
-                                data-delta="1">
-                            +
-                        </button>
-                    </div>
-                </td>
-                <td>@item.Category</td>
-                <td class="text-end text-nowrap">@item.EstimatedCost?.ToString("C")</td>
-                <td class="text-end text-nowrap">@item.ActualCost?.ToString("C")</td>
-
-                <td class="text-nowrap">
-                    @if (IsImageReceipt(item.PurchaseReceiptPath))
-                    {
-                        <a href="#"
-                            data-bs-toggle="modal"
-                            data-bs-target="#receiptPreviewModal"
-                            data-receipt-src="@item.PurchaseReceiptPath"
-                            data-receipt-title="@item.Name - Receipt"
-                            class="receipt-preview-trigger">
-                                <img src="@item.PurchaseReceiptPath"
-                                    alt="Receipt"
-                                    style="width: 44px; height: 44px; object-fit: cover;"
-                                    class="rounded border bg-light" />
-                        </a>
+                                    <a asp-controller="Items" asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary">Edit</a>
+                                    <a asp-controller="Items" asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-secondary">Details</a>
+                                </div>
+                            </td>
+                        </tr>
                     }
-                    else if (!string.IsNullOrWhiteSpace(item.PurchaseReceiptPath))
-                    {
-                        <a href="@item.PurchaseReceiptPath" target="_blank" class="btn btn-sm btn-outline-primary">
-                            Receipt
-                        </a>
-                    }
-                    else
-                    {
-                        <span class="text-muted">—</span>
-                    }
-                </td>
-
-                <td class="text-nowrap">
-                    <div class="d-inline-flex gap-1">
-                        <form asp-controller="Items" asp-action="MarkAcquired" asp-route-id="@item.Id" method="post" class="d-inline">
-                            @Html.AntiForgeryToken()
-                            <button type="submit" class="btn btn-sm btn-success">
-                                +
-                            </button>
-                        </form>
-
-                        <a asp-controller="Items" asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary">Edit</a>
-                        <a asp-controller="Items" asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-secondary">Details</a>
-                    </div>
-                </td>
-            </tr>
-        }
-        </tbody>
-    </table>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
 }
 else
 {
@@ -242,120 +273,131 @@ else
 
 <!-- ===================== ACQUIRED ===================== -->
 <h2>Acquired Items (@acquiredItems.Count)</h2>
-@if (acquiredItems.Any())
+@if (acquiredGroups.Any())
 {
-    <table class="table table-striped table-hover align-middle">
-        <thead>
-            <tr>
-                <th>Name</th>
-                <th>Qty</th>
-                <th>Category</th>
-                <th>Est.</th>
-                <th>Actual</th>
-                <th>Receipt</th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-        @foreach (var item in acquiredItems)
-        {
-            <tr tabindex="0" class="item-row" data-item-id="@item.Id">
-                <td>
-                    <div class="d-flex align-items-start gap-2">
-                        @if (!string.IsNullOrWhiteSpace(item.ImageUrl))
-                        {
-                            <img src="@item.ImageUrl"
-                                 alt="@item.Name"
-                                 style="width: 44px; height: 44px; object-fit: cover;"
-                                 class="rounded border bg-light" />
-                        }
+    @foreach (var group in acquiredGroups)
+    {
+        <div class="card shadow-sm mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">@group.Key</h5>
+                <span class="badge bg-secondary">@group.Count()</span>
+            </div>
 
-                        <div>
-                            <div>@item.Name</div>
+            <div class="card-body p-0">
+                <table class="table table-striped table-hover align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th class="text-center">Qty</th>
+                            <th>Category</th>
+                            <th class="text-end">Est.</th>
+                            <th class="text-end">Actual</th>
+                            <th class="text-nowrap">Receipt</th>
+                            <th class="text-nowrap"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    @foreach (var item in group)
+                    {
+                        <tr tabindex="0" class="item-row" data-item-id="@item.Id">
+                            <td>
+                                <div class="d-flex align-items-start gap-2">
+                                    @if (!string.IsNullOrWhiteSpace(item.ImageUrl))
+                                    {
+                                        <img src="@item.ImageUrl"
+                                             alt="@item.Name"
+                                             style="width: 44px; height: 44px; object-fit: cover;"
+                                             class="rounded border bg-light" />
+                                    }
 
-                            <div class="mt-1">
-                                @if (item.IsReturnRequired && !item.IsReturned)
+                                    <div>
+                                        <div>@item.Name</div>
+
+                                        <div class="mt-1">
+                                            @if (item.IsReturnRequired && !item.IsReturned)
+                                            {
+                                                <span class="badge bg-warning text-dark me-1">Return</span>
+                                            }
+
+                                            @if (item.IsReturned)
+                                            {
+                                                <span class="badge bg-danger me-1">Returned</span>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+
+                            <td class="text-center">
+                                <div class="qty-stepper" data-item-id="@item.Id">
+                                    <button type="button"
+                                            class="qty-btn qty-adjust-btn"
+                                            data-id="@item.Id"
+                                            data-delta="-1"
+                                            @(item.Quantity <= 1 ? "disabled=\"disabled\"" : "")>
+                                        −
+                                    </button>
+
+                                    <span class="qty-value" id="qty-value-@item.Id">@item.Quantity</span>
+
+                                    <button type="button"
+                                            class="qty-btn qty-adjust-btn"
+                                            data-id="@item.Id"
+                                            data-delta="1">
+                                        +
+                                    </button>
+                                </div>
+                            </td>
+
+                            <td>@item.Category</td>
+                            <td class="text-end text-nowrap">@item.EstimatedCost?.ToString("C")</td>
+                            <td class="text-end text-nowrap">@item.ActualCost?.ToString("C")</td>
+
+                            <td class="text-nowrap">
+                                @if (IsImageReceipt(item.PurchaseReceiptPath))
                                 {
-                                    <span class="badge bg-warning text-dark me-1">Return</span>
+                                    <a href="#"
+                                       data-bs-toggle="modal"
+                                       data-bs-target="#receiptPreviewModal"
+                                       data-receipt-src="@item.PurchaseReceiptPath"
+                                       data-receipt-title="@item.Name - Receipt"
+                                       class="receipt-preview-trigger">
+                                        <img src="@item.PurchaseReceiptPath"
+                                             alt="Receipt"
+                                             style="width: 44px; height: 44px; object-fit: cover;"
+                                             class="rounded border bg-light" />
+                                    </a>
                                 }
-
-                                @if (item.IsReturned)
+                                else if (!string.IsNullOrWhiteSpace(item.PurchaseReceiptPath))
                                 {
-                                    <span class="badge bg-danger me-1">Returned</span>
+                                    <a href="@item.PurchaseReceiptPath" target="_blank" class="btn btn-sm btn-outline-primary">
+                                        Receipt
+                                    </a>
                                 }
-                            </div>
-                        </div>
-                    </div>
-                </td>
+                                else
+                                {
+                                    <span class="text-muted">—</span>
+                                }
+                            </td>
 
-                <td class="text-center">
-                    <div class="qty-stepper" data-item-id="@item.Id">
-                        <button type="button"
-                                class="qty-btn qty-adjust-btn"
-                                data-id="@item.Id"
-                                data-delta="-1"
-                                @(item.Quantity <= 1 ? "disabled=\"disabled\"" : "")>
-                            −
-                        </button>
+                            <td class="text-nowrap">
+                                <div class="d-inline-flex gap-1">
+                                    <form asp-controller="Items" asp-action="MarkNeeded" asp-route-id="@item.Id" method="post" class="d-inline">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="btn btn-sm btn-outline-warning">-</button>
+                                    </form>
 
-                        <span class="qty-value" id="qty-value-@item.Id">@item.Quantity</span>
-
-                        <button type="button"
-                                class="qty-btn qty-adjust-btn"
-                                data-id="@item.Id"
-                                data-delta="1">
-                            +
-                        </button>
-                    </div>
-                </td>
-                <td>@item.Category</td>
-                <td class="text-end text-nowrap">@item.EstimatedCost?.ToString("C")</td>
-                <td class="text-end text-nowrap">@item.ActualCost?.ToString("C")</td>
-
-                <td class="text-nowrap">
-                    @if (IsImageReceipt(item.PurchaseReceiptPath))
-                    {
-                        <a href="#"
-                            data-bs-toggle="modal"
-                            data-bs-target="#receiptPreviewModal"
-                            data-receipt-src="@item.PurchaseReceiptPath"
-                            data-receipt-title="@item.Name - Receipt"
-                            class="receipt-preview-trigger">
-                                <img src="@item.PurchaseReceiptPath"
-                                    alt="Receipt"
-                                    style="width: 44px; height: 44px; object-fit: cover;"
-                                    class="rounded border bg-light" />
-                        </a>
+                                    <a asp-controller="Items" asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary">Edit</a>
+                                    <a asp-controller="Items" asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-secondary">Details</a>
+                                </div>
+                            </td>
+                        </tr>
                     }
-                    else if (!string.IsNullOrWhiteSpace(item.PurchaseReceiptPath))
-                    {
-                        <a href="@item.PurchaseReceiptPath" target="_blank" class="btn btn-sm btn-outline-primary">
-                            Receipt
-                        </a>
-                    }
-                    else
-                    {
-                        <span class="text-muted">—</span>
-                    }
-                </td>
-
-                <td class="text-nowrap">
-                    <div class="d-inline-flex gap-1">
-                        <form asp-controller="Items" asp-action="MarkNeeded" asp-route-id="@item.Id" method="post" class="d-inline">
-                            @Html.AntiForgeryToken()
-                            <button type="submit" class="btn btn-sm btn-outline-warning">
-                                -
-                            </button>
-                        </form>
-
-                        <a asp-controller="Items" asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary">Edit</a>
-                        <a asp-controller="Items" asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-secondary">Details</a>
-                    </div>
-                </td>
-            </tr>
-        }
-        </tbody>
-    </table>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
 }
 else
 {
@@ -364,115 +406,130 @@ else
 
 <!-- ===================== RETURN QUEUE ===================== -->
 <h2>Return Queue (@returnItems.Count)</h2>
-@if (returnItems.Any())
+@if (returnGroups.Any())
 {
-    <table class="table table-striped table-hover align-middle">
-        <thead>
-            <tr>
-                <th>Name</th>
-                <th>Qty</th>
-                <th>Category</th>
-                <th>Return Location</th>
-                <th>Return By</th>
-                <th>Receipt</th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-        @foreach (var item in returnItems)
-        {
-            <tr tabindex="0" class="item-row" data-item-id="@item.Id">
-                <td>
-                    <div class="d-flex align-items-start gap-2">
-                        @if (!string.IsNullOrWhiteSpace(item.ImageUrl))
-                        {
-                            <img src="@item.ImageUrl"
-                                 alt="@item.Name"
-                                 style="width: 44px; height: 44px; object-fit: cover;"
-                                 class="rounded border bg-light" />
-                        }
+    @foreach (var group in returnGroups)
+    {
+        <div class="card shadow-sm mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">@group.Key</h5>
+                <span class="badge bg-secondary">@group.Count()</span>
+            </div>
 
-                        <div>
-                            <div>@item.Name</div>
-
-                            <div class="mt-1">
-                                <span class="badge bg-warning text-dark me-1">Return</span>
-                            </div>
-                        </div>
-                    </div>
-                </td>
-
-                <td class="text-center">
-                    <div class="qty-stepper" data-item-id="@item.Id">
-                        <button type="button"
-                                class="qty-btn qty-adjust-btn"
-                                data-id="@item.Id"
-                                data-delta="-1"
-                                @(item.Quantity <= 1 ? "disabled=\"disabled\"" : "")>
-                            −
-                        </button>
-
-                        <span class="qty-value" id="qty-value-@item.Id">@item.Quantity</span>
-
-                        <button type="button"
-                                class="qty-btn qty-adjust-btn"
-                                data-id="@item.Id"
-                                data-delta="1">
-                            +
-                        </button>
-                    </div>
-                </td>
-                <td>@item.Category</td>
-                <td>@item.ReturnLocation</td>
-                <td class="text-nowrap">@item.ReturnByDate?.ToString("d")</td>
-
-                <td class="text-nowrap">
-                    @if (IsImageReceipt(item.ReturnReceiptPath))
+            <div class="card-body p-0">
+                <table class="table table-striped table-hover align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th class="text-center">Qty</th>
+                            <th>Category</th>
+                            <th>Return Location</th>
+                            <th class="text-nowrap">Return By</th>
+                            <th class="text-nowrap">Receipt</th>
+                            <th class="text-nowrap"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    @foreach (var item in group)
                     {
-                        <a href="#"
-                        data-bs-toggle="modal"
-                        data-bs-target="#receiptPreviewModal"
-                        data-receipt-src="@item.ReturnReceiptPath"
-                        data-receipt-title="@item.Name - Return Receipt"
-                        class="receipt-preview-trigger">
-                            <img src="@item.ReturnReceiptPath"
-                                alt="Return Receipt"
-                                style="width: 44px; height: 44px; object-fit: cover;"
-                                class="rounded border bg-light" />
-                        </a>
-                    }
-                    else if (!string.IsNullOrWhiteSpace(item.ReturnReceiptPath))
-                    {
-                        <a href="@item.ReturnReceiptPath" target="_blank" class="btn btn-sm btn-outline-danger">
-                            Receipt
-                        </a>
-                    }
-                    else
-                    {
-                        <span class="text-muted">—</span>
-                    }
-                </td>
+                        <tr tabindex="0" class="item-row" data-item-id="@item.Id">
+                            <td>
+                                <div class="d-flex align-items-start gap-2">
+                                    @if (!string.IsNullOrWhiteSpace(item.ImageUrl))
+                                    {
+                                        <img src="@item.ImageUrl"
+                                             alt="@item.Name"
+                                             style="width: 44px; height: 44px; object-fit: cover;"
+                                             class="rounded border bg-light" />
+                                    }
 
-                <td class="text-nowrap">
-                    <div class="d-inline-flex gap-1">
-                        <a asp-controller="Items" asp-action="ReturnInfo" asp-route-id="@item.Id" class="btn btn-sm btn-outline-warning">
-                            Return Info
-                        </a>
+                                    <div>
+                                        <div>@item.Name</div>
 
-                        <form asp-controller="Items" asp-action="MarkReturned" asp-route-id="@item.Id" method="post" class="d-inline">
-                            @Html.AntiForgeryToken()
-                            <button type="submit" class="btn btn-sm btn-danger">Mark Returned</button>
-                        </form>
+                                        <div class="mt-1">
+                                            @if (item.IsReturnRequired && !item.IsReturned)
+                                            {
+                                                <span class="badge bg-warning text-dark me-1">Return</span>
+                                            }
 
-                        <a asp-controller="Items" asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-secondary">
-                            Details
-                        </a>
-                    </div>
-                </td>
-            </tr>
-        }
-        </tbody>
-    </table>
+                                            @if (item.IsReturned)
+                                            {
+                                                <span class="badge bg-danger me-1">Returned</span>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+
+                            <td class="text-center">
+                                <div class="qty-stepper" data-item-id="@item.Id">
+                                    <button type="button"
+                                            class="qty-btn qty-adjust-btn"
+                                            data-id="@item.Id"
+                                            data-delta="-1"
+                                            @(item.Quantity <= 1 ? "disabled=\"disabled\"" : "")>
+                                        −
+                                    </button>
+
+                                    <span class="qty-value" id="qty-value-@item.Id">@item.Quantity</span>
+
+                                    <button type="button"
+                                            class="qty-btn qty-adjust-btn"
+                                            data-id="@item.Id"
+                                            data-delta="1">
+                                        +
+                                    </button>
+                                </div>
+                            </td>
+
+                            <td>@item.Category</td>
+                            <td>@item.ReturnLocation</td>
+                            <td class="text-nowrap">@item.ReturnByDate?.ToString("d")</td>
+
+                            <td class="text-nowrap">
+                                @if (IsImageReceipt(item.ReturnReceiptPath))
+                                {
+                                    <a href="#"
+                                       data-bs-toggle="modal"
+                                       data-bs-target="#receiptPreviewModal"
+                                       data-receipt-src="@item.ReturnReceiptPath"
+                                       data-receipt-title="@item.Name - Return Receipt"
+                                       class="receipt-preview-trigger">
+                                        <img src="@item.ReturnReceiptPath"
+                                             alt="Receipt"
+                                             style="width: 44px; height: 44px; object-fit: cover;"
+                                             class="rounded border bg-light" />
+                                    </a>
+                                }
+                                else if (!string.IsNullOrWhiteSpace(item.ReturnReceiptPath))
+                                {
+                                    <a href="@item.ReturnReceiptPath" target="_blank" class="btn btn-sm btn-outline-primary">
+                                        Return Receipt
+                                    </a>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">—</span>
+                                }
+                            </td>
+
+                            <td class="text-nowrap">
+                                <div class="d-inline-flex gap-1">
+                                    <a asp-controller="Items" asp-action="ReturnInfo" asp-route-id="@item.Id" class="btn btn-sm btn-outline-warning">Return Info</a>
+                                    <form asp-controller="Items" asp-action="MarkReturned" asp-route-id="@item.Id" method="post" class="d-inline">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="btn btn-sm btn-danger">Mark Returned</button>
+                                    </form>
+                                    <a asp-controller="Items" asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-secondary">Details</a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
 }
 else
 {
@@ -481,101 +538,113 @@ else
 
 <!-- ===================== RETURNED ITEMS ===================== -->
 <h2>Returned Items (@returnedItems.Count)</h2>
-@if (returnedItems.Any())
+@if (returnedGroups.Any())
 {
-    <table class="table table-striped table-hover align-middle">
-        <thead>
-            <tr>
-                <th>Name</th>
-                <th>Qty</th>
-                <th>Category</th>
-                <th>Returned At</th>
-                <th>Receipt</th>
-                <th>Receipt Status</th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-        @foreach (var item in returnedItems)
-        {
-            <tr tabindex="0" class="item-row" data-item-id="@item.Id">
-                <td>
-                    <div class="d-flex align-items-start gap-2">
-                        @if (!string.IsNullOrWhiteSpace(item.ImageUrl))
-                        {
-                            <img src="@item.ImageUrl"
-                                 alt="@item.Name"
-                                 style="width: 44px; height: 44px; object-fit: cover;"
-                                 class="rounded border bg-light" />
-                        }
+    @foreach (var group in returnedGroups)
+    {
+        <div class="card shadow-sm mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">@group.Key</h5>
+                <span class="badge bg-secondary">@group.Count()</span>
+            </div>
 
-                        <div>
-                            <div>@item.Name</div>
-
-                            <div class="mt-1">
-                                <span class="badge bg-danger me-1">Returned</span>
-                            </div>
-                        </div>
-                    </div>
-                </td>
-
-                <td>@item.Quantity</td>
-                <td>@item.Category</td>
-                <td class="text-nowrap">@item.ReturnedAt?.ToLocalTime().ToString("g")</td>
-
-                <td class="text-nowrap">
-                    @if (IsImageReceipt(item.ReturnReceiptPath))
+            <div class="card-body p-0">
+                <table class="table table-striped table-hover align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th class="text-center">Qty</th>
+                            <th>Category</th>
+                            <th class="text-nowrap">Returned At</th>
+                            <th class="text-nowrap">Receipt</th>
+                            <th class="text-nowrap">Receipt Status</th>
+                            <th class="text-nowrap"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    @foreach (var item in group)
                     {
-                        <a href="@item.ReturnReceiptPath" target="_blank">
-                            <img src="@item.ReturnReceiptPath"
-                                 alt="Return Receipt"
-                                 style="width: 44px; height: 44px; object-fit: cover;"
-                                 class="rounded border bg-light" />
-                        </a>
-                    }
-                    else if (!string.IsNullOrWhiteSpace(item.ReturnReceiptPath))
-                    {
-                        <a href="#"
-                            data-bs-toggle="modal"
-                            data-bs-target="#receiptPreviewModal"
-                            data-receipt-src="@item.ReturnReceiptPath"
-                            data-receipt-title="@item.Name - Return Receipt"
-                            class="receipt-preview-trigger">
-                            Receipt
-                        </a>
-                    }
-                    else
-                    {
-                        <span class="text-muted">—</span>
-                    }
-                </td>
+                        <tr tabindex="0" class="item-row" data-item-id="@item.Id">
+                            <td>
+                                <div class="d-flex align-items-start gap-2">
+                                    @if (!string.IsNullOrWhiteSpace(item.ImageUrl))
+                                    {
+                                        <img src="@item.ImageUrl"
+                                             alt="@item.Name"
+                                             style="width: 44px; height: 44px; object-fit: cover;"
+                                             class="rounded border bg-light" />
+                                    }
 
-                <td class="text-nowrap">
-                    @if (!string.IsNullOrWhiteSpace(item.ReturnReceiptPath))
-                    {
-                        <span class="text-success fw-semibold">Uploaded</span>
-                    }
-                    else
-                    {
-                        <span class="text-warning fw-semibold">Missing</span>
-                    }
-                </td>
+                                    <div>
+                                        <div>@item.Name</div>
 
-                <td>
-                    <div class="d-inline-flex gap-1">
-                        <a asp-controller="Items" asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-secondary">
-                            Details
-                        </a>
+                                        <div class="mt-1">
+                                            <span class="badge bg-danger me-1">Returned</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
 
-                        <a asp-controller="Items" asp-action="ReturnInfo" asp-route-id="@item.Id" class="btn btn-sm btn-outline-warning">
-                            Return Info
-                        </a>
-                    </div>
-                </td>
-            </tr>
-        }
-        </tbody>
-    </table>
+                            <td class="text-center text-nowrap">@item.Quantity</td>
+                            <td>@item.Category</td>
+                            <td class="text-nowrap">@item.ReturnedAt?.ToLocalTime().ToString("g")</td>
+
+                            <td class="text-nowrap">
+                                @if (IsImageReceipt(item.ReturnReceiptPath))
+                                {
+                                    <a href="#"
+                                       data-bs-toggle="modal"
+                                       data-bs-target="#receiptPreviewModal"
+                                       data-receipt-src="@item.ReturnReceiptPath"
+                                       data-receipt-title="@item.Name - Return Receipt"
+                                       class="receipt-preview-trigger">
+                                        <img src="@item.ReturnReceiptPath"
+                                             alt="Return Receipt"
+                                             style="width: 44px; height: 44px; object-fit: cover;"
+                                             class="rounded border bg-light" />
+                                    </a>
+                                }
+                                else if (!string.IsNullOrWhiteSpace(item.ReturnReceiptPath))
+                                {
+                                    <a href="@item.ReturnReceiptPath" target="_blank" class="btn btn-sm btn-outline-danger">
+                                        Receipt
+                                    </a>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">—</span>
+                                }
+                            </td>
+
+                            <td class="text-nowrap">
+                                @if (!string.IsNullOrWhiteSpace(item.ReturnReceiptPath))
+                                {
+                                    <span class="text-success fw-semibold">Uploaded</span>
+                                }
+                                else
+                                {
+                                    <span class="text-warning fw-semibold">Missing</span>
+                                }
+                            </td>
+
+                            <td class="text-nowrap">
+                                <div class="d-inline-flex gap-1">
+                                    <a asp-controller="Items" asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-secondary">
+                                        Details
+                                    </a>
+
+                                    <a asp-controller="Items" asp-action="ReturnInfo" asp-route-id="@item.Id" class="btn btn-sm btn-outline-warning">
+                                        Return Info
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
 }
 else
 {
