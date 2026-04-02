@@ -337,6 +337,37 @@ namespace Art_BaBomb.Web.Controllers
             return _context.Items.Any(e => e.Id == id);
         }
 
+        // POST: Update Description
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UpdateDescription(int id, string? description)
+        {
+            var item = await _context.Items.FindAsync(id);
+
+            if (item == null)
+            {
+                return NotFound();
+            }
+
+            item.Description = string.IsNullOrWhiteSpace(description)
+                ? null
+                : description.Trim();
+
+            await _context.SaveChangesAsync();
+
+            if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+            {
+                return Json(new
+                {
+                    success = true,
+                    itemId = item.Id,
+                    description = item.Description ?? ""
+                });
+            }
+
+            return RedirectToAction("Details", "Projects", new { id = item.ProjectId });
+        }
+
         // GET: Items/PurchaseReceipt/5
         public async Task<IActionResult> PurchaseReceipt(int? id)
         {
@@ -435,6 +466,7 @@ namespace Art_BaBomb.Web.Controllers
             return true;
         }
 
+        // POST: Delete Purchase Receipt
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeletePurchaseReceipt(int id)
@@ -604,6 +636,7 @@ namespace Art_BaBomb.Web.Controllers
             return View(item);
         }
 
+        // POST: Mark as Returned
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> MarkReturned(int id)

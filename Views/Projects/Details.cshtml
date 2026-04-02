@@ -177,22 +177,74 @@
                                              class="rounded border bg-light" />
                                     }
 
-                                    <div>
+                                    <div class="flex-grow-1">
                                         <div>@item.Name</div>
 
                                         <div class="mt-1">
                                             @if (item.IsReturnRequired && !item.IsReturned)
                                             {
                                                 <span class="badge bg-warning text-dark me-1">Return</span>
-                                            }
+                                            }   
 
                                             @if (item.IsReturned)
                                             {
                                                 <span class="badge bg-danger me-1">Returned</span>
                                             }
                                         </div>
+
+                                        <div class="small text-muted mt-1" id="description-display-@item.Id">
+                                            @if (string.IsNullOrWhiteSpace(item.Description))
+                                            {
+                                                <span class="fst-italic">No notes</span>
+                                            }
+                                            else
+                                            {
+                                            @item.Description
+                                            }
+                                        </div>
+
+                                        <div class="mt-1 d-none" id="description-editor-@item.Id">
+                                            <textarea class="form-control form-control-sm mb-2 inline-description-input"
+                                                    id="description-input-@item.Id"
+                                                    rows="2">@(item.Description ?? "")</textarea>
+
+                                            <div class="d-flex gap-1">
+                                                <button type="button"
+                                                        class="btn btn-sm btn-primary save-description-btn"
+                                                        data-id="@item.Id">
+                                                    Save
+                                                </button>
+
+                                                <button type="button"
+                                                        class="btn btn-sm btn-outline-secondary cancel-description-btn"
+                                                        data-id="@item.Id">
+                                                    Cancel
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        <div class="mt-1">
+                                            @if (!string.IsNullOrWhiteSpace(item.Description))
+                                            {
+                                                <button type="button"
+                                                        class="btn btn-sm btn-link p-0 edit-description-btn"
+                                                        data-id="@item.Id">
+                                                    ✏️ Edit
+                                                </button>
+                                            }
+                                            else
+                                            {
+                                            <button type="button"
+                                                    class="btn btn-sm btn-link p-0 edit-description-btn text-muted"
+                                                    data-id="@item.Id">
+                                                + Notes
+                                            </button>
+                                            }
+                                        </div>
                                     </div>
+
                                 </div>
+
                             </td>
 
                             <td class="text-center">
@@ -310,21 +362,72 @@ else
                                              class="rounded border bg-light" />
                                     }
 
-                                    <div>
+                                    <div class="flex-grow-1">
                                         <div>@item.Name</div>
 
                                         <div class="mt-1">
                                             @if (item.IsReturnRequired && !item.IsReturned)
                                             {
                                                 <span class="badge bg-warning text-dark me-1">Return</span>
-                                            }
+                                            }   
 
                                             @if (item.IsReturned)
                                             {
                                                 <span class="badge bg-danger me-1">Returned</span>
                                             }
                                         </div>
+
+                                        <div class="small text-muted mt-1" id="description-display-@item.Id">
+                                            @if (string.IsNullOrWhiteSpace(item.Description))
+                                            {
+                                                <span class="fst-italic">No notes</span>
+                                            }
+                                            else
+                                            {
+                                            @item.Description
+                                            }
+                                        </div>
+
+                                        <div class="mt-1 d-none" id="description-editor-@item.Id">
+                                            <textarea class="form-control form-control-sm mb-2 inline-description-input"
+                                                    id="description-input-@item.Id"
+                                                    rows="2">@(item.Description ?? "")</textarea>
+
+                                            <div class="d-flex gap-1">
+                                                <button type="button"
+                                                        class="btn btn-sm btn-primary save-description-btn"
+                                                        data-id="@item.Id">
+                                                    Save
+                                                </button>
+
+                                                <button type="button"
+                                                        class="btn btn-sm btn-outline-secondary cancel-description-btn"
+                                                        data-id="@item.Id">
+                                                    Cancel
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        <div class="mt-1">
+                                            @if (!string.IsNullOrWhiteSpace(item.Description))
+                                            {
+                                                <button type="button"
+                                                        class="btn btn-sm btn-link p-0 edit-description-btn"
+                                                        data-id="@item.Id">
+                                                    ✏️ Edit
+                                                </button>
+                                            }
+                                            else
+                                            {
+                                            <button type="button"
+                                                    class="btn btn-sm btn-link p-0 edit-description-btn text-muted"
+                                                    data-id="@item.Id">
+                                                + Notes
+                                            </button>
+                                            }
+                                        </div>
                                     </div>
+
                                 </div>
                             </td>
 
@@ -443,21 +546,72 @@ else
                                              class="rounded border bg-light" />
                                     }
 
-                                    <div>
+                                    <div class="flex-grow-1">
                                         <div>@item.Name</div>
 
                                         <div class="mt-1">
                                             @if (item.IsReturnRequired && !item.IsReturned)
                                             {
                                                 <span class="badge bg-warning text-dark me-1">Return</span>
-                                            }
+                                            }   
 
                                             @if (item.IsReturned)
                                             {
                                                 <span class="badge bg-danger me-1">Returned</span>
                                             }
                                         </div>
+
+                                        <div class="small text-muted mt-1" id="description-display-@item.Id">
+                                            @if (string.IsNullOrWhiteSpace(item.Description))
+                                            {
+                                                <span class="fst-italic">No notes</span>
+                                            }
+                                            else
+                                            {
+                                            @item.Description
+                                            }
+                                        </div>
+
+                                        <div class="mt-1 d-none" id="description-editor-@item.Id">
+                                            <textarea class="form-control form-control-sm mb-2 inline-description-input"
+                                                    id="description-input-@item.Id"
+                                                    rows="2">@(item.Description ?? "")</textarea>
+
+                                            <div class="d-flex gap-1">
+                                                <button type="button"
+                                                        class="btn btn-sm btn-primary save-description-btn"
+                                                        data-id="@item.Id">
+                                                    Save
+                                                </button>
+
+                                                <button type="button"
+                                                        class="btn btn-sm btn-outline-secondary cancel-description-btn"
+                                                        data-id="@item.Id">
+                                                    Cancel
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        <div class="mt-1">
+                                            @if (!string.IsNullOrWhiteSpace(item.Description))
+                                            {
+                                                <button type="button"
+                                                        class="btn btn-sm btn-link p-0 edit-description-btn"
+                                                        data-id="@item.Id">
+                                                    ✏️ Edit
+                                                </button>
+                                            }
+                                            else
+                                            {
+                                            <button type="button"
+                                                    class="btn btn-sm btn-link p-0 edit-description-btn text-muted"
+                                                    data-id="@item.Id">
+                                                + Notes
+                                            </button>
+                                            }
+                                        </div>
                                     </div>
+
                                 </div>
                             </td>
 
@@ -575,13 +729,72 @@ else
                                              class="rounded border bg-light" />
                                     }
 
-                                    <div>
+                                    <div class="flex-grow-1">
                                         <div>@item.Name</div>
 
                                         <div class="mt-1">
-                                            <span class="badge bg-danger me-1">Returned</span>
+                                            @if (item.IsReturnRequired && !item.IsReturned)
+                                            {
+                                                <span class="badge bg-warning text-dark me-1">Return</span>
+                                            }   
+
+                                            @if (item.IsReturned)
+                                            {
+                                                <span class="badge bg-danger me-1">Returned</span>
+                                            }
+                                        </div>
+
+                                        <div class="small text-muted mt-1" id="description-display-@item.Id">
+                                            @if (string.IsNullOrWhiteSpace(item.Description))
+                                            {
+                                                <span class="fst-italic">No notes</span>
+                                            }
+                                            else
+                                            {
+                                            @item.Description
+                                            }
+                                        </div>
+
+                                        <div class="mt-1 d-none" id="description-editor-@item.Id">
+                                            <textarea class="form-control form-control-sm mb-2 inline-description-input"
+                                                    id="description-input-@item.Id"
+                                                    rows="2">@(item.Description ?? "")</textarea>
+
+                                            <div class="d-flex gap-1">
+                                                <button type="button"
+                                                        class="btn btn-sm btn-primary save-description-btn"
+                                                        data-id="@item.Id">
+                                                    Save
+                                                </button>
+
+                                                <button type="button"
+                                                        class="btn btn-sm btn-outline-secondary cancel-description-btn"
+                                                        data-id="@item.Id">
+                                                    Cancel
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        <div class="mt-1">
+                                            @if (!string.IsNullOrWhiteSpace(item.Description))
+                                            {
+                                                <button type="button"
+                                                        class="btn btn-sm btn-link p-0 edit-description-btn"
+                                                        data-id="@item.Id">
+                                                    ✏️ Edit
+                                                </button>
+                                            }
+                                            else
+                                            {
+                                            <button type="button"
+                                                    class="btn btn-sm btn-link p-0 edit-description-btn text-muted"
+                                                    data-id="@item.Id">
+                                                + Notes
+                                            </button>
+                                            }
                                         </div>
                                     </div>
+
                                 </div>
                             </td>
 
@@ -779,6 +992,106 @@ else
                     triggerQtyUpdate(activeItemId, -1);
                     e.preventDefault();
                 }
+            });
+
+            document.querySelectorAll(".edit-description-btn").forEach(button => {
+                button.addEventListener("click", function () {
+                    const itemId = this.dataset.id;
+                    const display = document.getElementById(`description-display-${itemId}`);
+                    const editor = document.getElementById(`description-editor-${itemId}`);
+                    const editBtn = this;
+
+                    if (display) display.classList.add("d-none");
+                    if (editor) editor.classList.remove("d-none");
+                    editBtn.classList.add("d-none");
+                });
+            });
+
+            document.querySelectorAll(".cancel-description-btn").forEach(button => {
+                button.addEventListener("click", function () {
+                    const itemId = this.dataset.id;
+                    const display = document.getElementById(`description-display-${itemId}`);
+                    const editor = document.getElementById(`description-editor-${itemId}`);
+                    const editBtn = document.querySelector(`.edit-description-btn[data-id="${itemId}"]`);
+                    const input = document.getElementById(`description-input-${itemId}`);
+
+                    if (editor) editor.classList.add("d-none");
+                    if (display) display.classList.remove("d-none");
+                    if (editBtn) editBtn.classList.remove("d-none");
+
+                    if (input && display) {
+                        input.value = display.textContent.trim() === "No notes"
+                            ? ""
+                            : display.textContent.trim();
+                    }
+                });
+            });
+
+            document.querySelectorAll(".save-description-btn").forEach(button => {
+                button.addEventListener("click", async function () {
+                    const itemId = this.dataset.id;
+                    const input = document.getElementById(`description-input-${itemId}`);
+                    const display = document.getElementById(`description-display-${itemId}`);
+                    const editor = document.getElementById(`description-editor-${itemId}`);
+                    const editBtn = document.querySelector(`.edit-description-btn[data-id="${itemId}"]`);
+                    const tokenInput = document.querySelector('#antiForgeryForm input[name="__RequestVerificationToken"]');
+
+                    if (!input || !display || !tokenInput) {
+                        return;
+                    }
+
+                    try {
+                        const response = await fetch('@Url.Action("UpdateDescription", "Items")', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+                                'RequestVerificationToken': tokenInput.value,
+                                'X-Requested-With': 'XMLHttpRequest'
+                            },
+                            body: new URLSearchParams({
+                                id: itemId,
+                                description: input.value
+                            })
+                        });
+
+                        if (!response.ok) {
+                            throw new Error("Description update failed.");
+                        }
+
+                        const result = await response.json();
+
+                        if (result.success) {
+                            display.innerHTML = result.description && result.description.trim() !== ""
+                                ? result.description
+                                : '<span class="fst-italic">No notes</span>';
+
+                            display.classList.remove("d-none");
+                            editor.classList.add("d-none");
+                            if (editBtn) editBtn.classList.remove("d-none");
+
+                            display.classList.add("text-success");
+                            setTimeout(() => display.classList.remove("text-success"), 250);
+                        }
+                    } catch (error) {
+                        console.error(error);
+                        alert("Could not update notes. Please try again.");
+                    }
+                });
+            });
+
+            document.querySelectorAll(".inline-description-input").forEach(input => {
+                input.addEventListener("keydown", function (e) {
+                    if (e.key === "Enter" && !e.shiftKey) {
+                        e.preventDefault();
+
+                        const itemId = this.id.replace("description-input-", "");
+                        const saveButton = document.querySelector(`.save-description-btn[data-id="${itemId}"]`);
+
+                        if (saveButton) {
+                            saveButton.click();
+                        }
+                    }
+                });
             });
         });
     </script>
