@@ -71,7 +71,18 @@
 
                     <div class="mb-3">
                         <label class="form-label">Return Receipt</label>
-                        <input type="file" id="returnReceiptFile" name="returnReceiptFile" class="form-control" accept=".jpg,.jpeg,.png,.webp,.pdf" />
+
+                        <div id="returnReceiptDropZone" class="receipt-drop-zone" role="button" tabindex="0">
+                            <div class="fw-semibold">Drag & drop receipt here</div>
+                            <div class="text-muted small">or click to choose a file</div>
+
+                            <input type="file"
+                                id="returnReceiptFile"
+                                name="returnReceiptFile"
+                                class="d-none"
+                                accept=".jpg,.jpeg,.png,.webp,.pdf" />
+                        </div>
+
                         @Html.ValidationMessage("returnReceiptFile", new { @class = "text-danger d-block mt-1" })
                         <div id="returnReceiptSelectedFile" class="form-text">Upload a return receipt image or PDF. Max file size: 10 MB.</div>
                     </div>
@@ -144,10 +155,15 @@
 
                     @if (returnReceiptIsImage)
                     {
-                        <a href="@Model.ReturnReceiptPath" target="_blank">
+                        <a href="#"
+                        data-bs-toggle="modal"
+                        data-bs-target="#receiptPreviewModal"
+                        data-receipt-src="@Model.ReturnReceiptPath"
+                        data-receipt-title="@Model.Name - Return Receipt"
+                        class="receipt-preview-trigger">
                             <img src="@Model.ReturnReceiptPath"
-                                 alt="Return Receipt"
-                                 class="img-fluid rounded border mb-3" />
+                                alt="Return Receipt"
+                                class="img-fluid rounded border mb-3" />
                         </a>
                     }
 
@@ -180,15 +196,47 @@
     }
 
     <script>
-        const returnInput = document.getElementById('returnReceiptFile');
-        const returnLabel = document.getElementById('returnReceiptSelectedFile');
+        document.addEventListener("DOMContentLoaded", function () {
+            const returnInput = document.getElementById("returnReceiptFile");
+            const returnLabel = document.getElementById("returnReceiptSelectedFile");
+            const returnDropZone = document.getElementById("returnReceiptDropZone");
 
-        if (returnInput && returnLabel) {
-            returnInput.addEventListener('change', function () {
-                returnLabel.textContent = this.files.length > 0
-                    ? `Selected: ${this.files[0].name}`
-                    : 'Upload a return receipt image or PDF. Max file size: 10 MB.';
-            });
-        }
+            if (returnInput && returnLabel && returnDropZone) {
+                returnDropZone.addEventListener("click", function () {
+                    returnInput.click();
+                });
+
+                returnInput.addEventListener("change", function () {
+                    returnLabel.textContent = this.files.length > 0
+                        ? `Selected: ${this.files[0].name}`
+                        : "Upload a return receipt image or PDF. Max file size: 10 MB.";
+                });
+
+                ["dragenter", "dragover"].forEach(eventName => {
+                    returnDropZone.addEventListener(eventName, function (e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        returnDropZone.classList.add("dragover");
+                    });
+                });
+
+                ["dragleave", "drop"].forEach(eventName => {
+                    returnDropZone.addEventListener(eventName, function (e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        returnDropZone.classList.remove("dragover");
+                    });
+                });
+
+                returnDropZone.addEventListener("drop", function (e) {
+                    const files = e.dataTransfer.files;
+                    if (files && files.length > 0) {
+                        returnInput.files = files;
+                        returnLabel.textContent = `Selected: ${files[0].name}`;
+                    }
+                });
+            }
+        });
+
     </script>
 }

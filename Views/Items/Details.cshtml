@@ -153,12 +153,18 @@ else if (Model.IsReturnRequired)
                 {
                     @if (purchaseReceiptIsImage)
                     {
-                        <a href="@Model.PurchaseReceiptPath" target="_blank">
+                        <a href="#"
+                        data-bs-toggle="modal"
+                        data-bs-target="#receiptPreviewModal"
+                        data-receipt-src="@Model.PurchaseReceiptPath"
+                        data-receipt-title="@Model.Name - Purchase Receipt"
+                        class="receipt-preview-trigger">
                             <img src="@Model.PurchaseReceiptPath"
-                                 alt="Purchase Receipt"
-                                 class="img-fluid rounded border mb-3" />
+                                alt="Purchase Receipt"
+                                class="img-fluid rounded border mb-3" />
                         </a>
                     }
+
 
                     <a href="@Model.PurchaseReceiptPath" target="_blank" class="btn btn-sm btn-outline-primary">
                         View Purchase Receipt
@@ -193,10 +199,15 @@ else if (Model.IsReturnRequired)
                 {
                     @if (returnReceiptIsImage)
                     {
-                        <a href="@Model.ReturnReceiptPath" target="_blank">
+                        <a href="#"
+                        data-bs-toggle="modal"
+                        data-bs-target="#receiptPreviewModal"
+                        data-receipt-src="@Model.ReturnReceiptPath"
+                        data-receipt-title="@Model.Name - Return Receipt"
+                        class="receipt-preview-trigger">
                             <img src="@Model.ReturnReceiptPath"
-                                 alt="Return Receipt"
-                                 class="img-fluid rounded border mb-3" />
+                                alt="Return Receipt"
+                                class="img-fluid rounded border mb-3" />
                         </a>
                     }
 
@@ -272,3 +283,4 @@ else if (Model.IsReturnRequired)
         </div>
     </div>
 </div>
+
