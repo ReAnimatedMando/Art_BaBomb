@@ -111,6 +111,10 @@ body {
   min-width: 220px;
 }
 
+.item-row.overdue {
+  background-color: #fff5f5 !important;
+}
+
 .receipt-drop-zone {
   border: 2px dashed #ced4da;
   border-radius: 0.5rem;
@@ -161,4 +165,9 @@ body {
 
 .text-success {
   transition: color 0.2s ease;
+}
+
+.badge {
+  font-weight: 500;
+  letter-spacing: 0.02em;
 }

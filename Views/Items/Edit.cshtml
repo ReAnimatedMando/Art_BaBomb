@@ -103,44 +103,47 @@
         <!-- RIGHT SIDE: RECEIPTS -->
         <div class="col-lg-5">
 
-            <!-- PURCHASE RECEIPT -->
-            <div class="card shadow-sm">
-                <div class="card-body">
-                    <h5 class="card-title mb-3">Purchase Receipt</h5>
+        <!-- PURCHASE RECEIPT -->
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title mb-3">Purchase Receipt</h5>
 
-                    <div class="mb-3">
-                        <input type="file" name="purchaseReceiptFile" class="form-control" accept=".jpg,.jpeg,.png,.webp,.pdf" />
-                        @Html.ValidationMessage("purchaseReceiptFile", new { @class = "text-danger d-block mt-1" })
-                        <div class="form-text">Upload purchase receipt (image or PDF)</div>
-                    </div>
-
-                    @if (hasPurchaseReceipt)
-                    {
-                        @if (purchaseIsImage)
-                        {
-                            <a href="@Model.PurchaseReceiptPath" target="_blank">
-                                <img src="@Model.PurchaseReceiptPath"
-                                 class="img-fluid rounded border mb-3" />
-                            </a>
-                        }
-
-                        <a href="@Model.PurchaseReceiptPath" target="_blank" class="btn btn-sm btn-outline-primary">
-                            View Receipt
-                        </a>
-
-                        <div class="small text-muted mt-2">
-                            @Model.PurchaseReceiptFileName
-                        </div>
-                    }
-                    else
-                    {
-                        <p class="text-muted mb-0">No purchase receipt uploaded.</p>
-                    }
+                <div class="mb-3">
+                    <input type="file" name="purchaseReceiptFile" class="form-control" accept=".jpg,.jpeg,.png,.webp,.pdf" />
+                    @Html.ValidationMessage("purchaseReceiptFile", new { @class = "text-danger d-block mt-1" })
+                    <div class="form-text">Upload purchase receipt (image or PDF)</div>
                 </div>
-            </div>
 
+                @if (hasPurchaseReceipt)
+                {
+                    @if (purchaseIsImage)
+                    {
+                        <a href="#"
+                            data-bs-toggle="modal"
+                            data-bs-target="#receiptPreviewModal"
+                            data-receipt-src="@Model.PurchaseReceiptPath"
+                            data-receipt-title="@Model.Name - Receipt"
+                            class="receipt-preview-trigger">
+                            <img src="@Model.PurchaseReceiptPath"
+                                    alt="Receipt"
+                                    style="width: 44px; height: 44px; object-fit: cover;"
+                                    class="rounded border bg-light" />
+                        </a>
+                    }
+
+                    <div class="small text-muted mt-2">
+                        @Model.PurchaseReceiptFileName
+                    </div>
+                }
+                else
+                {
+                    <p class="text-muted mb-0">No purchase receipt uploaded.</p>
+                }
+            </div>
         </div>
+
     </div>
+</div>
 
 </form>
 @section Scripts {

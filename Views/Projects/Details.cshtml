@@ -503,7 +503,7 @@ else
                                 }
                                 else
                                 {
-                                    <span class="text-muted">—</span>
+                                    <span class="badge bg-warning text-dark me-1">No Receipt</span>
                                 }
                             </td>
 
@@ -559,7 +559,7 @@ else
                     <tbody>
                     @foreach (var item in group)
                     {
-                        <tr tabindex="0" class="item-row" data-item-id="@item.Id">
+                        <tr tabindex="0" class="item-row @(item.IsReturnRequired && item.ReturnByDate < DateTime.Today ? "overdue" : "")" data-item-id="@item.Id">
                             <td>
                                 <div class="d-flex align-items-start gap-2">
                                     <div class="item-thumb-slot">
@@ -590,6 +590,11 @@ else
                                             {
                                                 <span class="badge bg-warning text-dark me-1">Return</span>
                                             }   
+
+                                            @if (item.IsReturnRequired && item.ReturnByDate.HasValue && item.ReturnByDate < DateTime.Today)
+                                            {
+                                                <span class="badge bg-danger me-1">Overdue</span>
+                                            }
 
                                             @if (item.IsReturned)
                                             {
