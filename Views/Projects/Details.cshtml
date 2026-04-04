@@ -169,13 +169,25 @@
                         <tr tabindex="0" class="item-row" data-item-id="@item.Id">
                             <td>
                                 <div class="d-flex align-items-start gap-2">
-                                    @if (!string.IsNullOrWhiteSpace(item.ImageUrl))
-                                    {
-                                        <img src="@item.ImageUrl"
-                                             alt="@item.Name"
-                                             style="width: 44px; height: 44px; object-fit: cover;"
-                                             class="rounded border bg-light" />
-                                    }
+                                    <div class="item-thumb-slot">
+                                        @if (!string.IsNullOrWhiteSpace(item.ImageUrl))
+                                        {
+                                            <a href="#"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#itemPreviewModal"
+                                            data-item-src="@item.ImageUrl"
+                                            data-item-title="@item.Name"
+                                            class="item-preview-trigger">
+                                                <img src="@item.ImageUrl"
+                                                    alt="@item.Name"
+                                                    class="item-thumb rounded border bg-light" />
+                                            </a>
+                                            }
+                                            else
+                                            {
+                                                <div class="item-thumb item-thumb-placeholder rounded border bg-light"></div>
+                                            }
+                                    </div>
 
                                     <div class="flex-grow-1">
                                         <div>@item.Name</div>
@@ -199,7 +211,7 @@
                                             }
                                             else
                                             {
-                                            @item.Description
+                                                @item.Description
                                             }
                                         </div>
 
@@ -354,13 +366,25 @@ else
                         <tr tabindex="0" class="item-row" data-item-id="@item.Id">
                             <td>
                                 <div class="d-flex align-items-start gap-2">
-                                    @if (!string.IsNullOrWhiteSpace(item.ImageUrl))
-                                    {
-                                        <img src="@item.ImageUrl"
-                                             alt="@item.Name"
-                                             style="width: 44px; height: 44px; object-fit: cover;"
-                                             class="rounded border bg-light" />
-                                    }
+                                    <div class="item-thumb-slot">
+                                        @if (!string.IsNullOrWhiteSpace(item.ImageUrl))
+                                        {
+                                            <a href="#"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#itemPreviewModal"
+                                            data-item-src="@item.ImageUrl"
+                                            data-item-title="@item.Name"
+                                            class="item-preview-trigger">
+                                                <img src="@item.ImageUrl"
+                                                    alt="@item.Name"
+                                                    class="item-thumb rounded border bg-light" />
+                                            </a>
+                                            }
+                                            else
+                                            {
+                                                <div class="item-thumb item-thumb-placeholder rounded border bg-light"></div>
+                                            }
+                                    </div>
 
                                     <div class="flex-grow-1">
                                         <div>@item.Name</div>
@@ -384,7 +408,7 @@ else
                                             }
                                             else
                                             {
-                                            @item.Description
+                                                @item.Description
                                             }
                                         </div>
 
@@ -538,13 +562,25 @@ else
                         <tr tabindex="0" class="item-row" data-item-id="@item.Id">
                             <td>
                                 <div class="d-flex align-items-start gap-2">
-                                    @if (!string.IsNullOrWhiteSpace(item.ImageUrl))
-                                    {
-                                        <img src="@item.ImageUrl"
-                                             alt="@item.Name"
-                                             style="width: 44px; height: 44px; object-fit: cover;"
-                                             class="rounded border bg-light" />
-                                    }
+                                    <div class="item-thumb-slot">
+                                        @if (!string.IsNullOrWhiteSpace(item.ImageUrl))
+                                        {
+                                            <a href="#"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#itemPreviewModal"
+                                            data-item-src="@item.ImageUrl"
+                                            data-item-title="@item.Name"
+                                            class="item-preview-trigger">
+                                                <img src="@item.ImageUrl"
+                                                    alt="@item.Name"
+                                                    class="item-thumb rounded border bg-light" />
+                                            </a>
+                                            }
+                                            else
+                                            {
+                                                <div class="item-thumb item-thumb-placeholder rounded border bg-light"></div>
+                                            }
+                                    </div>
 
                                     <div class="flex-grow-1">
                                         <div>@item.Name</div>
@@ -568,7 +604,7 @@ else
                                             }
                                             else
                                             {
-                                            @item.Description
+                                                @item.Description
                                             }
                                         </div>
 
@@ -721,13 +757,25 @@ else
                         <tr tabindex="0" class="item-row" data-item-id="@item.Id">
                             <td>
                                 <div class="d-flex align-items-start gap-2">
-                                    @if (!string.IsNullOrWhiteSpace(item.ImageUrl))
-                                    {
-                                        <img src="@item.ImageUrl"
-                                             alt="@item.Name"
-                                             style="width: 44px; height: 44px; object-fit: cover;"
-                                             class="rounded border bg-light" />
-                                    }
+                                    <div class="item-thumb-slot">
+                                        @if (!string.IsNullOrWhiteSpace(item.ImageUrl))
+                                        {
+                                            <a href="#"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#itemPreviewModal"
+                                            data-item-src="@item.ImageUrl"
+                                            data-item-title="@item.Name"
+                                            class="item-preview-trigger">
+                                                <img src="@item.ImageUrl"
+                                                    alt="@item.Name"
+                                                    class="item-thumb rounded border bg-light" />
+                                            </a>
+                                            }
+                                            else
+                                            {
+                                                <div class="item-thumb item-thumb-placeholder rounded border bg-light"></div>
+                                            }
+                                    </div>
 
                                     <div class="flex-grow-1">
                                         <div>@item.Name</div>
@@ -751,7 +799,7 @@ else
                                             }
                                             else
                                             {
-                                            @item.Description
+                                                @item.Description
                                             }
                                         </div>
 

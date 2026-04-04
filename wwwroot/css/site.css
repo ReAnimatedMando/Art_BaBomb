@@ -89,6 +89,28 @@ body {
   min-width: 220px;
 }
 
+.item-thumb-slot {
+  width: 44px;
+  min-width: 44px;
+  flex: 0 0 44px;
+}
+
+.item-thumb {
+  width: 44px;
+  height: 44px;
+  object-fit: cover;
+  display: block;
+}
+
+.item-thumb-placeholder {
+  width: 44px;
+  height: 44px;
+}
+
+.item-row .flex-grow-1 {
+  min-width: 220px;
+}
+
 .receipt-drop-zone {
   border: 2px dashed #ced4da;
   border-radius: 0.5rem;
