@@ -140,6 +140,12 @@ body {
   min-height: 60px;
 }
 
+.notes-col {
+  min-width: 260px;
+  max-width: 360px;
+  vertical-align: top;
+}
+
 #description-display,
 [id^="description-display-"] {
   display: block;

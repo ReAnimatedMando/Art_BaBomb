@@ -155,6 +155,7 @@
                     <thead>
                         <tr>
                             <th>Name</th>
+                            <th>Notes</th>
                             <th class="text-center">Qty</th>
                             <th>Category</th>
                             <th class="text-end">Est.</th>
@@ -173,90 +174,97 @@
                                         @if (!string.IsNullOrWhiteSpace(item.ImageUrl))
                                         {
                                             <a href="#"
-                                            data-bs-toggle="modal"
-                                            data-bs-target="#itemPreviewModal"
-                                            data-item-src="@item.ImageUrl"
-                                            data-item-title="@item.Name"
-                                            class="item-preview-trigger">
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#itemPreviewModal"
+                                                data-item-src="@item.ImageUrl"
+                                                data-item-title="@item.Name"
+                                                class="item-preview-trigger">
                                                 <img src="@item.ImageUrl"
                                                     alt="@item.Name"
                                                     class="item-thumb rounded border bg-light" />
                                             </a>
-                                            }
-                                            else
-                                            {
-                                                <div class="item-thumb item-thumb-placeholder rounded border bg-light"></div>
-                                            }
+                                        }
+                                        else
+                                        {
+                                            <div class="item-thumb item-thumb-placeholder rounded border bg-light"></div>
+                                        }
                                     </div>
 
-                                    <div class="flex-grow-1">
+                                    <div>
                                         <div>@item.Name</div>
 
                                         <div class="mt-1">
                                             @if (item.IsReturnRequired && !item.IsReturned)
                                             {
                                                 <span class="badge bg-warning text-dark me-1">Return</span>
-                                            }   
+                                            }
 
                                             @if (item.IsReturned)
                                             {
                                                 <span class="badge bg-danger me-1">Returned</span>
                                             }
-                                        </div>
 
-                                        <div class="small text-muted mt-1" id="description-display-@item.Id">
-                                            @if (string.IsNullOrWhiteSpace(item.Description))
+                                            @if (item.ActualCost.HasValue && string.IsNullOrWhiteSpace(item.PurchaseReceiptPath))
                                             {
-                                                <span class="fst-italic">No notes</span>
-                                            }
-                                            else
-                                            {
-                                                @item.Description
-                                            }
-                                        </div>
-
-                                        <div class="mt-1 d-none" id="description-editor-@item.Id">
-                                            <textarea class="form-control form-control-sm mb-2 inline-description-input"
-                                                    id="description-input-@item.Id"
-                                                    rows="2">@(item.Description ?? "")</textarea>
-
-                                            <div class="d-flex gap-1">
-                                                <button type="button"
-                                                        class="btn btn-sm btn-primary save-description-btn"
-                                                        data-id="@item.Id">
-                                                    Save
-                                                </button>
-
-                                                <button type="button"
-                                                        class="btn btn-sm btn-outline-secondary cancel-description-btn"
-                                                        data-id="@item.Id">
-                                                    Cancel
-                                                </button>
-                                            </div>
-                                        </div>
-
-                                        <div class="mt-1">
-                                            @if (!string.IsNullOrWhiteSpace(item.Description))
-                                            {
-                                                <button type="button"
-                                                        class="btn btn-sm btn-link p-0 edit-description-btn"
-                                                        data-id="@item.Id">
-                                                    ✏️ Edit
-                                                </button>
-                                            }
-                                            else
-                                            {
-                                            <button type="button"
-                                                    class="btn btn-sm btn-link p-0 edit-description-btn text-muted"
-                                                    data-id="@item.Id">
-                                                + Notes
-                                            </button>
+                                                <span class="badge bg-warning text-dark me-1">No Receipt</span>
                                             }
                                         </div>
                                     </div>
+                                </div>
+                            </td>
 
+                            <td class="notes-col">
+                                <div class="small text-muted" id="description-display-@item.Id">
+                                    @if (string.IsNullOrWhiteSpace(item.Description))
+                                    {
+                                        <span class="fst-italic">No notes</span>
+                                    }
+                                    else
+                                    {
+                                        @item.Description
+                                    }
                                 </div>
 
+                                <div class="mt-1 d-none" id="description-editor-@item.Id">
+                                    <textarea class="form-control form-control-sm mb-2 inline-description-input"
+                                            id="description-input-@item.Id"
+                                            rows="2">@(item.Description ?? "")</textarea>
+
+                                    <div class="d-flex gap-1 flex-wrap">
+                                        <button type="button"
+                                                class="btn btn-sm btn-primary save-description-btn"
+                                                data-id="@item.Id">
+                                            Save
+                                        </button>
+
+                                        <button type="button"
+                                                class="btn btn-sm btn-outline-secondary cancel-description-btn"
+                                                data-id="@item.Id">
+                                            Cancel
+                                        </button>
+                                    </div>
+
+                                    <div class="form-text">Enter to save, Shift+Enter for new line.</div>
+                                </div>
+
+                                <div class="mt-1">
+                                    @if (!string.IsNullOrWhiteSpace(item.Description))
+                                    {
+                                        <button type="button"
+                                                class="btn btn-sm btn-link p-0 edit-description-btn"
+                                                data-id="@item.Id">
+                                            ✏️ Edit
+                                        </button>
+                                    }
+                                    else
+                                    {
+                                        <button type="button"
+                                                class="btn btn-sm btn-link p-0 edit-description-btn text-muted"
+                                                data-id="@item.Id">
+                                            + Notes
+                                        </button>
+                                    }
+                                </div>
                             </td>
 
                             <td class="text-center">
@@ -352,6 +360,7 @@ else
                     <thead>
                         <tr>
                             <th>Name</th>
+                            <th>Notes</th>
                             <th class="text-center">Qty</th>
                             <th>Category</th>
                             <th class="text-end">Est.</th>
@@ -370,88 +379,96 @@ else
                                         @if (!string.IsNullOrWhiteSpace(item.ImageUrl))
                                         {
                                             <a href="#"
-                                            data-bs-toggle="modal"
-                                            data-bs-target="#itemPreviewModal"
-                                            data-item-src="@item.ImageUrl"
-                                            data-item-title="@item.Name"
-                                            class="item-preview-trigger">
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#itemPreviewModal"
+                                                data-item-src="@item.ImageUrl"
+                                                data-item-title="@item.Name"
+                                                class="item-preview-trigger">
                                                 <img src="@item.ImageUrl"
                                                     alt="@item.Name"
                                                     class="item-thumb rounded border bg-light" />
                                             </a>
-                                            }
-                                            else
-                                            {
-                                                <div class="item-thumb item-thumb-placeholder rounded border bg-light"></div>
-                                            }
+                                        }
+                                        else
+                                        {
+                                            <div class="item-thumb item-thumb-placeholder rounded border bg-light"></div>
+                                        }
                                     </div>
 
-                                    <div class="flex-grow-1">
+                                    <div>
                                         <div>@item.Name</div>
 
                                         <div class="mt-1">
                                             @if (item.IsReturnRequired && !item.IsReturned)
                                             {
                                                 <span class="badge bg-warning text-dark me-1">Return</span>
-                                            }   
+                                            }
 
                                             @if (item.IsReturned)
                                             {
                                                 <span class="badge bg-danger me-1">Returned</span>
                                             }
-                                        </div>
 
-                                        <div class="small text-muted mt-1" id="description-display-@item.Id">
-                                            @if (string.IsNullOrWhiteSpace(item.Description))
+                                            @if (item.ActualCost.HasValue && string.IsNullOrWhiteSpace(item.PurchaseReceiptPath))
                                             {
-                                                <span class="fst-italic">No notes</span>
-                                            }
-                                            else
-                                            {
-                                                @item.Description
-                                            }
-                                        </div>
-
-                                        <div class="mt-1 d-none" id="description-editor-@item.Id">
-                                            <textarea class="form-control form-control-sm mb-2 inline-description-input"
-                                                    id="description-input-@item.Id"
-                                                    rows="2">@(item.Description ?? "")</textarea>
-
-                                            <div class="d-flex gap-1">
-                                                <button type="button"
-                                                        class="btn btn-sm btn-primary save-description-btn"
-                                                        data-id="@item.Id">
-                                                    Save
-                                                </button>
-
-                                                <button type="button"
-                                                        class="btn btn-sm btn-outline-secondary cancel-description-btn"
-                                                        data-id="@item.Id">
-                                                    Cancel
-                                                </button>
-                                            </div>
-                                        </div>
-
-                                        <div class="mt-1">
-                                            @if (!string.IsNullOrWhiteSpace(item.Description))
-                                            {
-                                                <button type="button"
-                                                        class="btn btn-sm btn-link p-0 edit-description-btn"
-                                                        data-id="@item.Id">
-                                                    ✏️ Edit
-                                                </button>
-                                            }
-                                            else
-                                            {
-                                            <button type="button"
-                                                    class="btn btn-sm btn-link p-0 edit-description-btn text-muted"
-                                                    data-id="@item.Id">
-                                                + Notes
-                                            </button>
+                                                <span class="badge bg-warning text-dark me-1">No Receipt</span>
                                             }
                                         </div>
                                     </div>
+                                </div>
+                            </td>
 
+                            <td class="notes-col">
+                                <div class="small text-muted" id="description-display-@item.Id">
+                                    @if (string.IsNullOrWhiteSpace(item.Description))
+                                    {
+                                        <span class="fst-italic">No notes</span>
+                                    }
+                                    else
+                                    {
+                                        @item.Description
+                                    }
+                                </div>
+
+                                <div class="mt-1 d-none" id="description-editor-@item.Id">
+                                    <textarea class="form-control form-control-sm mb-2 inline-description-input"
+                                            id="description-input-@item.Id"
+                                            rows="2">@(item.Description ?? "")</textarea>
+
+                                    <div class="d-flex gap-1 flex-wrap">
+                                        <button type="button"
+                                                class="btn btn-sm btn-primary save-description-btn"
+                                                data-id="@item.Id">
+                                            Save
+                                        </button>
+
+                                        <button type="button"
+                                                class="btn btn-sm btn-outline-secondary cancel-description-btn"
+                                                data-id="@item.Id">
+                                            Cancel
+                                        </button>
+                                    </div>
+
+                                    <div class="form-text">Enter to save, Shift+Enter for new line.</div>
+                                </div>
+
+                                <div class="mt-1">
+                                    @if (!string.IsNullOrWhiteSpace(item.Description))
+                                    {
+                                        <button type="button"
+                                                class="btn btn-sm btn-link p-0 edit-description-btn"
+                                                data-id="@item.Id">
+                                            ✏️ Edit
+                                        </button>
+                                    }
+                                    else
+                                    {
+                                        <button type="button"
+                                                class="btn btn-sm btn-link p-0 edit-description-btn text-muted"
+                                                data-id="@item.Id">
+                                            + Notes
+                                        </button>
+                                    }
                                 </div>
                             </td>
 
@@ -548,6 +565,7 @@ else
                     <thead>
                         <tr>
                             <th>Name</th>
+                            <th>Notes</th>
                             <th class="text-center">Qty</th>
                             <th>Category</th>
                             <th>Return Location</th>
@@ -566,93 +584,96 @@ else
                                         @if (!string.IsNullOrWhiteSpace(item.ImageUrl))
                                         {
                                             <a href="#"
-                                            data-bs-toggle="modal"
-                                            data-bs-target="#itemPreviewModal"
-                                            data-item-src="@item.ImageUrl"
-                                            data-item-title="@item.Name"
-                                            class="item-preview-trigger">
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#itemPreviewModal"
+                                                data-item-src="@item.ImageUrl"
+                                                data-item-title="@item.Name"
+                                                class="item-preview-trigger">
                                                 <img src="@item.ImageUrl"
                                                     alt="@item.Name"
                                                     class="item-thumb rounded border bg-light" />
                                             </a>
-                                            }
-                                            else
-                                            {
-                                                <div class="item-thumb item-thumb-placeholder rounded border bg-light"></div>
-                                            }
+                                        }
+                                        else
+                                        {
+                                            <div class="item-thumb item-thumb-placeholder rounded border bg-light"></div>
+                                        }
                                     </div>
 
-                                    <div class="flex-grow-1">
+                                    <div>
                                         <div>@item.Name</div>
 
                                         <div class="mt-1">
                                             @if (item.IsReturnRequired && !item.IsReturned)
                                             {
                                                 <span class="badge bg-warning text-dark me-1">Return</span>
-                                            }   
-
-                                            @if (item.IsReturnRequired && item.ReturnByDate.HasValue && item.ReturnByDate < DateTime.Today)
-                                            {
-                                                <span class="badge bg-danger me-1">Overdue</span>
                                             }
 
                                             @if (item.IsReturned)
                                             {
                                                 <span class="badge bg-danger me-1">Returned</span>
                                             }
-                                        </div>
 
-                                        <div class="small text-muted mt-1" id="description-display-@item.Id">
-                                            @if (string.IsNullOrWhiteSpace(item.Description))
+                                            @if (item.ActualCost.HasValue && string.IsNullOrWhiteSpace(item.PurchaseReceiptPath))
                                             {
-                                                <span class="fst-italic">No notes</span>
-                                            }
-                                            else
-                                            {
-                                                @item.Description
-                                            }
-                                        </div>
-
-                                        <div class="mt-1 d-none" id="description-editor-@item.Id">
-                                            <textarea class="form-control form-control-sm mb-2 inline-description-input"
-                                                    id="description-input-@item.Id"
-                                                    rows="2">@(item.Description ?? "")</textarea>
-
-                                            <div class="d-flex gap-1">
-                                                <button type="button"
-                                                        class="btn btn-sm btn-primary save-description-btn"
-                                                        data-id="@item.Id">
-                                                    Save
-                                                </button>
-
-                                                <button type="button"
-                                                        class="btn btn-sm btn-outline-secondary cancel-description-btn"
-                                                        data-id="@item.Id">
-                                                    Cancel
-                                                </button>
-                                            </div>
-                                        </div>
-
-                                        <div class="mt-1">
-                                            @if (!string.IsNullOrWhiteSpace(item.Description))
-                                            {
-                                                <button type="button"
-                                                        class="btn btn-sm btn-link p-0 edit-description-btn"
-                                                        data-id="@item.Id">
-                                                    ✏️ Edit
-                                                </button>
-                                            }
-                                            else
-                                            {
-                                            <button type="button"
-                                                    class="btn btn-sm btn-link p-0 edit-description-btn text-muted"
-                                                    data-id="@item.Id">
-                                                + Notes
-                                            </button>
+                                                <span class="badge bg-warning text-dark me-1">No Receipt</span>
                                             }
                                         </div>
                                     </div>
+                                </div>
+                            </td>
 
+                            <td class="notes-col">
+                                <div class="small text-muted" id="description-display-@item.Id">
+                                    @if (string.IsNullOrWhiteSpace(item.Description))
+                                    {
+                                        <span class="fst-italic">No notes</span>
+                                    }
+                                    else
+                                    {
+                                        @item.Description
+                                    }
+                                </div>
+
+                                <div class="mt-1 d-none" id="description-editor-@item.Id">
+                                    <textarea class="form-control form-control-sm mb-2 inline-description-input"
+                                            id="description-input-@item.Id"
+                                            rows="2">@(item.Description ?? "")</textarea>
+
+                                    <div class="d-flex gap-1 flex-wrap">
+                                        <button type="button"
+                                                class="btn btn-sm btn-primary save-description-btn"
+                                                data-id="@item.Id">
+                                            Save
+                                        </button>
+
+                                        <button type="button"
+                                                class="btn btn-sm btn-outline-secondary cancel-description-btn"
+                                                data-id="@item.Id">
+                                            Cancel
+                                        </button>
+                                    </div>
+
+                                    <div class="form-text">Enter to save, Shift+Enter for new line.</div>
+                                </div>
+
+                                <div class="mt-1">
+                                    @if (!string.IsNullOrWhiteSpace(item.Description))
+                                    {
+                                        <button type="button"
+                                                class="btn btn-sm btn-link p-0 edit-description-btn"
+                                                data-id="@item.Id">
+                                            ✏️ Edit
+                                        </button>
+                                    }
+                                    else
+                                    {
+                                        <button type="button"
+                                                class="btn btn-sm btn-link p-0 edit-description-btn text-muted"
+                                                data-id="@item.Id">
+                                            + Notes
+                                        </button>
+                                    }
                                 </div>
                             </td>
 
@@ -748,6 +769,7 @@ else
                     <thead>
                         <tr>
                             <th>Name</th>
+                            <th>Notes</th>
                             <th class="text-center">Qty</th>
                             <th>Category</th>
                             <th class="text-nowrap">Returned At</th>
@@ -760,94 +782,102 @@ else
                     @foreach (var item in group)
                     {
                         <tr tabindex="0" class="item-row" data-item-id="@item.Id">
-                            <td>
+                           <td>
                                 <div class="d-flex align-items-start gap-2">
                                     <div class="item-thumb-slot">
                                         @if (!string.IsNullOrWhiteSpace(item.ImageUrl))
                                         {
                                             <a href="#"
-                                            data-bs-toggle="modal"
-                                            data-bs-target="#itemPreviewModal"
-                                            data-item-src="@item.ImageUrl"
-                                            data-item-title="@item.Name"
-                                            class="item-preview-trigger">
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#itemPreviewModal"
+                                                data-item-src="@item.ImageUrl"
+                                                data-item-title="@item.Name"
+                                                class="item-preview-trigger">
                                                 <img src="@item.ImageUrl"
                                                     alt="@item.Name"
                                                     class="item-thumb rounded border bg-light" />
                                             </a>
-                                            }
-                                            else
-                                            {
-                                                <div class="item-thumb item-thumb-placeholder rounded border bg-light"></div>
-                                            }
+                                        }
+                                        else
+                                        {
+                                            <div class="item-thumb item-thumb-placeholder rounded border bg-light"></div>
+                                        }
                                     </div>
 
-                                    <div class="flex-grow-1">
+                                    <div>
                                         <div>@item.Name</div>
 
                                         <div class="mt-1">
                                             @if (item.IsReturnRequired && !item.IsReturned)
                                             {
                                                 <span class="badge bg-warning text-dark me-1">Return</span>
-                                            }   
+                                            }
 
                                             @if (item.IsReturned)
                                             {
                                                 <span class="badge bg-danger me-1">Returned</span>
                                             }
-                                        </div>
 
-                                        <div class="small text-muted mt-1" id="description-display-@item.Id">
-                                            @if (string.IsNullOrWhiteSpace(item.Description))
+                                            @if (item.ActualCost.HasValue && string.IsNullOrWhiteSpace(item.PurchaseReceiptPath))
                                             {
-                                                <span class="fst-italic">No notes</span>
-                                            }
-                                            else
-                                            {
-                                                @item.Description
-                                            }
-                                        </div>
-
-                                        <div class="mt-1 d-none" id="description-editor-@item.Id">
-                                            <textarea class="form-control form-control-sm mb-2 inline-description-input"
-                                                    id="description-input-@item.Id"
-                                                    rows="2">@(item.Description ?? "")</textarea>
-
-                                            <div class="d-flex gap-1">
-                                                <button type="button"
-                                                        class="btn btn-sm btn-primary save-description-btn"
-                                                        data-id="@item.Id">
-                                                    Save
-                                                </button>
-
-                                                <button type="button"
-                                                        class="btn btn-sm btn-outline-secondary cancel-description-btn"
-                                                        data-id="@item.Id">
-                                                    Cancel
-                                                </button>
-                                            </div>
-                                        </div>
-
-                                        <div class="mt-1">
-                                            @if (!string.IsNullOrWhiteSpace(item.Description))
-                                            {
-                                                <button type="button"
-                                                        class="btn btn-sm btn-link p-0 edit-description-btn"
-                                                        data-id="@item.Id">
-                                                    ✏️ Edit
-                                                </button>
-                                            }
-                                            else
-                                            {
-                                            <button type="button"
-                                                    class="btn btn-sm btn-link p-0 edit-description-btn text-muted"
-                                                    data-id="@item.Id">
-                                                + Notes
-                                            </button>
+                                                <span class="badge bg-warning text-dark me-1">No Receipt</span>
                                             }
                                         </div>
                                     </div>
+                                </div>
+                            </td>
 
+                            <td class="notes-col">
+                                <div class="small text-muted" id="description-display-@item.Id">
+                                    @if (string.IsNullOrWhiteSpace(item.Description))
+                                    {
+                                        <span class="fst-italic">No notes</span>
+                                    }
+                                    else
+                                    {
+                                        @item.Description
+                                    }
+                                </div>
+
+                                <div class="mt-1 d-none" id="description-editor-@item.Id">
+                                    <textarea class="form-control form-control-sm mb-2 inline-description-input"
+                                            id="description-input-@item.Id"
+                                            rows="2">@(item.Description ?? "")</textarea>
+
+                                    <div class="d-flex gap-1 flex-wrap">
+                                        <button type="button"
+                                                class="btn btn-sm btn-primary save-description-btn"
+                                                data-id="@item.Id">
+                                            Save
+                                        </button>
+
+                                        <button type="button"
+                                                class="btn btn-sm btn-outline-secondary cancel-description-btn"
+                                                data-id="@item.Id">
+                                            Cancel
+                                        </button>
+                                    </div>
+
+                                    <div class="form-text">Enter to save, Shift+Enter for new line.</div>
+                                </div>
+
+                                <div class="mt-1">
+                                    @if (!string.IsNullOrWhiteSpace(item.Description))
+                                    {
+                                        <button type="button"
+                                                class="btn btn-sm btn-link p-0 edit-description-btn"
+                                                data-id="@item.Id">
+                                            ✏️ Edit
+                                        </button>
+                                    }
+                                    else
+                                    {
+                                        <button type="button"
+                                                class="btn btn-sm btn-link p-0 edit-description-btn text-muted"
+                                                data-id="@item.Id">
+                                            + Notes
+                                        </button>
+                                    }
                                 </div>
                             </td>
 
