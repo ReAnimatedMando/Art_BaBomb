@@ -20,11 +20,59 @@ builder.Services.AddDefaultIdentity<ApplicationUser>(options =>
 {
     options.SignIn.RequireConfirmedAccount = false;
 })
+.AddRoles<IdentityRole>()
 .AddEntityFrameworkStores<ApplicationDbContext>();
 
 builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
+
+static async Task SeedRolesAsync(IServiceProvider services)
+{
+    var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+
+    string[] roles = { "Admin", "Production", "Shopper" };
+
+    foreach (var role in roles)
+    {
+        if (!await roleManager.RoleExistsAsync(role))
+        {
+            await roleManager.CreateAsync(new IdentityRole(role));
+        }
+    }
+}
+
+static async Task SeedAdminUserAsync(IServiceProvider services)
+{
+    var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
+
+    var email = "the_guma@yahoo.com";
+    var password = "P@55ion_2003";
+
+    var user = await userManager.FindByEmailAsync(email);
+
+    if (user == null)
+    {
+        user = new ApplicationUser
+        {
+            UserName = email,
+            Email = email,
+            EmailConfirmed = true
+        };
+
+        var createResult = await userManager.CreateAsync(user, password);
+
+        if (!createResult.Succeeded)
+        {
+            throw new Exception("Failed to create seed admin user.");
+        }
+    }
+
+    if (!await userManager.IsInRoleAsync(user, "Admin"))
+    {
+        await userManager.AddToRoleAsync(user, "Admin");
+    }
+}
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
@@ -47,5 +95,12 @@ app.MapControllerRoute(
     .WithStaticAssets();
 
 app.MapRazorPages();
+
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    await SeedRolesAsync(services);
+    await SeedAdminUserAsync(services);
+}
 
 app.Run();

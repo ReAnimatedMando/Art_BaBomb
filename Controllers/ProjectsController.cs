@@ -48,6 +48,7 @@ namespace Art_BaBomb.Web.Controllers
         }
 
         // GET: Projects/Create
+        [Authorize(Roles = "Admin,Shopper")]
         public IActionResult Create()
         {
             return View();
@@ -58,6 +59,7 @@ namespace Art_BaBomb.Web.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin,Shopper")]
         public async Task<IActionResult> Create([Bind("Id,Name,Description,Budget,CreatedAt")] Project project)
         {
             if (ModelState.IsValid)
@@ -70,6 +72,7 @@ namespace Art_BaBomb.Web.Controllers
         }
 
         // GET: Projects/Edit/5
+        [Authorize(Roles = "Admin,Shopper")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -90,6 +93,7 @@ namespace Art_BaBomb.Web.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin,Shopper")]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Description,Budget,CreatedAt")] Project project)
         {
             if (id != project.Id)
@@ -121,6 +125,7 @@ namespace Art_BaBomb.Web.Controllers
         }
 
         // GET: Projects/Delete/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -141,6 +146,7 @@ namespace Art_BaBomb.Web.Controllers
         // POST: Projects/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var project = await _context.Projects.FindAsync(id);
