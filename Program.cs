@@ -31,7 +31,7 @@ static async Task SeedRolesAsync(IServiceProvider services)
 {
     var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
 
-    string[] roles = { "Admin", "Production", "Shopper" };
+    string[] roles = { "Admin", "Shopper", "Production" };
 
     foreach (var role in roles)
     {

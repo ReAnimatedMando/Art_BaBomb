@@ -116,16 +116,22 @@
 </div>
 
 <div class="mb-3">
-    <a asp-controller="Items"
-       asp-action="Create"
-       asp-route-projectId="@Model.Id"
-       class="btn btn-primary">
-        + Add Item
-    </a>
+    @if (User.IsInRole("Admin") || User.IsInRole("Shopper"))
+    {
+        <a asp-controller="Items"
+           asp-action="Create"
+           asp-route-projectId="@Model.Id"
+           class="btn btn-primary">
+            + Add Item
+        </a>
+    }
 
-    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-outline-secondary">
-        Edit Project
-    </a>
+    @if (User.IsInRole("Admin"))
+    {
+        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-outline-secondary">
+            Edit Project
+        </a>
+    }
 
     <a asp-action="Index" class="btn btn-outline-dark">
         Back to Projects
@@ -248,44 +254,50 @@
                                 </div>
 
                                 <div class="mt-1">
-                                    @if (!string.IsNullOrWhiteSpace(item.Description))
+                                    @if (User.IsInRole("Admin") || User.IsInRole("Shopper"))
                                     {
-                                        <button type="button"
-                                                class="btn btn-sm btn-link p-0 edit-description-btn"
-                                                data-id="@item.Id">
-                                            ✏️ Edit
-                                        </button>
-                                    }
-                                    else
-                                    {
-                                        <button type="button"
+                                        @if (!string.IsNullOrWhiteSpace(item.Description))
+                                        {
+                                            <button type="button"
+                                                    class="btn btn-sm btn-link p-0 edit-description-btn"
+                                                    data-id="@item.Id">
+                                                ✏️ Edit
+                                            </button>
+                                        }
+                                        else
+                                        {
+                                            <button type="button"
                                                 class="btn btn-sm btn-link p-0 edit-description-btn text-muted"
                                                 data-id="@item.Id">
-                                            + Notes
-                                        </button>
+                                                + Notes
+                                            </button>
+                                        }
                                     }
                                 </div>
                             </td>
 
                             <td class="text-center">
-                                <div class="qty-stepper" data-item-id="@item.Id">
-                                    <button type="button"
-                                            class="qty-btn qty-adjust-btn"
-                                            data-id="@item.Id"
-                                            data-delta="-1"
-                                            @(item.Quantity <= 1 ? "disabled=\"disabled\"" : "")>
-                                        −
-                                    </button>
+                                @if (User.IsInRole("Admin") || User.IsInRole("Shopper"))
+                                {
+                                    <div class="qty-stepper" data-item-id="@item.Id">
+                                        <button type="button"
+                                                class="qty-btn qty-adjust-btn"
+                                                data-id="@item.Id"
+                                                data-delta="-1"
+                                                @(item.Quantity <= 1 ? "disabled=\"disabled\"" : "")>
+                                            −
+                                        </button>
 
-                                    <span class="qty-value" id="qty-value-@item.Id">@item.Quantity</span>
+                                        <span class="qty-value" id="qty-value-@item.Id">@item.Quantity</span>
 
-                                    <button type="button"
-                                            class="qty-btn qty-adjust-btn"
-                                            data-id="@item.Id"
-                                            data-delta="1">
-                                        +
-                                    </button>
-                                </div>
+                                        <button type="button"
+                                                class="qty-btn qty-adjust-btn"
+                                                data-id="@item.Id"
+                                                data-delta="1">
+                                            +
+                                        </button>
+                                    </div>
+                                }
                             </td>
 
                             <td>@item.Category</td>
@@ -321,13 +333,17 @@
 
                             <td class="text-nowrap">
                                 <div class="d-inline-flex gap-1">
-                                    <form asp-controller="Items" asp-action="MarkAcquired" asp-route-id="@item.Id" method="post" class="d-inline">
-                                        @Html.AntiForgeryToken()
-                                        <button type="submit" class="btn btn-sm btn-success">+</button>
-                                    </form>
+                                    @if (User.IsInRole("Admin") || User.IsInRole("Shopper"))
+                                    {
+                                        <form asp-controller="Items" asp-action="MarkAcquired" asp-route-id="@item.Id" method="post" class="d-inline">
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="btn btn-sm btn-success">+</button>
+                                        </form>
 
-                                    <a asp-controller="Items" asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary">Edit</a>
-                                    <a asp-controller="Items" asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-secondary">Details</a>
+                                        <a asp-controller="Items" asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm               btn-outline-primary">Edit</a>
+                                    }
+
+                                    <a asp-controller="Items" asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm                btn-outline-secondary">Details</a>
                                 </div>
                             </td>
                         </tr>
@@ -453,44 +469,50 @@ else
                                 </div>
 
                                 <div class="mt-1">
-                                    @if (!string.IsNullOrWhiteSpace(item.Description))
+                                    @if (User.IsInRole("Admin") || User.IsInRole("Shopper"))
                                     {
-                                        <button type="button"
-                                                class="btn btn-sm btn-link p-0 edit-description-btn"
-                                                data-id="@item.Id">
-                                            ✏️ Edit
-                                        </button>
-                                    }
-                                    else
-                                    {
-                                        <button type="button"
+                                        @if (!string.IsNullOrWhiteSpace(item.Description))
+                                        {
+                                            <button type="button"
+                                                    class="btn btn-sm btn-link p-0 edit-description-btn"
+                                                    data-id="@item.Id">
+                                                ✏️ Edit
+                                            </button>
+                                        }
+                                        else
+                                        {
+                                            <button type="button"
                                                 class="btn btn-sm btn-link p-0 edit-description-btn text-muted"
                                                 data-id="@item.Id">
-                                            + Notes
-                                        </button>
+                                                + Notes
+                                            </button>
+                                        }
                                     }
                                 </div>
                             </td>
 
                             <td class="text-center">
-                                <div class="qty-stepper" data-item-id="@item.Id">
-                                    <button type="button"
-                                            class="qty-btn qty-adjust-btn"
-                                            data-id="@item.Id"
-                                            data-delta="-1"
-                                            @(item.Quantity <= 1 ? "disabled=\"disabled\"" : "")>
-                                        −
-                                    </button>
+                                @if (User.IsInRole("Admin") || User.IsInRole("Shopper"))
+                                {
+                                    <div class="qty-stepper" data-item-id="@item.Id">
+                                        <button type="button"
+                                                class="qty-btn qty-adjust-btn"
+                                                data-id="@item.Id"
+                                                data-delta="-1"
+                                                @(item.Quantity <= 1 ? "disabled=\"disabled\"" : "")>
+                                            −
+                                        </button>
 
-                                    <span class="qty-value" id="qty-value-@item.Id">@item.Quantity</span>
+                                        <span class="qty-value" id="qty-value-@item.Id">@item.Quantity</span>
 
-                                    <button type="button"
-                                            class="qty-btn qty-adjust-btn"
-                                            data-id="@item.Id"
-                                            data-delta="1">
-                                        +
-                                    </button>
-                                </div>
+                                        <button type="button"
+                                                class="qty-btn qty-adjust-btn"
+                                                data-id="@item.Id"
+                                                data-delta="1">
+                                            +
+                                        </button>
+                                    </div>
+                                }
                             </td>
 
                             <td>@item.Category</td>
@@ -526,12 +548,16 @@ else
 
                             <td class="text-nowrap">
                                 <div class="d-inline-flex gap-1">
-                                    <form asp-controller="Items" asp-action="MarkNeeded" asp-route-id="@item.Id" method="post" class="d-inline">
-                                        @Html.AntiForgeryToken()
-                                        <button type="submit" class="btn btn-sm btn-outline-warning">-</button>
-                                    </form>
+                                     @if (User.IsInRole("Admin") || User.IsInRole("Shopper"))
+                                    {
+                                        <form asp-controller="Items" asp-action="MarkNeeded" asp-route-id="@item.Id" method="post" class="d-inline">
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="btn btn-sm btn-outline-warning">-</button>
+                                        </form>
 
-                                    <a asp-controller="Items" asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary">Edit</a>
+                                        <a asp-controller="Items" asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary">Edit</a>
+                                    }
+
                                     <a asp-controller="Items" asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-secondary">Details</a>
                                 </div>
                             </td>
@@ -658,44 +684,50 @@ else
                                 </div>
 
                                 <div class="mt-1">
-                                    @if (!string.IsNullOrWhiteSpace(item.Description))
+                                    @if (User.IsInRole("Admin") || User.IsInRole("Shopper"))
                                     {
-                                        <button type="button"
-                                                class="btn btn-sm btn-link p-0 edit-description-btn"
-                                                data-id="@item.Id">
-                                            ✏️ Edit
-                                        </button>
-                                    }
-                                    else
-                                    {
-                                        <button type="button"
+                                        @if (!string.IsNullOrWhiteSpace(item.Description))
+                                        {
+                                            <button type="button"
+                                                    class="btn btn-sm btn-link p-0 edit-description-btn"
+                                                    data-id="@item.Id">
+                                                ✏️ Edit
+                                            </button>
+                                        }
+                                        else
+                                        {
+                                            <button type="button"
                                                 class="btn btn-sm btn-link p-0 edit-description-btn text-muted"
                                                 data-id="@item.Id">
-                                            + Notes
-                                        </button>
+                                                + Notes
+                                            </button>
+                                        }
                                     }
                                 </div>
                             </td>
 
                             <td class="text-center">
-                                <div class="qty-stepper" data-item-id="@item.Id">
-                                    <button type="button"
-                                            class="qty-btn qty-adjust-btn"
-                                            data-id="@item.Id"
-                                            data-delta="-1"
-                                            @(item.Quantity <= 1 ? "disabled=\"disabled\"" : "")>
-                                        −
-                                    </button>
+                                @if (User.IsInRole("Admin") || User.IsInRole("Shopper"))
+                                {
+                                    <div class="qty-stepper" data-item-id="@item.Id">
+                                        <button type="button"
+                                                class="qty-btn qty-adjust-btn"
+                                                data-id="@item.Id"
+                                                data-delta="-1"
+                                                @(item.Quantity <= 1 ? "disabled=\"disabled\"" : "")>
+                                            −
+                                        </button>
 
-                                    <span class="qty-value" id="qty-value-@item.Id">@item.Quantity</span>
+                                        <span class="qty-value" id="qty-value-@item.Id">@item.Quantity</span>
 
-                                    <button type="button"
-                                            class="qty-btn qty-adjust-btn"
-                                            data-id="@item.Id"
-                                            data-delta="1">
-                                        +
-                                    </button>
-                                </div>
+                                        <button type="button"
+                                                class="qty-btn qty-adjust-btn"
+                                                data-id="@item.Id"
+                                                data-delta="1">
+                                            +
+                                        </button>
+                                    </div>
+                                }
                             </td>
 
                             <td>@item.Category</td>
@@ -731,11 +763,16 @@ else
 
                             <td class="text-nowrap">
                                 <div class="d-inline-flex gap-1">
-                                    <a asp-controller="Items" asp-action="ReturnInfo" asp-route-id="@item.Id" class="btn btn-sm btn-outline-warning">Return Info</a>
-                                    <form asp-controller="Items" asp-action="MarkReturned" asp-route-id="@item.Id" method="post" class="d-inline">
-                                        @Html.AntiForgeryToken()
-                                        <button type="submit" class="btn btn-sm btn-danger">Mark Returned</button>
-                                    </form>
+                                     @if (User.IsInRole("Admin") || User.IsInRole("Shopper"))
+                                    {
+                                        <a asp-controller="Items" asp-action="ReturnInfo" asp-route-id="@item.Id" class="btn btn-sm btn-outline-warning">Return Info</a>
+
+                                        <form asp-controller="Items" asp-action="MarkReturned" asp-route-id="@item.Id" method="post" class="d-inline">
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="btn btn-sm btn-danger">Mark Returned</button>
+                                        </form>
+                                    }
+
                                     <a asp-controller="Items" asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-secondary">Details</a>
                                 </div>
                             </td>
@@ -862,21 +899,24 @@ else
                                 </div>
 
                                 <div class="mt-1">
-                                    @if (!string.IsNullOrWhiteSpace(item.Description))
+                                    @if (User.IsInRole("Admin") || User.IsInRole("Shopper"))
                                     {
-                                        <button type="button"
-                                                class="btn btn-sm btn-link p-0 edit-description-btn"
-                                                data-id="@item.Id">
-                                            ✏️ Edit
-                                        </button>
-                                    }
-                                    else
-                                    {
-                                        <button type="button"
+                                        @if (!string.IsNullOrWhiteSpace(item.Description))
+                                        {
+                                            <button type="button"
+                                                    class="btn btn-sm btn-link p-0 edit-description-btn"
+                                                    data-id="@item.Id">
+                                                ✏️ Edit
+                                            </button>
+                                        }
+                                        else
+                                        {
+                                            <button type="button"
                                                 class="btn btn-sm btn-link p-0 edit-description-btn text-muted"
                                                 data-id="@item.Id">
-                                            + Notes
-                                        </button>
+                                                + Notes
+                                            </button>
+                                        }
                                     }
                                 </div>
                             </td>
@@ -929,9 +969,12 @@ else
                                         Details
                                     </a>
 
-                                    <a asp-controller="Items" asp-action="ReturnInfo" asp-route-id="@item.Id" class="btn btn-sm btn-outline-warning">
-                                        Return Info
-                                    </a>
+                                    @if (User.IsInRole("Admin") || User.IsInRole("Shopper"))
+                                    {
+                                        <a asp-controller="Items" asp-action="ReturnInfo" asp-route-id="@item.Id" class="btn btn-sm btn-outline-warning">
+                                            Return Info
+                                        </a>
+                                    }                       
                                 </div>
                             </td>
                         </tr>
@@ -946,24 +989,6 @@ else
 {
     <p>No returned items yet.</p>
 }
-
-<div class="modal fade" id="receiptPreviewModal" tabindex="-1" aria-labelledby="receiptPreviewModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="receiptPreviewModalLabel">Receipt Preview</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body text-center">
-                <img id="receiptPreviewImage"
-                     src=""
-                     alt="Receipt Preview"
-                     class="img-fluid rounded border"
-                     style="max-height: 75vh;" />
-            </div>
-        </div>
-    </div>
-</div>
 
 @section Scripts {
     <script>

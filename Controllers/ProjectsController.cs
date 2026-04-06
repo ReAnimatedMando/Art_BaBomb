@@ -48,7 +48,7 @@ namespace Art_BaBomb.Web.Controllers
         }
 
         // GET: Projects/Create
-        [Authorize(Roles = "Admin,Shopper")]
+        [Authorize(Roles = "Admin")]
         public IActionResult Create()
         {
             return View();
@@ -59,7 +59,7 @@ namespace Art_BaBomb.Web.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin,Shopper")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create([Bind("Id,Name,Description,Budget,CreatedAt")] Project project)
         {
             if (ModelState.IsValid)
@@ -72,7 +72,7 @@ namespace Art_BaBomb.Web.Controllers
         }
 
         // GET: Projects/Edit/5
-        [Authorize(Roles = "Admin,Shopper")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -93,7 +93,7 @@ namespace Art_BaBomb.Web.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin,Shopper")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Description,Budget,CreatedAt")] Project project)
         {
             if (id != project.Id)
