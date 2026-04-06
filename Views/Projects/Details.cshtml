@@ -298,6 +298,10 @@
                                         </button>
                                     </div>
                                 }
+                                else
+                                {
+                                    <span class="qty-value">@item.Quantity</span>
+                                }
                             </td>
 
                             <td>@item.Category</td>
@@ -513,6 +517,10 @@ else
                                         </button>
                                     </div>
                                 }
+                                else
+                                {
+                                    <span class="qty-value">@item.Quantity</span>
+                                }
                             </td>
 
                             <td>@item.Category</td>
@@ -673,9 +681,7 @@ else
                                             Save
                                         </button>
 
-                                        <button type="button"
-                                                class="btn btn-sm btn-outline-secondary cancel-description-btn"
-                                                data-id="@item.Id">
+                                        <button type="button" class="btn btn-sm btn-outline-secondary cancel-description-btn" data-id="@item.Id">
                                             Cancel
                                         </button>
                                     </div>
@@ -727,6 +733,10 @@ else
                                             +
                                         </button>
                                     </div>
+                                }
+                                else
+                                {
+                                    <span class="qty-value">@item.Quantity</span>
                                 }
                             </td>
 
@@ -888,9 +898,7 @@ else
                                             Save
                                         </button>
 
-                                        <button type="button"
-                                                class="btn btn-sm btn-outline-secondary cancel-description-btn"
-                                                data-id="@item.Id">
+                                        <button type="button" class="btn btn-sm btn-outline-secondary cancel-description-btn" data-id="@item.Id">
                                             Cancel
                                         </button>
                                     </div>
