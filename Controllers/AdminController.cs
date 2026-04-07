@@ -72,6 +72,17 @@ namespace Art_BaBomb.Web.Controllers
                 return RedirectToAction(nameof(Users));
             }
 
+            var isCurrentlyAdmin = await _userManager.IsInRoleAsync(user, "Admin");
+            if (isCurrentlyAdmin && model.SelectedRole != "Admin")
+            {
+                var adminUsers = await _userManager.GetUsersInRoleAsync("Admin");
+                if (adminUsers.Count <= 1)
+                {
+                    TempData["ErrorMessage"] = "You cannot remove the last Admin role.";
+                    return RedirectToAction(nameof(Users));
+                }
+            }
+
             if (!await _roleManager.RoleExistsAsync(model.SelectedRole))
             {
                 TempData["ErrorMessage"] = "Selected role does not exist.";
@@ -125,6 +136,17 @@ namespace Art_BaBomb.Web.Controllers
             {
                 TempData["ErrorMessage"] = "You cannot delete your own account.";
                 return RedirectToAction(nameof(Users));
+            }
+
+            var isAdmin = await _userManager.IsInRoleAsync(user, "Admin");
+            if (isAdmin)
+            {
+                var adminUsers = await _userManager.GetUsersInRoleAsync("Admin");
+                if (adminUsers.Count <= 1)
+                {
+                    TempData["ErrorMessage"] = "Cannot delete the last Admin account.";
+                    return RedirectToAction(nameof(Users));
+                }
             }
 
             var currentRoles = await _userManager.GetRolesAsync(user);
