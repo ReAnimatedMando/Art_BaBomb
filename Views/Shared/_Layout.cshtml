@@ -13,32 +13,7 @@
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/Art_BaBomb.Web.styles.css" asp-append-version="true" />
 </head>
-<div class="modal fade" id="itemPreviewModal" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="itemPreviewModalLabel">Item Preview</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body text-center">
-                <img id="itemPreviewImage" src="" class="img-fluid rounded" />
-            </div>
-        </div>
-    </div>
-</div>
-<div class="modal fade" id="receiptPreviewModal" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="receiptPreviewModalLabel">Receipt Preview</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body text-center">
-                <img id="receiptPreviewImage" src="" class="img-fluid rounded" />
-            </div>
-        </div>
-    </div>
-</div>
+
 <body>
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
@@ -91,6 +66,14 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-controller="Projects" asp-action="Index">Projects</a>
                         </li>
+
+                        @if (SignInManager.IsSignedIn(User) && User.IsInRole("Admin"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Admin" asp-action="Users">User Manager</a>
+                            </li>
+                        }
+
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
                         </li>
@@ -110,6 +93,34 @@
             &copy; 2026 - Art_BaBomb.Web - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
     </footer>
+
+<div class="modal fade" id="itemPreviewModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="itemPreviewModalLabel">Item Preview</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body text-center">
+                <img id="itemPreviewImage" src="" class="img-fluid rounded" />
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="receiptPreviewModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="receiptPreviewModalLabel">Receipt Preview</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body text-center">
+                <img id="receiptPreviewImage" src="" class="img-fluid rounded" />
+            </div>
+        </div>
+    </div>
+</div>
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>

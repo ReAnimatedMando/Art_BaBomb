@@ -1,0 +1,73 @@
+@model List<Art_BaBomb.Web.Models.ViewModels.UserRoleViewModel>
+
+@{
+    ViewData["Title"] = "User Manager";
+    var availableRoles = ViewBag.AvailableRoles as List<string> ?? new List<string>();
+}
+
+<h1>User Manager</h1>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["SuccessMessage"]
+    </div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["ErrorMessage"]
+    </div>
+}
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-striped align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th>Email</th>
+                        <th>Current Role</th>
+                        <th style="width: 260px;">Assign Role</th>
+                    </tr>
+                </thead>
+                <tbody>
+                @foreach (var user in Model)
+                {
+                    <tr>
+                        <td>@user.Email</td>
+                        <td>@user.CurrentRole</td>
+                        <td>
+                            <form asp-action="UpdateRole" method="post" class="d-flex gap-2">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="UserId" value="@user.UserId" />
+                                <input type="hidden" name="Email" value="@user.Email" />
+                                <input type="hidden" name="CurrentRole" value="@user.CurrentRole" />
+
+                                <select name="SelectedRole" class="form-select form-select-sm">
+                                    @foreach (var role in availableRoles)
+                                    {
+                                        if (role == user.CurrentRole)
+                                        {
+                                            <option value="@role" selected="selected">@role</option>
+                                        }
+                                        else
+                                        {
+                                            <option value="@role">@role</option>
+                                        }
+                                    }
+                                </select>
+
+                                <button type="submit" class="btn btn-sm btn-primary">
+                                    Save
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
