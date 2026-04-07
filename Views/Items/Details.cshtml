@@ -24,6 +24,12 @@
 <div class="d-flex justify-content-between align-items-start mb-3">
     <div>
         <h1 class="mb-1">@Model.Name</h1>
+        @if (Model.ActualCost.HasValue && string.IsNullOrWhiteSpace(Model.PurchaseReceiptPath))
+        {
+            <div class="alert alert-warning text-center fw-bold mb-4 shadow-sm">
+                This item has an actual cost but is missing a purchase receipt.
+            </div>
+        }
         <div class="text-muted">
             Project: <strong>@Model.Project?.Name</strong>
         </div>

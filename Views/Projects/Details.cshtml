@@ -68,6 +68,22 @@
     <p><strong>Created:</strong> @Model.CreatedAt.ToLocalTime().ToString("g")</p>
 </div>
 
+@if (TempData["WarningMessage"] != null)
+{
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        @TempData["WarningMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
 <!-- 🔷 Budget Summary Cards -->
 <div class="row mb-4">
     <div class="col-md-3">
@@ -212,7 +228,7 @@
 
                                             @if (item.ActualCost.HasValue && string.IsNullOrWhiteSpace(item.PurchaseReceiptPath))
                                             {
-                                                <span class="badge bg-warning text-dark me-1">No Receipt</span>
+                                                <span class="badge bg-warning text-dark me-1">Needs Receipt</span>
                                             }
                                         </div>
                                     </div>
@@ -431,7 +447,7 @@ else
 
                                             @if (item.ActualCost.HasValue && string.IsNullOrWhiteSpace(item.PurchaseReceiptPath))
                                             {
-                                                <span class="badge bg-warning text-dark me-1">No Receipt</span>
+                                                <span class="badge bg-warning text-dark me-1">Needs Receipt</span>
                                             }
                                         </div>
                                     </div>
@@ -550,7 +566,7 @@ else
                                 }
                                 else
                                 {
-                                    <span class="badge bg-warning text-dark me-1">No Receipt</span>
+                                    <span class="badge bg-warning text-dark me-1">Needs Receipt</span>
                                 }
                             </td>
 
@@ -608,6 +624,7 @@ else
                             <th class="text-nowrap"></th>
                         </tr>
                     </thead>
+
                     <tbody>
                     @foreach (var item in group)
                     {
@@ -650,7 +667,7 @@ else
 
                                             @if (item.ActualCost.HasValue && string.IsNullOrWhiteSpace(item.PurchaseReceiptPath))
                                             {
-                                                <span class="badge bg-warning text-dark me-1">No Receipt</span>
+                                                <span class="badge bg-warning text-dark me-1">Needs Receipt</span>
                                             }
                                         </div>
                                     </div>
@@ -867,7 +884,7 @@ else
 
                                             @if (item.ActualCost.HasValue && string.IsNullOrWhiteSpace(item.PurchaseReceiptPath))
                                             {
-                                                <span class="badge bg-warning text-dark me-1">No Receipt</span>
+                                                <span class="badge bg-warning text-dark me-1">Needs Receipt</span>
                                             }
                                         </div>
                                     </div>

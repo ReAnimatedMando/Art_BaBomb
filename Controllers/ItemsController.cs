@@ -125,6 +125,16 @@ namespace Art_BaBomb.Web.Controllers
             {
                 _context.Items.Add(item);
                 await _context.SaveChangesAsync();
+
+                if (NeedsPurchaseReceipt(item))
+                {
+                    TempData["WarningMessage"] = $"\"{item.Name}\" has an actual cost but no purchase receipt uploaded.";
+                }
+                else
+                {
+                    TempData["SuccessMessage"] = $"\"{item.Name}\" created successfully.";
+                }
+
                 return RedirectToAction("Details", "Projects", new { id = item.ProjectId });
             }
 
@@ -228,6 +238,15 @@ namespace Art_BaBomb.Web.Controllers
                     throw;
                 }
 
+                if (NeedsPurchaseReceipt(item))
+                {
+                    TempData["WarningMessage"] = $"\"{item.Name}\" has an actual cost but no purchase receipt uploaded.";
+                }
+                else
+                {
+                    TempData["SuccessMessage"] = $"\"{item.Name}\" updated successfully.";
+                }   
+
                 return RedirectToAction("Details", "Projects", new { id = item.ProjectId });
             }
 
@@ -299,6 +318,11 @@ namespace Art_BaBomb.Web.Controllers
 
             TempData["SuccessMessage"] = $"Moved \"{item.Name}\" back to needed.";
             return RedirectToAction("Details", "Projects", new { id = item.ProjectId });
+        }
+
+        private bool NeedsPurchaseReceipt(Item item)
+        {
+            return item.ActualCost.HasValue && item.ActualCost.Value > 0 && string.IsNullOrWhiteSpace(item.PurchaseReceiptPath);
         }
 
         // GET: Items/Delete/5
