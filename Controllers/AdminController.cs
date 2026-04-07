@@ -100,5 +100,53 @@ namespace Art_BaBomb.Web.Controllers
             TempData["SuccessMessage"] = $"Updated {user.Email} to role: {model.SelectedRole}";
             return RedirectToAction(nameof(Users));
         }
+
+        // POST: Admin/DeleteUser
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteUser(string userId)
+        {
+
+            if (string.IsNullOrWhiteSpace(userId))
+            {
+                TempData["ErrorMessage"] = "Invalid user.";
+                return RedirectToAction(nameof(Users));
+            }
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                TempData["ErrorMessage"] = "User not found.";
+                return RedirectToAction(nameof(Users));
+            }
+
+            var currentAdminEmail = User.Identity?.Name;
+
+            if (string.Equals(user.Email, currentAdminEmail, StringComparison.OrdinalIgnoreCase))
+            {
+                TempData["ErrorMessage"] = "You cannot delete your own account.";
+                return RedirectToAction(nameof(Users));
+            }
+
+            var currentRoles = await _userManager.GetRolesAsync(user);
+            if (currentRoles.Any())
+            {
+                var removeRolesResult = await _userManager.RemoveFromRolesAsync(user, currentRoles);
+                if (!removeRolesResult.Succeeded)
+                {
+                    TempData["ErrorMessage"] = "Could not remove user roles.";
+                    return RedirectToAction(nameof(Users));
+                }
+            }
+
+            var result = await _userManager.DeleteAsync(user);
+            if (!result.Succeeded)
+            {
+                TempData["ErrorMessage"] = "Could not delete user.";
+                return RedirectToAction(nameof(Users));
+            }
+
+            TempData["SuccessMessage"] = $"Deleted user: {user.Email}";
+            return RedirectToAction(nameof(Users));
+        }
     }
 }
