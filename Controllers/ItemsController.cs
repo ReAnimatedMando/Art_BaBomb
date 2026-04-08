@@ -519,6 +519,7 @@ namespace Art_BaBomb.Web.Controllers
             return RedirectToAction(nameof(Details), new { id = item.Id });
         }
 
+        // DELETE: Delete Uploaded File
         private void DeleteUploadedFile(string? relativePath)
         {
             if (string.IsNullOrWhiteSpace(relativePath))
@@ -647,7 +648,23 @@ namespace Art_BaBomb.Web.Controllers
                     _context.Update(item);
                     await _context.SaveChangesAsync();
 
-                    TempData["SuccessMessage"] = "Return info updated successfully.";
+                    if (MissingReturnByDate(item))
+                    {
+                        TempData["WarningMessage"] = $"\"{item.Name}\" is in the return workflow but has no return-by date.";
+                    }
+                    else if (HasPastReturnByDate(item))
+                    {
+                        TempData["WarningMessage"] = $"\"{item.Name}\" has a return-by date in the past.";
+                    }
+                    else if (NeedsReturnReceipt(item))
+                    {
+                        TempData["WarningMessage"] = $"\"{item.Name}\" was marked returned but is missing a return receipt.";
+                    }
+                    else
+                    {
+                        TempData["SuccessMessage"] = "Return info updated successfully.";
+                    }
+
                     return RedirectToAction(nameof(Details), new { id = item.Id });
                 }
                 catch (DbUpdateConcurrencyException)
@@ -663,6 +680,28 @@ namespace Art_BaBomb.Web.Controllers
 
             item.Project = await _context.Projects.FindAsync(item.ProjectId);
             return View(item);
+        }
+
+        // Return Workflow: Warning without return receipt
+        private bool NeedsReturnReceipt(Item item)
+        {
+            return item.IsReturned && string.IsNullOrWhiteSpace(item.ReturnReceiptPath);
+        }
+
+        // Return Workflow: Warning for missing return-by date
+        private bool MissingReturnByDate(Item item)
+        {
+            return item.IsReturnRequired
+                && !item.IsReturned
+                && !item.ReturnByDate.HasValue;
+        }
+
+        private bool HasPastReturnByDate(Item item)
+        {
+            return item.IsReturnRequired
+                && !item.IsReturned
+                && item.ReturnByDate.HasValue
+                && item.ReturnByDate.Value.Date < DateTime.Today;
         }
 
         // POST: Mark as Returned
@@ -682,6 +721,15 @@ namespace Art_BaBomb.Web.Controllers
             item.ReturnedAt = DateTime.UtcNow;
 
             await _context.SaveChangesAsync();
+
+            if (NeedsReturnReceipt(item))
+            {
+                TempData["WarningMessage"] = $"\"{item.Name}\" is marked as returned but is missing a return receipt.";
+            }
+            else
+            {
+                TempData["SuccessMessage"] = $"\"{item.Name}\" marked as returned.";
+            }
 
             return RedirectToAction(nameof(Details), new { id = item.Id });
         }
