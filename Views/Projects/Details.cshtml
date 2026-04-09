@@ -151,7 +151,7 @@
     </div>
 </div>
 
-<div class="mb-3">
+<div class="d-flex flex-wrap gap-2 mb-3">
     @if (User.IsInRole("Admin") || User.IsInRole("Shopper"))
     {
         <a asp-controller="Items"
@@ -185,7 +185,7 @@
     Needed Items (@neededItems.Count)
     @if (neededAttentionCount > 0)
     {
-        <span class="badge bg-warning text-dark ms-2">@neededAttentionCount needs attention</span>
+        <span class="badge bg-warning text-dark ms-2">@neededAttentionCount attention</span>
     }
 </h2>
 @if (neededGroups.Any())
@@ -351,10 +351,7 @@
                                        data-receipt-src="@item.PurchaseReceiptPath"
                                        data-receipt-title="@item.Name - Receipt"
                                        class="receipt-preview-trigger">
-                                        <img src="@item.PurchaseReceiptPath"
-                                             alt="Receipt"
-                                             style="width: 44px; height: 44px; object-fit: cover;"
-                                             class="rounded border bg-light" />
+                                        <img src="@item.PurchaseReceiptPath" alt="Receipt" class="receipt-thumb rounded border bg-light" />
                                     </a>
                                 }
                                 else if (!string.IsNullOrWhiteSpace(item.PurchaseReceiptPath))
@@ -370,7 +367,7 @@
                             </td>
 
                             <td class="text-nowrap">
-                                <div class="d-inline-flex gap-1">
+                                <div class="d-inline-flex align-items-center gap-1">
                                     @if (User.IsInRole("Admin") || User.IsInRole("Shopper"))
                                     {
                                         <form asp-controller="Items" asp-action="MarkAcquired" asp-route-id="@item.Id" method="post" class="d-inline">
@@ -402,7 +399,7 @@ else
     Acquired Items (@acquiredItems.Count)
     @if (acquiredAttentionCount > 0)
     {
-        <span class="badge bg-warning text-dark ms-2">@acquiredAttentionCount needs attention</span>
+        <span class="badge bg-warning text-dark ms-2">@acquiredAttentionCount attention</span>
     }
 </h2>
 @if (acquiredGroups.Any())
@@ -576,10 +573,7 @@ else
                                        data-receipt-src="@item.PurchaseReceiptPath"
                                        data-receipt-title="@item.Name - Receipt"
                                        class="receipt-preview-trigger">
-                                        <img src="@item.PurchaseReceiptPath"
-                                             alt="Receipt"
-                                             style="width: 44px; height: 44px; object-fit: cover;"
-                                             class="rounded border bg-light" />
+                                        <img src="@item.PurchaseReceiptPath" alt="Receipt" class="receipt-thumb rounded border bg-light" />
                                     </a>
                                 }
                                 else if (!string.IsNullOrWhiteSpace(item.PurchaseReceiptPath))
@@ -590,12 +584,12 @@ else
                                 }
                                 else
                                 {
-                                    <span class="badge bg-warning text-dark me-1">Needs Receipt</span>
+                                    <span class="badge bg-warning text-dark me-1">-</span>
                                 }
                             </td>
 
                             <td class="text-nowrap">
-                                <div class="d-inline-flex gap-1">
+                                <div class="d-inline-flex align-items-center gap-1">
                                      @if (User.IsInRole("Admin") || User.IsInRole("Shopper"))
                                     {
                                         <form asp-controller="Items" asp-action="MarkNeeded" asp-route-id="@item.Id" method="post" class="d-inline">
@@ -627,7 +621,7 @@ else
     Return Queue (@returnItems.Count)
     @if (returnAttentionCount > 0)
     {
-        <span class="badge bg-warning text-dark ms-2">@returnAttentionCount needs attention</span>
+        <span class="badge bg-warning text-dark ms-2">@returnAttentionCount attention</span>
     }
 </h2>
 @if (returnGroups.Any())
@@ -687,7 +681,7 @@ else
                                         <div class="mt-1">
                                             @if (item.IsReturnRequired && !item.IsReturned)
                                             {
-                                                <span class="badge bg-warning text-dark me-1">Return</span>
+                                                <span class="badge bg-warning text-dark me-1">Return Pending</span>
                                             }
 
                                             @if (item.IsReturned)
@@ -695,10 +689,6 @@ else
                                                 <span class="badge bg-secondary me-1">Returned</span>
                                             }
 
-                                            @if (item.ActualCost.HasValue && string.IsNullOrWhiteSpace(item.PurchaseReceiptPath))
-                                            {
-                                                <span class="badge bg-danger me-1">Needs Receipt</span>
-                                            }
                                         </div>
                                     </div>
                                 </div>
@@ -800,16 +790,13 @@ else
                                        data-receipt-src="@item.ReturnReceiptPath"
                                        data-receipt-title="@item.Name - Return Receipt"
                                        class="receipt-preview-trigger">
-                                        <img src="@item.ReturnReceiptPath"
-                                             alt="Receipt"
-                                             style="width: 44px; height: 44px; object-fit: cover;"
-                                             class="rounded border bg-light" />
+                                        <img src="@item.ReturnReceiptPath" alt="Return Receipt" class="receipt-thumb rounded border bg-light" />
                                     </a>
                                 }
                                 else if (!string.IsNullOrWhiteSpace(item.ReturnReceiptPath))
                                 {
                                     <a href="@item.ReturnReceiptPath" target="_blank" class="btn btn-sm btn-outline-primary">
-                                        Return Receipt
+                                        Receipt
                                     </a>
                                 }
                                 else
@@ -819,10 +806,10 @@ else
                             </td>
 
                             <td class="text-nowrap">
-                                <div class="d-inline-flex gap-1">
+                                <div class="d-inline-flex align-items-center gap-1">
                                      @if (User.IsInRole("Admin") || User.IsInRole("Shopper"))
                                     {
-                                        <a asp-controller="Items" asp-action="ReturnInfo" asp-route-id="@item.Id" class="btn btn-sm btn-outline-warning">Return Info</a>
+                                        <a asp-controller="Items" asp-action="ReturnInfo" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary">Return Info</a>
 
                                         <form asp-controller="Items" asp-action="MarkReturned" asp-route-id="@item.Id" method="post" class="d-inline">
                                             @Html.AntiForgeryToken()
@@ -851,7 +838,7 @@ else
     Returned Items (@returnedItems.Count)
     @if (returnedAttentionCount > 0)
     {
-        <span class="badge bg-warning text-dark ms-2">@returnedAttentionCount needs attention</span>
+        <span class="badge bg-warning text-dark ms-2">@returnedAttentionCount attention</span>
     }
 </h2>
 @if (returnedGroups.Any())
@@ -908,20 +895,7 @@ else
                                         <div>@item.Name</div>
 
                                         <div class="mt-1">
-                                            @if (item.IsReturnRequired && !item.IsReturned)
-                                            {
-                                                <span class="badge bg-warning text-dark me-1">Return</span>
-                                            }
-
-                                            @if (item.IsReturned)
-                                            {
-                                                <span class="badge bg-secondary me-1">Returned</span>
-                                            }
-
-                                            @if (item.ActualCost.HasValue && string.IsNullOrWhiteSpace(item.PurchaseReceiptPath))
-                                            {
-                                                <span class="badge bg-danger me-1">Needs Receipt</span>
-                                            }
+                                            <span class="badge bg-secondary me-1">Returned</span>
                                         </div>
                                     </div>
                                 </div>
@@ -995,15 +969,12 @@ else
                                        data-receipt-src="@item.ReturnReceiptPath"
                                        data-receipt-title="@item.Name - Return Receipt"
                                        class="receipt-preview-trigger">
-                                        <img src="@item.ReturnReceiptPath"
-                                             alt="Return Receipt"
-                                             style="width: 44px; height: 44px; object-fit: cover;"
-                                             class="rounded border bg-light" />
+                                        <img src="@item.ReturnReceiptPath" alt="Return Receipt" class="receipt-thumb rounded border bg-light" />
                                     </a>
                                 }
                                 else if (!string.IsNullOrWhiteSpace(item.ReturnReceiptPath))
                                 {
-                                    <a href="@item.ReturnReceiptPath" target="_blank" class="btn btn-sm btn-outline-danger">
+                                    <a href="@item.ReturnReceiptPath" target="_blank" class="btn btn-sm btn-outline-primary">
                                         Receipt
                                     </a>
                                 }
@@ -1016,7 +987,7 @@ else
                             <td class="text-nowrap">
                                 @if (!string.IsNullOrWhiteSpace(item.ReturnReceiptPath))
                                 {
-                                    <span class="text-success fw-semibold">Uploaded</span>
+                                    <span class="text-success fw-semibold">Complete</span>
                                 }
                                 else
                                 {
@@ -1026,16 +997,18 @@ else
 
                             <td class="text-nowrap">
                                 <div class="d-inline-flex gap-1">
+
+                                    @if (User.IsInRole("Admin") || User.IsInRole("Shopper"))
+                                        {
+                                            <a asp-controller="Items" asp-action="ReturnInfo" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary">
+                                            Return Info
+                                            </a>
+                                        }    
+
                                     <a asp-controller="Items" asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-secondary">
                                         Details
                                     </a>
-
-                                    @if (User.IsInRole("Admin") || User.IsInRole("Shopper"))
-                                    {
-                                        <a asp-controller="Items" asp-action="ReturnInfo" asp-route-id="@item.Id" class="btn btn-sm btn-outline-warning">
-                                            Return Info
-                                        </a>
-                                    }                       
+                
                                 </div>
                             </td>
                         </tr>
