@@ -115,6 +115,16 @@ body {
   background-color: #fff5f5 !important;
 }
 
+.item-row.needs-attention {
+  background-image: linear-gradient(to right, rgba(255, 193, 7, 0.12), rgba(255, 193, 7, 0));
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+}
+
+.item-row.needs-attention:hover, .item-row.needs-attention.table-active {
+  background-color: #fffdf5 !important;
+}
+
 .receipt-drop-zone {
   border: 2px dashed #ced4da;
   border-radius: 0.5rem;

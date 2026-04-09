@@ -59,6 +59,26 @@
         || path.EndsWith(".jpeg", StringComparison.OrdinalIgnoreCase)
         || path.EndsWith(".png", StringComparison.OrdinalIgnoreCase)
         || path.EndsWith(".webp", StringComparison.OrdinalIgnoreCase));
+
+    bool NeedsPurchaseReceipt(Art_BaBomb.Web.Models.Item item) =>
+        item.ActualCost.HasValue && item.ActualCost.Value > 0 && string.IsNullOrWhiteSpace(item.PurchaseReceiptPath);
+
+    bool MissingReturnByDate(Art_BaBomb.Web.Models.Item item) =>
+        item.IsReturnRequired && !item.IsReturned && !item.ReturnByDate.HasValue;
+
+    bool HasPastReturnByDate(Art_BaBomb.Web.Models.Item item) =>
+        item.IsReturnRequired && !item.IsReturned && item.ReturnByDate.HasValue && item.ReturnByDate.Value.Date < DateTime.Today;
+
+    bool NeedsReturnReceipt(Art_BaBomb.Web.Models.Item item) =>
+        item.IsReturned && string.IsNullOrWhiteSpace(item.ReturnReceiptPath);
+
+    bool NeedsAttention(Art_BaBomb.Web.Models.Item item) =>
+        NeedsPurchaseReceipt(item) || MissingReturnByDate(item) || HasPastReturnByDate(item) || NeedsReturnReceipt(item);
+
+    var neededAttentionCount = neededItems.Count(i => NeedsAttention(i));
+    var acquiredAttentionCount = acquiredItems.Count(i => NeedsAttention(i));
+    var returnAttentionCount = returnItems.Count(i => NeedsAttention(i));
+    var returnedAttentionCount = returnedItems.Count(i => NeedsAttention(i));
 }
 
 <h1>@Model.Name</h1>
@@ -161,7 +181,13 @@
 </form>
 
 <!-- ===================== NEEDED ===================== -->
-<h2>Needed Items (@neededItems.Count)</h2>
+<h2>
+    Needed Items (@neededItems.Count)
+    @if (neededAttentionCount > 0)
+    {
+        <span class="badge bg-warning text-dark ms-2">@neededAttentionCount needs attention</span>
+    }
+</h2>
 @if (neededGroups.Any())
 {
     @foreach (var group in neededGroups)
@@ -189,7 +215,7 @@
                     <tbody>
                     @foreach (var item in group)
                     {
-                        <tr tabindex="0" class="item-row" data-item-id="@item.Id">
+                        <tr tabindex="0" class="item-row @(NeedsAttention(item) ? "needs-attention" : "")" data-item-id="@item.Id">
                             <td>
                                 <div class="d-flex align-items-start gap-2">
                                     <div class="item-thumb-slot">
@@ -223,12 +249,12 @@
 
                                             @if (item.IsReturned)
                                             {
-                                                <span class="badge bg-danger me-1">Returned</span>
+                                                <span class="badge bg-secondary me-1">Returned</span>
                                             }
 
                                             @if (item.ActualCost.HasValue && string.IsNullOrWhiteSpace(item.PurchaseReceiptPath))
                                             {
-                                                <span class="badge bg-warning text-dark me-1">Needs Receipt</span>
+                                                <span class="badge bg-danger me-1">Needs Receipt</span>
                                             }
                                         </div>
                                     </div>
@@ -253,15 +279,11 @@
                                             rows="2">@(item.Description ?? "")</textarea>
 
                                     <div class="d-flex gap-1 flex-wrap">
-                                        <button type="button"
-                                                class="btn btn-sm btn-primary save-description-btn"
-                                                data-id="@item.Id">
+                                        <button type="button" class="btn btn-sm btn-primary save-description-btn" data-id="@item.Id">
                                             Save
                                         </button>
 
-                                        <button type="button"
-                                                class="btn btn-sm btn-outline-secondary cancel-description-btn"
-                                                data-id="@item.Id">
+                                        <button type="button" class="btn btn-sm btn-outline-secondary cancel-description-btn" data-id="@item.Id">
                                             Cancel
                                         </button>
                                     </div>
@@ -274,17 +296,13 @@
                                     {
                                         @if (!string.IsNullOrWhiteSpace(item.Description))
                                         {
-                                            <button type="button"
-                                                    class="btn btn-sm btn-link p-0 edit-description-btn"
-                                                    data-id="@item.Id">
+                                            <button type="button" class="btn btn-sm btn-link p-0 edit-description-btn" data-id="@item.Id">
                                                 ✏️ Edit
                                             </button>
                                         }
                                         else
                                         {
-                                            <button type="button"
-                                                class="btn btn-sm btn-link p-0 edit-description-btn text-muted"
-                                                data-id="@item.Id">
+                                            <button type="button" class="btn btn-sm btn-link p-0 edit-description-btn text-muted" data-id="@item.Id">
                                                 + Notes
                                             </button>
                                         }
@@ -380,7 +398,13 @@ else
 }
 
 <!-- ===================== ACQUIRED ===================== -->
-<h2>Acquired Items (@acquiredItems.Count)</h2>
+<h2>
+    Acquired Items (@acquiredItems.Count)
+    @if (acquiredAttentionCount > 0)
+    {
+        <span class="badge bg-warning text-dark ms-2">@acquiredAttentionCount needs attention</span>
+    }
+</h2>
 @if (acquiredGroups.Any())
 {
     @foreach (var group in acquiredGroups)
@@ -408,7 +432,7 @@ else
                     <tbody>
                     @foreach (var item in group)
                     {
-                        <tr tabindex="0" class="item-row" data-item-id="@item.Id">
+                        <tr tabindex="0" class="item-row @(NeedsAttention(item) ? "needs-attention" : "")" data-item-id="@item.Id">
                             <td>
                                 <div class="d-flex align-items-start gap-2">
                                     <div class="item-thumb-slot">
@@ -442,12 +466,12 @@ else
 
                                             @if (item.IsReturned)
                                             {
-                                                <span class="badge bg-danger me-1">Returned</span>
+                                                <span class="badge bg-secondary me-1">Returned</span>
                                             }
 
                                             @if (item.ActualCost.HasValue && string.IsNullOrWhiteSpace(item.PurchaseReceiptPath))
                                             {
-                                                <span class="badge bg-warning text-dark me-1">Needs Receipt</span>
+                                                <span class="badge bg-danger me-1">Needs Receipt</span>
                                             }
                                         </div>
                                     </div>
@@ -599,7 +623,13 @@ else
 }
 
 <!-- ===================== RETURN QUEUE ===================== -->
-<h2>Return Queue (@returnItems.Count)</h2>
+<h2>
+    Return Queue (@returnItems.Count)
+    @if (returnAttentionCount > 0)
+    {
+        <span class="badge bg-warning text-dark ms-2">@returnAttentionCount needs attention</span>
+    }
+</h2>
 @if (returnGroups.Any())
 {
     @foreach (var group in returnGroups)
@@ -628,7 +658,7 @@ else
                     <tbody>
                     @foreach (var item in group)
                     {
-                        <tr tabindex="0" class="item-row @(item.IsReturnRequired && item.ReturnByDate < DateTime.Today ? "overdue" : "")" data-item-id="@item.Id">
+                        <tr tabindex="0" class="item-row @(NeedsAttention(item) ? "needs-attention" : "") @(item.IsReturnRequired && item.ReturnByDate.HasValue && item.ReturnByDate.Value.Date < DateTime.Today ? "overdue" : "")" data-item-id="@item.Id">
                             <td>
                                 <div class="d-flex align-items-start gap-2">
                                     <div class="item-thumb-slot">
@@ -662,12 +692,12 @@ else
 
                                             @if (item.IsReturned)
                                             {
-                                                <span class="badge bg-danger me-1">Returned</span>
+                                                <span class="badge bg-secondary me-1">Returned</span>
                                             }
 
                                             @if (item.ActualCost.HasValue && string.IsNullOrWhiteSpace(item.PurchaseReceiptPath))
                                             {
-                                                <span class="badge bg-warning text-dark me-1">Needs Receipt</span>
+                                                <span class="badge bg-danger me-1">Needs Receipt</span>
                                             }
                                         </div>
                                     </div>
@@ -817,7 +847,13 @@ else
 }
 
 <!-- ===================== RETURNED ITEMS ===================== -->
-<h2>Returned Items (@returnedItems.Count)</h2>
+<h2>
+    Returned Items (@returnedItems.Count)
+    @if (returnedAttentionCount > 0)
+    {
+        <span class="badge bg-warning text-dark ms-2">@returnedAttentionCount needs attention</span>
+    }
+</h2>
 @if (returnedGroups.Any())
 {
     @foreach (var group in returnedGroups)
@@ -845,7 +881,7 @@ else
                     <tbody>
                     @foreach (var item in group)
                     {
-                        <tr tabindex="0" class="item-row" data-item-id="@item.Id">
+                        <tr tabindex="0" class="item-row @(NeedsAttention(item) ? "needs-attention" : "")" data-item-id="@item.Id">
                            <td>
                                 <div class="d-flex align-items-start gap-2">
                                     <div class="item-thumb-slot">
@@ -879,12 +915,12 @@ else
 
                                             @if (item.IsReturned)
                                             {
-                                                <span class="badge bg-danger me-1">Returned</span>
+                                                <span class="badge bg-secondary me-1">Returned</span>
                                             }
 
                                             @if (item.ActualCost.HasValue && string.IsNullOrWhiteSpace(item.PurchaseReceiptPath))
                                             {
-                                                <span class="badge bg-warning text-dark me-1">Needs Receipt</span>
+                                                <span class="badge bg-danger me-1">Needs Receipt</span>
                                             }
                                         </div>
                                     </div>
