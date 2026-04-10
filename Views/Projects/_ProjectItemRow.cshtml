@@ -7,6 +7,10 @@
     var showReturnedColumns = (bool?)ViewData["ShowReturnedColumns"] ?? false;
     var showPurchaseFinancials = (bool?)ViewData["ShowPurchaseFinancials"] ?? false;
 
+    var actionCellClass = section == "ReturnQueue" ? "actions-col-cell actions-col-cell-wide" : "actions-col-cell";
+
+    var useStackedActions = section == "ReturnQueue" || section == "Returned";
+
     bool IsImageReceipt(string? path) =>
         !string.IsNullOrWhiteSpace(path) &&
         (path.EndsWith(".jpg", StringComparison.OrdinalIgnoreCase)
@@ -20,7 +24,7 @@
     data-item-id="@Model.Id">
 
     <td>
-        <div class="d-flex align-items-start gap-2">
+        <div class="item-name-cell-content">
             <div class="item-thumb-slot">
                 @if (!string.IsNullOrWhiteSpace(Model.ImageUrl))
                 {
@@ -41,7 +45,7 @@
                 }
             </div>
 
-            <div>
+            <div class="item-name-text">
                 <div>@Model.Name</div>
 
                 <div class="mt-1">
@@ -165,7 +169,7 @@
         <td class="text-end text-nowrap">@Model.EstimatedCost?.ToString("C")</td>
         <td class="text-end text-nowrap">@Model.ActualCost?.ToString("C")</td>
 
-        <td class="text-nowrap">
+        <td class="text-nowrap receipt-cell">
             @if (IsImageReceipt(Model.PurchaseReceiptPath))
             {
                 <a href="#"
@@ -197,7 +201,7 @@
         <td>@Model.ReturnLocation</td>
         <td class="text-nowrap">@Model.ReturnByDate?.ToString("d")</td>
 
-        <td class="text-nowrap">
+        <td class="text-nowrap receipt-cell">
             @if (IsImageReceipt(Model.ReturnReceiptPath))
             {
                 <a href="#"
@@ -226,9 +230,9 @@
 
     @if (showReturnedColumns)
     {
-        <td class="text-nowrap">@Model.ReturnedAt?.ToLocalTime().ToString("g")</td>
+        <td class="returned-at-cell">@Model.ReturnedAt?.ToLocalTime().ToString("g")</td>
 
-        <td class="text-nowrap">
+        <td class="text-nowrap receipt-cell">
             @if (IsImageReceipt(Model.ReturnReceiptPath))
             {
                 <a href="#"
@@ -266,15 +270,15 @@
         </td>
     }
 
-    <td class="text-nowrap">
-        <div class="d-inline-flex align-items-center gap-1">
+    <td class="@actionCellClass">
+        <div class="@(useStackedActions ? "item-action-group item-action-group-stacked" : "item-action-group")">
             @if (canEdit)
             {
                 @if (section == "Needed")
                 {
                     <form asp-controller="Items" asp-action="MarkAcquired" asp-route-id="@Model.Id" method="post" class="d-inline">
                         @Html.AntiForgeryToken()
-                        <button type="submit" class="btn btn-sm btn-success">+</button>
+                        <button type="submit" class="btn btn-sm btn-success btn-icon">+</button>
                     </form>
 
                     <a asp-controller="Items" asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-sm btn-outline-primary">
@@ -285,7 +289,7 @@
                 {
                     <form asp-controller="Items" asp-action="MarkNeeded" asp-route-id="@Model.Id" method="post" class="d-inline">
                         @Html.AntiForgeryToken()
-                        <button type="submit" class="btn btn-sm btn-outline-warning">-</button>
+                        <button type="submit" class="btn btn-sm btn-outline-warning btn-icon">-</button>
                     </form>
 
                     <a asp-controller="Items" asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-sm btn-outline-primary">
