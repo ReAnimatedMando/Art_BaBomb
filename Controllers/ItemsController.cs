@@ -126,7 +126,7 @@ namespace Art_BaBomb.Web.Controllers
                 _context.Items.Add(item);
                 await _context.SaveChangesAsync();
 
-                if (NeedsPurchaseReceipt(item))
+                if (item.NeedsPurchaseReceipt)
                 {
                     TempData["WarningMessage"] = $"\"{item.Name}\" has an actual cost but no purchase receipt uploaded.";
                 }
@@ -238,14 +238,14 @@ namespace Art_BaBomb.Web.Controllers
                     throw;
                 }
 
-                if (NeedsPurchaseReceipt(item))
+                if (item.NeedsPurchaseReceipt)
                 {
                     TempData["WarningMessage"] = $"\"{item.Name}\" has an actual cost but no purchase receipt uploaded.";
                 }
                 else
                 {
                     TempData["SuccessMessage"] = $"\"{item.Name}\" updated successfully.";
-                }   
+                }
 
                 return RedirectToAction("Details", "Projects", new { id = item.ProjectId });
             }
@@ -283,6 +283,7 @@ namespace Art_BaBomb.Web.Controllers
         // POST: Mark as Acquired / Mark as Needed
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin,Shopper")]
         public async Task<IActionResult> MarkAcquired(int id)
         {
             var item = await _context.Items.FindAsync(id);
@@ -293,6 +294,7 @@ namespace Art_BaBomb.Web.Controllers
             }
 
             item.Status = "Acquired";
+            item.IsReturned = false;
 
             await _context.SaveChangesAsync();
 
@@ -303,6 +305,7 @@ namespace Art_BaBomb.Web.Controllers
         // POST: Mark as Needed
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin,Shopper")]
         public async Task<IActionResult> MarkNeeded(int id)
         {
             var item = await _context.Items.FindAsync(id);
@@ -318,11 +321,6 @@ namespace Art_BaBomb.Web.Controllers
 
             TempData["SuccessMessage"] = $"Moved \"{item.Name}\" back to needed.";
             return RedirectToAction("Details", "Projects", new { id = item.ProjectId });
-        }
-
-        private bool NeedsPurchaseReceipt(Item item)
-        {
-            return item.ActualCost.HasValue && item.ActualCost.Value > 0 && string.IsNullOrWhiteSpace(item.PurchaseReceiptPath);
         }
 
         // GET: Items/Delete/5
@@ -369,6 +367,7 @@ namespace Art_BaBomb.Web.Controllers
         // POST: Update Description
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin,Shopper")]
         public async Task<IActionResult> UpdateDescription(int id, string? description)
         {
             var item = await _context.Items.FindAsync(id);
@@ -398,6 +397,7 @@ namespace Art_BaBomb.Web.Controllers
         }
 
         // GET: Items/PurchaseReceipt/5
+        [Authorize(Roles = "Admin,Shopper")]
         public async Task<IActionResult> PurchaseReceipt(int? id)
         {
             if (id == null)
@@ -420,6 +420,7 @@ namespace Art_BaBomb.Web.Controllers
         // POST: Purchase Receipt
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin,Shopper")]
         public async Task<IActionResult> PurchaseReceipt(int id, IFormFile? purchaseReceiptFile)
         {
             var item = await _context.Items
@@ -498,6 +499,7 @@ namespace Art_BaBomb.Web.Controllers
         // POST: Delete Purchase Receipt
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin,Shopper")]
         public async Task<IActionResult> DeletePurchaseReceipt(int id)
         {
             var item = await _context.Items.FindAsync(id);
@@ -539,7 +541,7 @@ namespace Art_BaBomb.Web.Controllers
         }
 
         // GET: ReturnInfo
-
+        [Authorize(Roles = "Admin,Shopper")]
         public async Task<IActionResult> ReturnInfo(int? id)
         {
             if (id == null)
@@ -562,6 +564,7 @@ namespace Art_BaBomb.Web.Controllers
         // POST: ReturnInfo
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin,Shopper")]
         public async Task<IActionResult> ReturnInfo(
             int id,
             [Bind("Id,ProjectId,Name,Category,Description,EstimatedCost,ActualCost,Status,ImageUrl,IsReturnRequired,ReturnNotes,ReturnLocation,ReturnByDate,IsReturned,ReturnedAt,PurchaseReceiptFileName,PurchaseReceiptPath,ReturnReceiptFileName,ReturnReceiptPath")]
@@ -648,21 +651,21 @@ namespace Art_BaBomb.Web.Controllers
                     _context.Update(item);
                     await _context.SaveChangesAsync();
 
-                    if (MissingReturnByDate(item))
+                    if (item.MissingReturnByDate)
                     {
                         TempData["WarningMessage"] = $"\"{item.Name}\" is in the return workflow but has no return-by date.";
                     }
-                    else if (HasPastReturnByDate(item))
+                    else if (item.HasPastReturnByDate)
                     {
                         TempData["WarningMessage"] = $"\"{item.Name}\" has a return-by date in the past.";
                     }
-                    else if (NeedsReturnReceipt(item))
+                    else if (item.NeedsReturnReceipt)
                     {
                         TempData["WarningMessage"] = $"\"{item.Name}\" was marked returned but is missing a return receipt.";
                     }
                     else
                     {
-                        TempData["SuccessMessage"] = "Return info updated successfully.";
+                        TempData["SuccessMessage"] = $"\"{item.Name}\" return info updated successfully.";
                     }
 
                     return RedirectToAction(nameof(Details), new { id = item.Id });
@@ -682,31 +685,10 @@ namespace Art_BaBomb.Web.Controllers
             return View(item);
         }
 
-        // Return Workflow: Warning without return receipt
-        private bool NeedsReturnReceipt(Item item)
-        {
-            return item.IsReturned && string.IsNullOrWhiteSpace(item.ReturnReceiptPath);
-        }
-
-        // Return Workflow: Warning for missing return-by date
-        private bool MissingReturnByDate(Item item)
-        {
-            return item.IsReturnRequired
-                && !item.IsReturned
-                && !item.ReturnByDate.HasValue;
-        }
-
-        private bool HasPastReturnByDate(Item item)
-        {
-            return item.IsReturnRequired
-                && !item.IsReturned
-                && item.ReturnByDate.HasValue
-                && item.ReturnByDate.Value.Date < DateTime.Today;
-        }
-
         // POST: Mark as Returned
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin,Shopper")]
         public async Task<IActionResult> MarkReturned(int id)
         {
             var item = await _context.Items.FindAsync(id);
@@ -722,7 +704,7 @@ namespace Art_BaBomb.Web.Controllers
 
             await _context.SaveChangesAsync();
 
-            if (NeedsReturnReceipt(item))
+            if (item.NeedsReturnReceipt)
             {
                 TempData["WarningMessage"] = $"\"{item.Name}\" is marked as returned but is missing a return receipt.";
             }
