@@ -1,24 +1,21 @@
 @model Art_BaBomb.Web.Models.Project
+@using Microsoft.AspNetCore.Mvc.ViewFeatures
 
 @{
     ViewData["Title"] = "Project Details";
 
     var neededItems = Model.Items
-        .Where(i => string.IsNullOrWhiteSpace(i.Status)
-            || i.Status.Trim().Equals("Needed", StringComparison.OrdinalIgnoreCase))
+        .Where(i => i.IsNeeded)
         .OrderBy(i => i.Name)
         .ToList();
 
     var acquiredItems = Model.Items
-        .Where(i =>
-            (i.Status ?? "").Trim().Equals("Acquired", StringComparison.OrdinalIgnoreCase)
-            && !i.IsReturnRequired
-            && !i.IsReturned)
+        .Where(i => i.IsAcquired && !i.IsReturnRequired && !i.IsReturned)
         .OrderBy(i => i.Name)
         .ToList();
 
     var returnItems = Model.Items
-        .Where(i => i.IsReturnRequired && !i.IsReturned)
+        .Where(i => i.IsInReturnQueue)
         .OrderBy(i => i.ReturnByDate)
         .ThenBy(i => i.Name)
         .ToList();
@@ -60,25 +57,11 @@
         || path.EndsWith(".png", StringComparison.OrdinalIgnoreCase)
         || path.EndsWith(".webp", StringComparison.OrdinalIgnoreCase));
 
-    bool NeedsPurchaseReceipt(Art_BaBomb.Web.Models.Item item) =>
-        item.ActualCost.HasValue && item.ActualCost.Value > 0 && string.IsNullOrWhiteSpace(item.PurchaseReceiptPath);
-
-    bool MissingReturnByDate(Art_BaBomb.Web.Models.Item item) =>
-        item.IsReturnRequired && !item.IsReturned && !item.ReturnByDate.HasValue;
-
-    bool HasPastReturnByDate(Art_BaBomb.Web.Models.Item item) =>
-        item.IsReturnRequired && !item.IsReturned && item.ReturnByDate.HasValue && item.ReturnByDate.Value.Date < DateTime.Today;
-
-    bool NeedsReturnReceipt(Art_BaBomb.Web.Models.Item item) =>
-        item.IsReturned && string.IsNullOrWhiteSpace(item.ReturnReceiptPath);
-
-    bool NeedsAttention(Art_BaBomb.Web.Models.Item item) =>
-        NeedsPurchaseReceipt(item) || MissingReturnByDate(item) || HasPastReturnByDate(item) || NeedsReturnReceipt(item);
-
-    var neededAttentionCount = neededItems.Count(i => NeedsAttention(i));
-    var acquiredAttentionCount = acquiredItems.Count(i => NeedsAttention(i));
-    var returnAttentionCount = returnItems.Count(i => NeedsAttention(i));
-    var returnedAttentionCount = returnedItems.Count(i => NeedsAttention(i));
+    // ✅ NEW: Use model logic instead of local helper functions
+    var neededAttentionCount = neededItems.Count(i => i.NeedsAttention);
+    var acquiredAttentionCount = acquiredItems.Count(i => i.NeedsAttention);
+    var returnAttentionCount = returnItems.Count(i => i.NeedsAttention);
+    var returnedAttentionCount = returnedItems.Count(i => i.NeedsAttention);
 }
 
 <h1>@Model.Name</h1>
@@ -215,173 +198,14 @@
                     <tbody>
                     @foreach (var item in group)
                     {
-                        <tr tabindex="0" class="item-row @(NeedsAttention(item) ? "needs-attention" : "")" data-item-id="@item.Id">
-                            <td>
-                                <div class="d-flex align-items-start gap-2">
-                                    <div class="item-thumb-slot">
-                                        @if (!string.IsNullOrWhiteSpace(item.ImageUrl))
-                                        {
-                                            <a href="#"
-                                                data-bs-toggle="modal"
-                                                data-bs-target="#itemPreviewModal"
-                                                data-item-src="@item.ImageUrl"
-                                                data-item-title="@item.Name"
-                                                class="item-preview-trigger">
-                                                <img src="@item.ImageUrl"
-                                                    alt="@item.Name"
-                                                    class="item-thumb rounded border bg-light" />
-                                            </a>
-                                        }
-                                        else
-                                        {
-                                            <div class="item-thumb item-thumb-placeholder rounded border bg-light"></div>
-                                        }
-                                    </div>
-
-                                    <div>
-                                        <div>@item.Name</div>
-
-                                        <div class="mt-1">
-                                            @if (item.IsReturnRequired && !item.IsReturned)
-                                            {
-                                                <span class="badge bg-warning text-dark me-1">Return</span>
-                                            }
-
-                                            @if (item.IsReturned)
-                                            {
-                                                <span class="badge bg-secondary me-1">Returned</span>
-                                            }
-
-                                            @if (item.ActualCost.HasValue && string.IsNullOrWhiteSpace(item.PurchaseReceiptPath))
-                                            {
-                                                <span class="badge bg-danger me-1">Needs Receipt</span>
-                                            }
-                                        </div>
-                                    </div>
-                                </div>
-                            </td>
-
-                            <td class="notes-col">
-                                <div class="small text-muted" id="description-display-@item.Id">
-                                    @if (string.IsNullOrWhiteSpace(item.Description))
-                                    {
-                                        <span class="fst-italic">No notes</span>
-                                    }
-                                    else
-                                    {
-                                        @item.Description
-                                    }
-                                </div>
-
-                                <div class="mt-1 d-none" id="description-editor-@item.Id">
-                                    <textarea class="form-control form-control-sm mb-2 inline-description-input"
-                                            id="description-input-@item.Id"
-                                            rows="2">@(item.Description ?? "")</textarea>
-
-                                    <div class="d-flex gap-1 flex-wrap">
-                                        <button type="button" class="btn btn-sm btn-primary save-description-btn" data-id="@item.Id">
-                                            Save
-                                        </button>
-
-                                        <button type="button" class="btn btn-sm btn-outline-secondary cancel-description-btn" data-id="@item.Id">
-                                            Cancel
-                                        </button>
-                                    </div>
-
-                                    <div class="form-text">Enter to save, Shift+Enter for new line.</div>
-                                </div>
-
-                                <div class="mt-1">
-                                    @if (User.IsInRole("Admin") || User.IsInRole("Shopper"))
-                                    {
-                                        @if (!string.IsNullOrWhiteSpace(item.Description))
-                                        {
-                                            <button type="button" class="btn btn-sm btn-link p-0 edit-description-btn" data-id="@item.Id">
-                                                ✏️ Edit
-                                            </button>
-                                        }
-                                        else
-                                        {
-                                            <button type="button" class="btn btn-sm btn-link p-0 edit-description-btn text-muted" data-id="@item.Id">
-                                                + Notes
-                                            </button>
-                                        }
-                                    }
-                                </div>
-                            </td>
-
-                            <td class="text-center">
-                                @if (User.IsInRole("Admin") || User.IsInRole("Shopper"))
-                                {
-                                    <div class="qty-stepper" data-item-id="@item.Id">
-                                        <button type="button"
-                                                class="qty-btn qty-adjust-btn"
-                                                data-id="@item.Id"
-                                                data-delta="-1"
-                                                @(item.Quantity <= 1 ? "disabled=\"disabled\"" : "")>
-                                            −
-                                        </button>
-
-                                        <span class="qty-value" id="qty-value-@item.Id">@item.Quantity</span>
-
-                                        <button type="button"
-                                                class="qty-btn qty-adjust-btn"
-                                                data-id="@item.Id"
-                                                data-delta="1">
-                                            +
-                                        </button>
-                                    </div>
-                                }
-                                else
-                                {
-                                    <span class="qty-value">@item.Quantity</span>
-                                }
-                            </td>
-
-                            <td>@item.Category</td>
-                            <td class="text-end text-nowrap">@item.EstimatedCost?.ToString("C")</td>
-                            <td class="text-end text-nowrap">@item.ActualCost?.ToString("C")</td>
-
-                            <td class="text-nowrap">
-                                @if (IsImageReceipt(item.PurchaseReceiptPath))
-                                {
-                                    <a href="#"
-                                       data-bs-toggle="modal"
-                                       data-bs-target="#receiptPreviewModal"
-                                       data-receipt-src="@item.PurchaseReceiptPath"
-                                       data-receipt-title="@item.Name - Receipt"
-                                       class="receipt-preview-trigger">
-                                        <img src="@item.PurchaseReceiptPath" alt="Receipt" class="receipt-thumb rounded border bg-light" />
-                                    </a>
-                                }
-                                else if (!string.IsNullOrWhiteSpace(item.PurchaseReceiptPath))
-                                {
-                                    <a href="@item.PurchaseReceiptPath" target="_blank" class="btn btn-sm btn-outline-primary">
-                                        Receipt
-                                    </a>
-                                }
-                                else
-                                {
-                                    <span class="text-muted">—</span>
-                                }
-                            </td>
-
-                            <td class="text-nowrap">
-                                <div class="d-inline-flex align-items-center gap-1">
-                                    @if (User.IsInRole("Admin") || User.IsInRole("Shopper"))
-                                    {
-                                        <form asp-controller="Items" asp-action="MarkAcquired" asp-route-id="@item.Id" method="post" class="d-inline">
-                                            @Html.AntiForgeryToken()
-                                            <button type="submit" class="btn btn-sm btn-success">+</button>
-                                        </form>
-
-                                        <a asp-controller="Items" asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm               btn-outline-primary">Edit</a>
-                                    }
-
-                                    <a asp-controller="Items" asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm                btn-outline-secondary">Details</a>
-                                </div>
-                            </td>
-                        </tr>
+                        @await Html.PartialAsync("_ProjectItemRow", item, new ViewDataDictionary(ViewData)
+                        {
+                            ["Section"] = "Needed",
+                            ["CanEdit"] = User.IsInRole("Admin") || User.IsInRole("Shopper"),
+                            ["ShowPurchaseFinancials"] = true,
+                            ["ShowReturnColumns"] = false,
+                            ["ShowReturnedColumns"] = false
+                        })
                     }
                     </tbody>
                 </table>
@@ -429,181 +253,14 @@ else
                     <tbody>
                     @foreach (var item in group)
                     {
-                        <tr tabindex="0" class="item-row @(NeedsAttention(item) ? "needs-attention" : "")" data-item-id="@item.Id">
-                            <td>
-                                <div class="d-flex align-items-start gap-2">
-                                    <div class="item-thumb-slot">
-                                        @if (!string.IsNullOrWhiteSpace(item.ImageUrl))
-                                        {
-                                            <a href="#"
-                                                data-bs-toggle="modal"
-                                                data-bs-target="#itemPreviewModal"
-                                                data-item-src="@item.ImageUrl"
-                                                data-item-title="@item.Name"
-                                                class="item-preview-trigger">
-                                                <img src="@item.ImageUrl"
-                                                    alt="@item.Name"
-                                                    class="item-thumb rounded border bg-light" />
-                                            </a>
-                                        }
-                                        else
-                                        {
-                                            <div class="item-thumb item-thumb-placeholder rounded border bg-light"></div>
-                                        }
-                                    </div>
-
-                                    <div>
-                                        <div>@item.Name</div>
-
-                                        <div class="mt-1">
-                                            @if (item.IsReturnRequired && !item.IsReturned)
-                                            {
-                                                <span class="badge bg-warning text-dark me-1">Return</span>
-                                            }
-
-                                            @if (item.IsReturned)
-                                            {
-                                                <span class="badge bg-secondary me-1">Returned</span>
-                                            }
-
-                                            @if (item.ActualCost.HasValue && string.IsNullOrWhiteSpace(item.PurchaseReceiptPath))
-                                            {
-                                                <span class="badge bg-danger me-1">Needs Receipt</span>
-                                            }
-                                        </div>
-                                    </div>
-                                </div>
-                            </td>
-
-                            <td class="notes-col">
-                                <div class="small text-muted" id="description-display-@item.Id">
-                                    @if (string.IsNullOrWhiteSpace(item.Description))
-                                    {
-                                        <span class="fst-italic">No notes</span>
-                                    }
-                                    else
-                                    {
-                                        @item.Description
-                                    }
-                                </div>
-
-                                <div class="mt-1 d-none" id="description-editor-@item.Id">
-                                    <textarea class="form-control form-control-sm mb-2 inline-description-input"
-                                            id="description-input-@item.Id"
-                                            rows="2">@(item.Description ?? "")</textarea>
-
-                                    <div class="d-flex gap-1 flex-wrap">
-                                        <button type="button"
-                                                class="btn btn-sm btn-primary save-description-btn"
-                                                data-id="@item.Id">
-                                            Save
-                                        </button>
-
-                                        <button type="button"
-                                                class="btn btn-sm btn-outline-secondary cancel-description-btn"
-                                                data-id="@item.Id">
-                                            Cancel
-                                        </button>
-                                    </div>
-
-                                    <div class="form-text">Enter to save, Shift+Enter for new line.</div>
-                                </div>
-
-                                <div class="mt-1">
-                                    @if (User.IsInRole("Admin") || User.IsInRole("Shopper"))
-                                    {
-                                        @if (!string.IsNullOrWhiteSpace(item.Description))
-                                        {
-                                            <button type="button"
-                                                    class="btn btn-sm btn-link p-0 edit-description-btn"
-                                                    data-id="@item.Id">
-                                                ✏️ Edit
-                                            </button>
-                                        }
-                                        else
-                                        {
-                                            <button type="button"
-                                                class="btn btn-sm btn-link p-0 edit-description-btn text-muted"
-                                                data-id="@item.Id">
-                                                + Notes
-                                            </button>
-                                        }
-                                    }
-                                </div>
-                            </td>
-
-                            <td class="text-center">
-                                @if (User.IsInRole("Admin") || User.IsInRole("Shopper"))
-                                {
-                                    <div class="qty-stepper" data-item-id="@item.Id">
-                                        <button type="button"
-                                                class="qty-btn qty-adjust-btn"
-                                                data-id="@item.Id"
-                                                data-delta="-1"
-                                                @(item.Quantity <= 1 ? "disabled=\"disabled\"" : "")>
-                                            −
-                                        </button>
-
-                                        <span class="qty-value" id="qty-value-@item.Id">@item.Quantity</span>
-
-                                        <button type="button"
-                                                class="qty-btn qty-adjust-btn"
-                                                data-id="@item.Id"
-                                                data-delta="1">
-                                            +
-                                        </button>
-                                    </div>
-                                }
-                                else
-                                {
-                                    <span class="qty-value">@item.Quantity</span>
-                                }
-                            </td>
-
-                            <td>@item.Category</td>
-                            <td class="text-end text-nowrap">@item.EstimatedCost?.ToString("C")</td>
-                            <td class="text-end text-nowrap">@item.ActualCost?.ToString("C")</td>
-
-                            <td class="text-nowrap">
-                                @if (IsImageReceipt(item.PurchaseReceiptPath))
-                                {
-                                    <a href="#"
-                                       data-bs-toggle="modal"
-                                       data-bs-target="#receiptPreviewModal"
-                                       data-receipt-src="@item.PurchaseReceiptPath"
-                                       data-receipt-title="@item.Name - Receipt"
-                                       class="receipt-preview-trigger">
-                                        <img src="@item.PurchaseReceiptPath" alt="Receipt" class="receipt-thumb rounded border bg-light" />
-                                    </a>
-                                }
-                                else if (!string.IsNullOrWhiteSpace(item.PurchaseReceiptPath))
-                                {
-                                    <a href="@item.PurchaseReceiptPath" target="_blank" class="btn btn-sm btn-outline-primary">
-                                        Receipt
-                                    </a>
-                                }
-                                else
-                                {
-                                    <span class="badge bg-warning text-dark me-1">-</span>
-                                }
-                            </td>
-
-                            <td class="text-nowrap">
-                                <div class="d-inline-flex align-items-center gap-1">
-                                     @if (User.IsInRole("Admin") || User.IsInRole("Shopper"))
-                                    {
-                                        <form asp-controller="Items" asp-action="MarkNeeded" asp-route-id="@item.Id" method="post" class="d-inline">
-                                            @Html.AntiForgeryToken()
-                                            <button type="submit" class="btn btn-sm btn-outline-warning">-</button>
-                                        </form>
-
-                                        <a asp-controller="Items" asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary">Edit</a>
-                                    }
-
-                                    <a asp-controller="Items" asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-secondary">Details</a>
-                                </div>
-                            </td>
-                        </tr>
+                        @await Html.PartialAsync("_ProjectItemRow", item, new ViewDataDictionary(ViewData)
+                        {
+                            ["Section"] = "Acquired",
+                            ["CanEdit"] = User.IsInRole("Admin") || User.IsInRole("Shopper"),
+                            ["ShowPurchaseFinancials"] = true,
+                            ["ShowReturnColumns"] = false,
+                            ["ShowReturnedColumns"] = false
+                        })
                     }
                     </tbody>
                 </table>
@@ -652,175 +309,14 @@ else
                     <tbody>
                     @foreach (var item in group)
                     {
-                        <tr tabindex="0" class="item-row @(NeedsAttention(item) ? "needs-attention" : "") @(item.IsReturnRequired && item.ReturnByDate.HasValue && item.ReturnByDate.Value.Date < DateTime.Today ? "overdue" : "")" data-item-id="@item.Id">
-                            <td>
-                                <div class="d-flex align-items-start gap-2">
-                                    <div class="item-thumb-slot">
-                                        @if (!string.IsNullOrWhiteSpace(item.ImageUrl))
-                                        {
-                                            <a href="#"
-                                                data-bs-toggle="modal"
-                                                data-bs-target="#itemPreviewModal"
-                                                data-item-src="@item.ImageUrl"
-                                                data-item-title="@item.Name"
-                                                class="item-preview-trigger">
-                                                <img src="@item.ImageUrl"
-                                                    alt="@item.Name"
-                                                    class="item-thumb rounded border bg-light" />
-                                            </a>
-                                        }
-                                        else
-                                        {
-                                            <div class="item-thumb item-thumb-placeholder rounded border bg-light"></div>
-                                        }
-                                    </div>
-
-                                    <div>
-                                        <div>@item.Name</div>
-
-                                        <div class="mt-1">
-                                            @if (item.IsReturnRequired && !item.IsReturned)
-                                            {
-                                                <span class="badge bg-warning text-dark me-1">Return Pending</span>
-                                            }
-
-                                            @if (item.IsReturned)
-                                            {
-                                                <span class="badge bg-secondary me-1">Returned</span>
-                                            }
-
-                                        </div>
-                                    </div>
-                                </div>
-                            </td>
-
-                            <td class="notes-col">
-                                <div class="small text-muted" id="description-display-@item.Id">
-                                    @if (string.IsNullOrWhiteSpace(item.Description))
-                                    {
-                                        <span class="fst-italic">No notes</span>
-                                    }
-                                    else
-                                    {
-                                        @item.Description
-                                    }
-                                </div>
-
-                                <div class="mt-1 d-none" id="description-editor-@item.Id">
-                                    <textarea class="form-control form-control-sm mb-2 inline-description-input"
-                                            id="description-input-@item.Id"
-                                            rows="2">@(item.Description ?? "")</textarea>
-
-                                    <div class="d-flex gap-1 flex-wrap">
-                                        <button type="button"
-                                                class="btn btn-sm btn-primary save-description-btn"
-                                                data-id="@item.Id">
-                                            Save
-                                        </button>
-
-                                        <button type="button" class="btn btn-sm btn-outline-secondary cancel-description-btn" data-id="@item.Id">
-                                            Cancel
-                                        </button>
-                                    </div>
-
-                                    <div class="form-text">Enter to save, Shift+Enter for new line.</div>
-                                </div>
-
-                                <div class="mt-1">
-                                    @if (User.IsInRole("Admin") || User.IsInRole("Shopper"))
-                                    {
-                                        @if (!string.IsNullOrWhiteSpace(item.Description))
-                                        {
-                                            <button type="button"
-                                                    class="btn btn-sm btn-link p-0 edit-description-btn"
-                                                    data-id="@item.Id">
-                                                ✏️ Edit
-                                            </button>
-                                        }
-                                        else
-                                        {
-                                            <button type="button"
-                                                class="btn btn-sm btn-link p-0 edit-description-btn text-muted"
-                                                data-id="@item.Id">
-                                                + Notes
-                                            </button>
-                                        }
-                                    }
-                                </div>
-                            </td>
-
-                            <td class="text-center">
-                                @if (User.IsInRole("Admin") || User.IsInRole("Shopper"))
-                                {
-                                    <div class="qty-stepper" data-item-id="@item.Id">
-                                        <button type="button"
-                                                class="qty-btn qty-adjust-btn"
-                                                data-id="@item.Id"
-                                                data-delta="-1"
-                                                @(item.Quantity <= 1 ? "disabled=\"disabled\"" : "")>
-                                            −
-                                        </button>
-
-                                        <span class="qty-value" id="qty-value-@item.Id">@item.Quantity</span>
-
-                                        <button type="button"
-                                                class="qty-btn qty-adjust-btn"
-                                                data-id="@item.Id"
-                                                data-delta="1">
-                                            +
-                                        </button>
-                                    </div>
-                                }
-                                else
-                                {
-                                    <span class="qty-value">@item.Quantity</span>
-                                }
-                            </td>
-
-                            <td>@item.Category</td>
-                            <td>@item.ReturnLocation</td>
-                            <td class="text-nowrap">@item.ReturnByDate?.ToString("d")</td>
-
-                            <td class="text-nowrap">
-                                @if (IsImageReceipt(item.ReturnReceiptPath))
-                                {
-                                    <a href="#"
-                                       data-bs-toggle="modal"
-                                       data-bs-target="#receiptPreviewModal"
-                                       data-receipt-src="@item.ReturnReceiptPath"
-                                       data-receipt-title="@item.Name - Return Receipt"
-                                       class="receipt-preview-trigger">
-                                        <img src="@item.ReturnReceiptPath" alt="Return Receipt" class="receipt-thumb rounded border bg-light" />
-                                    </a>
-                                }
-                                else if (!string.IsNullOrWhiteSpace(item.ReturnReceiptPath))
-                                {
-                                    <a href="@item.ReturnReceiptPath" target="_blank" class="btn btn-sm btn-outline-primary">
-                                        Receipt
-                                    </a>
-                                }
-                                else
-                                {
-                                    <span class="text-muted">—</span>
-                                }
-                            </td>
-
-                            <td class="text-nowrap">
-                                <div class="d-inline-flex align-items-center gap-1">
-                                     @if (User.IsInRole("Admin") || User.IsInRole("Shopper"))
-                                    {
-                                        <a asp-controller="Items" asp-action="ReturnInfo" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary">Return Info</a>
-
-                                        <form asp-controller="Items" asp-action="MarkReturned" asp-route-id="@item.Id" method="post" class="d-inline">
-                                            @Html.AntiForgeryToken()
-                                            <button type="submit" class="btn btn-sm btn-danger">Mark Returned</button>
-                                        </form>
-                                    }
-
-                                    <a asp-controller="Items" asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-secondary">Details</a>
-                                </div>
-                            </td>
-                        </tr>
+                        @await Html.PartialAsync("_ProjectItemRow", item, new ViewDataDictionary(ViewData)
+                        {
+                            ["Section"] = "ReturnQueue",
+                            ["CanEdit"] = User.IsInRole("Admin") || User.IsInRole("Shopper"),
+                            ["ShowPurchaseFinancials"] = false,
+                            ["ShowReturnColumns"] = true,
+                            ["ShowReturnedColumns"] = false
+                        })
                     }
                     </tbody>
                 </table>
@@ -868,150 +364,14 @@ else
                     <tbody>
                     @foreach (var item in group)
                     {
-                        <tr tabindex="0" class="item-row @(NeedsAttention(item) ? "needs-attention" : "")" data-item-id="@item.Id">
-                           <td>
-                                <div class="d-flex align-items-start gap-2">
-                                    <div class="item-thumb-slot">
-                                        @if (!string.IsNullOrWhiteSpace(item.ImageUrl))
-                                        {
-                                            <a href="#"
-                                                data-bs-toggle="modal"
-                                                data-bs-target="#itemPreviewModal"
-                                                data-item-src="@item.ImageUrl"
-                                                data-item-title="@item.Name"
-                                                class="item-preview-trigger">
-                                                <img src="@item.ImageUrl"
-                                                    alt="@item.Name"
-                                                    class="item-thumb rounded border bg-light" />
-                                            </a>
-                                        }
-                                        else
-                                        {
-                                            <div class="item-thumb item-thumb-placeholder rounded border bg-light"></div>
-                                        }
-                                    </div>
-
-                                    <div>
-                                        <div>@item.Name</div>
-
-                                        <div class="mt-1">
-                                            <span class="badge bg-secondary me-1">Returned</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </td>
-
-                            <td class="notes-col">
-                                <div class="small text-muted" id="description-display-@item.Id">
-                                    @if (string.IsNullOrWhiteSpace(item.Description))
-                                    {
-                                        <span class="fst-italic">No notes</span>
-                                    }
-                                    else
-                                    {
-                                        @item.Description
-                                    }
-                                </div>
-
-                                <div class="mt-1 d-none" id="description-editor-@item.Id">
-                                    <textarea class="form-control form-control-sm mb-2 inline-description-input"
-                                            id="description-input-@item.Id"
-                                            rows="2">@(item.Description ?? "")</textarea>
-
-                                    <div class="d-flex gap-1 flex-wrap">
-                                        <button type="button"
-                                                class="btn btn-sm btn-primary save-description-btn"
-                                                data-id="@item.Id">
-                                            Save
-                                        </button>
-
-                                        <button type="button" class="btn btn-sm btn-outline-secondary cancel-description-btn" data-id="@item.Id">
-                                            Cancel
-                                        </button>
-                                    </div>
-
-                                    <div class="form-text">Enter to save, Shift+Enter for new line.</div>
-                                </div>
-
-                                <div class="mt-1">
-                                    @if (User.IsInRole("Admin") || User.IsInRole("Shopper"))
-                                    {
-                                        @if (!string.IsNullOrWhiteSpace(item.Description))
-                                        {
-                                            <button type="button"
-                                                    class="btn btn-sm btn-link p-0 edit-description-btn"
-                                                    data-id="@item.Id">
-                                                ✏️ Edit
-                                            </button>
-                                        }
-                                        else
-                                        {
-                                            <button type="button"
-                                                class="btn btn-sm btn-link p-0 edit-description-btn text-muted"
-                                                data-id="@item.Id">
-                                                + Notes
-                                            </button>
-                                        }
-                                    }
-                                </div>
-                            </td>
-
-                            <td class="text-center text-nowrap">@item.Quantity</td>
-                            <td>@item.Category</td>
-                            <td class="text-nowrap">@item.ReturnedAt?.ToLocalTime().ToString("g")</td>
-
-                            <td class="text-nowrap">
-                                @if (IsImageReceipt(item.ReturnReceiptPath))
-                                {
-                                    <a href="#"
-                                       data-bs-toggle="modal"
-                                       data-bs-target="#receiptPreviewModal"
-                                       data-receipt-src="@item.ReturnReceiptPath"
-                                       data-receipt-title="@item.Name - Return Receipt"
-                                       class="receipt-preview-trigger">
-                                        <img src="@item.ReturnReceiptPath" alt="Return Receipt" class="receipt-thumb rounded border bg-light" />
-                                    </a>
-                                }
-                                else if (!string.IsNullOrWhiteSpace(item.ReturnReceiptPath))
-                                {
-                                    <a href="@item.ReturnReceiptPath" target="_blank" class="btn btn-sm btn-outline-primary">
-                                        Receipt
-                                    </a>
-                                }
-                                else
-                                {
-                                    <span class="text-muted">—</span>
-                                }
-                            </td>
-
-                            <td class="text-nowrap">
-                                @if (!string.IsNullOrWhiteSpace(item.ReturnReceiptPath))
-                                {
-                                    <span class="text-success fw-semibold">Complete</span>
-                                }
-                                else
-                                {
-                                    <span class="text-warning fw-semibold">Missing</span>
-                                }
-                            </td>
-
-                            <td class="text-nowrap">
-                                <div class="d-inline-flex gap-1">
-
-                                    @if (User.IsInRole("Admin") || User.IsInRole("Shopper"))
-                                        {
-                                            <a asp-controller="Items" asp-action="ReturnInfo" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary">
-                                            Return Info
-                                            </a>
-                                        }    
-
-                                    <a asp-controller="Items" asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-secondary">
-                                        Details
-                                    </a>
-                
-                                </div>
-                            </td>
-                        </tr>
+                        @await Html.PartialAsync("_ProjectItemRow", item, new ViewDataDictionary(ViewData)
+                        {
+                            ["Section"] = "Returned",
+                            ["CanEdit"] = User.IsInRole("Admin") || User.IsInRole("Shopper"),
+                            ["ShowPurchaseFinancials"] = false,
+                            ["ShowReturnColumns"] = false,
+                            ["ShowReturnedColumns"] = true
+                        })
                     }
                     </tbody>
                 </table>
