@@ -87,53 +87,6 @@
     </div>
 }
 
-<!-- 🔷 Budget Summary Cards -->
-<div class="row mb-4">
-    <div class="col-md-3">
-        <div class="card shadow-sm">
-            <div class="card-body">
-                <h6 class="text-muted">Budget</h6>
-                <div class="fw-bold text-end">
-                    @Model.Budget.ToString("C")
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="col-md-3">
-        <div class="card shadow-sm">
-            <div class="card-body">
-                <h6 class="text-muted">Estimated</h6>
-                <div class="fw-bold text-end">
-                    @totalEstimated.ToString("C")
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="col-md-3">
-        <div class="card shadow-sm">
-            <div class="card-body">
-                <h6 class="text-muted">Actual</h6>
-                <div class="fw-bold text-end">
-                    @totalActual.ToString("C")
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="col-md-3">
-        <div class="card shadow-sm @(remainingBudget < 0 ? "border-danger" : "")">
-            <div class="card-body">
-                <h6 class="text-muted">Remaining</h6>
-                <div class="fw-bold text-end @(remainingBudget < 0 ? "text-danger" : "")">
-                    @remainingBudget.ToString("C")
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
 <div class="d-flex flex-wrap gap-2 mb-3">
     @if (User.IsInRole("Admin") || User.IsInRole("Shopper"))
     {
@@ -186,7 +139,7 @@
                 <span class="badge bg-secondary">@group.Count()</span>
             </div>
 
-            <div class="card-body p-0">
+            <div class="card-body p-0 table-responsive">
                 <table class="table table-striped table-hover align-middle mb-0 table-sm project-items-table">
                     <thead>
                         <tr>
@@ -236,7 +189,7 @@ else
                 <span class="badge bg-secondary">@group.Count()</span>
             </div>
 
-            <div class="card-body p-0">
+            <div class="card-body p-0 table-responsive">
                 <table class="table table-striped table-hover align-middle mb-0 table-sm project-items-table">
                     <thead>
                         <tr>
@@ -286,7 +239,7 @@ else
                 <span class="badge bg-secondary">@group.Count()</span>
             </div>
 
-            <div class="card-body p-0">
+            <div class="card-body p-0 table-responsive">
                 <table class="table table-striped table-hover align-middle mb-0 table-sm project-items-table">
                     <thead>
                         <tr>
@@ -337,7 +290,7 @@ else
                 <span class="badge bg-secondary">@group.Count()</span>
             </div>
 
-            <div class="card-body p-0">
+            <div class="card-body p-0 table-responsive">
                 <table class="table table-striped table-hover align-middle mb-0 table-sm project-items-table">
                     <thead>
                         <tr>
@@ -368,3 +321,50 @@ else
 {
     <p>No returned items yet.</p>
 }
+
+<!-- 🔷 Budget Summary Cards -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h6 class="text-muted">Budget</h6>
+                <div class="fw-bold text-end">
+                    @Model.Budget.ToString("C")
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h6 class="text-muted">Estimated</h6>
+                <div class="fw-bold text-end">
+                    @totalEstimated.ToString("C")
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h6 class="text-muted">Actual</h6>
+                <div class="fw-bold text-end">
+                    @totalActual.ToString("C")
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card shadow-sm @(remainingBudget < 0 ? "border-danger" : "")">
+            <div class="card-body">
+                <h6 class="text-muted">Remaining</h6>
+                <div class="fw-bold text-end @(remainingBudget < 0 ? "text-danger" : "")">
+                    @remainingBudget.ToString("C")
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -64,11 +64,6 @@
                     {
                         <span class="badge bg-secondary me-1">Returned</span>
                     }
-
-                    @if (Model.NeedsPurchaseReceipt && (isAcquired || isReturnQueue))
-                    {
-                        <span class="badge bg-danger me-1">Needs Receipt</span>
-                    }
                 </div>
             </div>
         </div>
@@ -196,7 +191,7 @@
             }
             else
             {
-                <span class="text-muted">—</span>
+                <span class="text-warning fw-semibold">Missing</span>
             }
         </td>
     }
@@ -227,7 +222,7 @@
             }
             else
             {
-                <span class="text-muted">—</span>
+                <span class="text-warning fw-semibold">Missing</span>
             }
         </td>
     }
