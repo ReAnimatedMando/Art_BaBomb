@@ -3,13 +3,17 @@
 @{
     var section = ViewData["Section"] as string ?? "";
     var canEdit = (bool?)ViewData["CanEdit"] ?? false;
-    var showReturnColumns = (bool?)ViewData["ShowReturnColumns"] ?? false;
-    var showReturnedColumns = (bool?)ViewData["ShowReturnedColumns"] ?? false;
-    var showPurchaseFinancials = (bool?)ViewData["ShowPurchaseFinancials"] ?? false;
 
-    var actionCellClass = section == "ReturnQueue" ? "actions-col-cell actions-col-cell-wide" : "actions-col-cell";
+    var isNeeded = section == "Needed";
+    var isAcquired = section == "Acquired";
+    var isReturnQueue = section == "ReturnQueue";
+    var isReturned = section == "Returned";
 
-    var useStackedActions = section == "ReturnQueue" || section == "Returned";
+    var actionCellClass = isReturnQueue
+        ? "actions-col-cell actions-col-cell-wide"
+        : "actions-col-cell";
+
+    var useStackedActions = isReturnQueue || isReturned;
 
     bool IsImageReceipt(string? path) =>
         !string.IsNullOrWhiteSpace(path) &&
@@ -52,7 +56,7 @@
                     @if (Model.IsInReturnQueue)
                     {
                         <span class="badge bg-warning text-dark me-1">
-                            @(showReturnColumns ? "Return Pending" : "Return")
+                            @(isReturnQueue ? "Return Pending" : "Return")
                         </span>
                     }
 
@@ -61,7 +65,7 @@
                         <span class="badge bg-secondary me-1">Returned</span>
                     }
 
-                    @if (Model.NeedsPurchaseReceipt)
+                    @if (Model.NeedsPurchaseReceipt && (isAcquired || isReturnQueue))
                     {
                         <span class="badge bg-danger me-1">Needs Receipt</span>
                     }
@@ -70,105 +74,106 @@
         </div>
     </td>
 
-    <td class="notes-col">
-        <div class="small text-muted" id="description-display-@Model.Id">
-            @if (string.IsNullOrWhiteSpace(Model.Description))
-            {
-                <span class="fst-italic">No notes</span>
-            }
-            else
-            {
-                @Model.Description
-            }
-        </div>
-
-        <div class="mt-1 d-none" id="description-editor-@Model.Id">
-            <textarea class="form-control form-control-sm mb-2 inline-description-input"
-                      id="description-input-@Model.Id"
-                      rows="2">@(Model.Description ?? "")</textarea>
-
-            <div class="d-flex gap-1 flex-wrap">
-                <button type="button"
-                        class="btn btn-sm btn-primary save-description-btn"
-                        data-id="@Model.Id">
-                    Save
-                </button>
-
-                <button type="button"
-                        class="btn btn-sm btn-outline-secondary cancel-description-btn"
-                        data-id="@Model.Id">
-                    Cancel
-                </button>
-            </div>
-
-            <div class="form-text">Enter to save, Shift+Enter for new line.</div>
-        </div>
-
-        <div class="mt-1">
-            @if (canEdit)
-            {
-                @if (!string.IsNullOrWhiteSpace(Model.Description))
+    @if (!isReturned)
+    {
+        <td class="notes-col">
+            <div class="small text-muted" id="description-display-@Model.Id">
+                @if (string.IsNullOrWhiteSpace(Model.Description))
                 {
-                    <button type="button"
-                            class="btn btn-sm btn-link p-0 edit-description-btn"
-                            data-id="@Model.Id">
-                        ✏️ Edit
-                    </button>
+                    <span class="fst-italic">No notes</span>
                 }
                 else
                 {
-                    <button type="button"
-                            class="btn btn-sm btn-link p-0 edit-description-btn text-muted"
-                            data-id="@Model.Id">
-                        + Notes
-                    </button>
+                    @Model.Description
                 }
-            }
-        </div>
-    </td>
+            </div>
 
-    @if (!showReturnedColumns)
-    {
-        <td class="text-center">
-            @if (canEdit)
-            {
-                <div class="qty-stepper" data-item-id="@Model.Id">
+            <div class="mt-1 d-none" id="description-editor-@Model.Id">
+                <textarea class="form-control form-control-sm mb-2 inline-description-input"
+                          id="description-input-@Model.Id"
+                          rows="2">@(Model.Description ?? "")</textarea>
+
+                <div class="d-flex gap-1 flex-wrap">
                     <button type="button"
-                            class="qty-btn qty-adjust-btn"
-                            data-id="@Model.Id"
-                            data-delta="-1"
-                            @(Model.Quantity <= 1 ? "disabled=\"disabled\"" : "")>
-                        −
+                            class="btn btn-sm btn-primary save-description-btn"
+                            data-id="@Model.Id">
+                        Save
                     </button>
 
-                    <span class="qty-value" id="qty-value-@Model.Id">@Model.Quantity</span>
-
                     <button type="button"
-                            class="qty-btn qty-adjust-btn"
-                            data-id="@Model.Id"
-                            data-delta="1">
-                        +
+                            class="btn btn-sm btn-outline-secondary cancel-description-btn"
+                            data-id="@Model.Id">
+                        Cancel
                     </button>
                 </div>
-            }
-            else
-            {
-                <span class="qty-value">@Model.Quantity</span>
-            }
+
+                <div class="form-text">Enter to save, Shift+Enter for new line.</div>
+            </div>
+
+            <div class="mt-1">
+                @if (canEdit)
+                {
+                    @if (!string.IsNullOrWhiteSpace(Model.Description))
+                    {
+                        <button type="button"
+                                class="btn btn-sm btn-link p-0 edit-description-btn"
+                                data-id="@Model.Id">
+                            ✏️ Edit
+                        </button>
+                    }
+                    else
+                    {
+                        <button type="button"
+                                class="btn btn-sm btn-link p-0 edit-description-btn text-muted"
+                                data-id="@Model.Id">
+                            + Notes
+                        </button>
+                    }
+                }
+            </div>
         </td>
     }
-    else
+
+    <td class="text-center">
+        @if (!isReturned && canEdit)
+        {
+            <div class="qty-stepper" data-item-id="@Model.Id">
+                <button type="button"
+                        class="qty-btn qty-adjust-btn"
+                        data-id="@Model.Id"
+                        data-delta="-1"
+                        @(Model.Quantity <= 1 ? "disabled=\"disabled\"" : "")>
+                    −
+                </button>
+
+                <span class="qty-value" id="qty-value-@Model.Id">@Model.Quantity</span>
+
+                <button type="button"
+                        class="qty-btn qty-adjust-btn"
+                        data-id="@Model.Id"
+                        data-delta="1">
+                    +
+                </button>
+            </div>
+        }
+        else
+        {
+            <span class="qty-value">@Model.Quantity</span>
+        }
+    </td>
+
+    @if (isNeeded || isAcquired)
     {
-        <td class="text-center text-nowrap">@Model.Quantity</td>
+        <td>@Model.Category</td>
     }
 
-    <td>@Model.Category</td>
-
-    @if (showPurchaseFinancials)
+    @if (isNeeded)
     {
         <td class="text-end text-nowrap">@Model.EstimatedCost?.ToString("C")</td>
-        <td class="text-end text-nowrap">@Model.ActualCost?.ToString("C")</td>
+    }
 
+    @if (isAcquired)
+    {
         <td class="text-nowrap receipt-cell">
             @if (IsImageReceipt(Model.PurchaseReceiptPath))
             {
@@ -176,10 +181,10 @@
                    data-bs-toggle="modal"
                    data-bs-target="#receiptPreviewModal"
                    data-receipt-src="@Model.PurchaseReceiptPath"
-                   data-receipt-title="@Model.Name - Receipt"
+                   data-receipt-title="@Model.Name - Purchase Receipt"
                    class="receipt-preview-trigger">
                     <img src="@Model.PurchaseReceiptPath"
-                         alt="Receipt"
+                         alt="Purchase Receipt"
                          class="receipt-thumb rounded border bg-light" />
                 </a>
             }
@@ -196,28 +201,27 @@
         </td>
     }
 
-    @if (showReturnColumns)
+    @if (isReturnQueue)
     {
         <td>@Model.ReturnLocation</td>
-        <td class="text-nowrap">@Model.ReturnByDate?.ToString("d")</td>
 
         <td class="text-nowrap receipt-cell">
-            @if (IsImageReceipt(Model.ReturnReceiptPath))
+            @if (IsImageReceipt(Model.PurchaseReceiptPath))
             {
                 <a href="#"
                    data-bs-toggle="modal"
                    data-bs-target="#receiptPreviewModal"
-                   data-receipt-src="@Model.ReturnReceiptPath"
-                   data-receipt-title="@Model.Name - Return Receipt"
+                   data-receipt-src="@Model.PurchaseReceiptPath"
+                   data-receipt-title="@Model.Name - Purchase Receipt"
                    class="receipt-preview-trigger">
-                    <img src="@Model.ReturnReceiptPath"
-                         alt="Return Receipt"
+                    <img src="@Model.PurchaseReceiptPath"
+                         alt="Purchase Receipt"
                          class="receipt-thumb rounded border bg-light" />
                 </a>
             }
-            else if (!string.IsNullOrWhiteSpace(Model.ReturnReceiptPath))
+            else if (!string.IsNullOrWhiteSpace(Model.PurchaseReceiptPath))
             {
-                <a href="@Model.ReturnReceiptPath" target="_blank" class="btn btn-sm btn-outline-primary">
+                <a href="@Model.PurchaseReceiptPath" target="_blank" class="btn btn-sm btn-outline-primary">
                     Receipt
                 </a>
             }
@@ -228,7 +232,7 @@
         </td>
     }
 
-    @if (showReturnedColumns)
+    @if (isReturned)
     {
         <td class="returned-at-cell">@Model.ReturnedAt?.ToLocalTime().ToString("g")</td>
 
@@ -274,7 +278,7 @@
         <div class="@(useStackedActions ? "item-action-group item-action-group-stacked" : "item-action-group")">
             @if (canEdit)
             {
-                @if (section == "Needed")
+                @if (isNeeded)
                 {
                     <form asp-controller="Items" asp-action="MarkAcquired" asp-route-id="@Model.Id" method="post" class="d-inline">
                         @Html.AntiForgeryToken()
@@ -285,7 +289,7 @@
                         Edit
                     </a>
                 }
-                else if (section == "Acquired")
+                else if (isAcquired)
                 {
                     <form asp-controller="Items" asp-action="MarkNeeded" asp-route-id="@Model.Id" method="post" class="d-inline">
                         @Html.AntiForgeryToken()
@@ -296,7 +300,7 @@
                         Edit
                     </a>
                 }
-                else if (section == "ReturnQueue")
+                else if (isReturnQueue)
                 {
                     <a asp-controller="Items" asp-action="ReturnInfo" asp-route-id="@Model.Id" class="btn btn-sm btn-outline-primary">
                         Return Info
@@ -307,7 +311,7 @@
                         <button type="submit" class="btn btn-sm btn-danger">Mark Returned</button>
                     </form>
                 }
-                else if (section == "Returned")
+                else if (isReturned)
                 {
                     <a asp-controller="Items" asp-action="ReturnInfo" asp-route-id="@Model.Id" class="btn btn-sm btn-outline-primary">
                         Return Info

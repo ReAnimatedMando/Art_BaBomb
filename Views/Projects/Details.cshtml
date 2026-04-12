@@ -195,8 +195,6 @@
                             <th class="text-center">Qty</th>
                             <th>Category</th>
                             <th class="text-end">Est.</th>
-                            <th class="text-end">Actual</th>
-                            <th class="text-nowrap">Receipt</th>
                             <th class="actions-col"></th>
                         </tr>
                     </thead>
@@ -206,10 +204,7 @@
                         @await Html.PartialAsync("_ProjectItemRow", item, new ViewDataDictionary(ViewData)
                         {
                             ["Section"] = "Needed",
-                            ["CanEdit"] = User.IsInRole("Admin") || User.IsInRole("Shopper"),
-                            ["ShowPurchaseFinancials"] = true,
-                            ["ShowReturnColumns"] = false,
-                            ["ShowReturnedColumns"] = false
+                            ["CanEdit"] = User.IsInRole("Admin") || User.IsInRole("Shopper")
                         })
                     }
                     </tbody>
@@ -249,9 +244,7 @@ else
                             <th>Notes</th>
                             <th class="text-center">Qty</th>
                             <th>Category</th>
-                            <th class="text-end">Est.</th>
-                            <th class="text-end">Actual</th>
-                            <th class="text-nowrap">Receipt</th>
+                            <th class="text-nowrap">Purchase Receipt</th>
                             <th class="actions-col"></th>
                         </tr>
                     </thead>
@@ -261,10 +254,7 @@ else
                         @await Html.PartialAsync("_ProjectItemRow", item, new ViewDataDictionary(ViewData)
                         {
                             ["Section"] = "Acquired",
-                            ["CanEdit"] = User.IsInRole("Admin") || User.IsInRole("Shopper"),
-                            ["ShowPurchaseFinancials"] = true,
-                            ["ShowReturnColumns"] = false,
-                            ["ShowReturnedColumns"] = false
+                            ["CanEdit"] = User.IsInRole("Admin") || User.IsInRole("Shopper")
                         })
                     }
                     </tbody>
@@ -303,10 +293,8 @@ else
                             <th>Name</th>
                             <th>Notes</th>
                             <th class="text-center">Qty</th>
-                            <th>Category</th>
                             <th>Return Location</th>
-                            <th class="text-nowrap">Return By</th>
-                            <th class="text-nowrap">Receipt</th>
+                            <th class="text-nowrap">Purchase Receipt</th>
                             <th class="actions-col"></th>
                         </tr>
                     </thead>
@@ -317,10 +305,7 @@ else
                         @await Html.PartialAsync("_ProjectItemRow", item, new ViewDataDictionary(ViewData)
                         {
                             ["Section"] = "ReturnQueue",
-                            ["CanEdit"] = User.IsInRole("Admin") || User.IsInRole("Shopper"),
-                            ["ShowPurchaseFinancials"] = false,
-                            ["ShowReturnColumns"] = true,
-                            ["ShowReturnedColumns"] = false
+                            ["CanEdit"] = User.IsInRole("Admin") || User.IsInRole("Shopper")
                         })
                     }
                     </tbody>
@@ -357,11 +342,9 @@ else
                     <thead>
                         <tr>
                             <th>Name</th>
-                            <th>Notes</th>
                             <th class="text-center">Qty</th>
-                            <th>Category</th>
                             <th class="text-nowrap">Returned At</th>
-                            <th class="text-nowrap">Receipt</th>
+                            <th class="text-nowrap">Return Receipt</th>
                             <th class="text-nowrap">Receipt Status</th>
                             <th class="actions-col"></th>
                         </tr>
@@ -372,10 +355,7 @@ else
                         @await Html.PartialAsync("_ProjectItemRow", item, new ViewDataDictionary(ViewData)
                         {
                             ["Section"] = "Returned",
-                            ["CanEdit"] = User.IsInRole("Admin") || User.IsInRole("Shopper"),
-                            ["ShowPurchaseFinancials"] = false,
-                            ["ShowReturnColumns"] = false,
-                            ["ShowReturnedColumns"] = true
+                            ["CanEdit"] = User.IsInRole("Admin") || User.IsInRole("Shopper")
                         })
                     }
                     </tbody>
