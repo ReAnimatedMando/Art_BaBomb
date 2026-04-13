@@ -250,6 +250,10 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUHJvamVjdHNcSW5kZXguY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
+[C:/DEV/Repos/Art_BaBomb/Art_BaBomb.Web/Views/Projects/_ProjectItemMobileCard.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUHJvamVjdHNcX1Byb2plY3RJdGVtTW9iaWxlQ2FyZC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
 [C:/DEV/Repos/Art_BaBomb/Art_BaBomb.Web/Views/Projects/_ProjectItemRow.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUHJvamVjdHNcX1Byb2plY3RJdGVtUm93LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 

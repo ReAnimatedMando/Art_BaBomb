@@ -1,0 +1,281 @@
+@model Art_BaBomb.Web.Models.Item
+
+@{
+    var section = ViewData["Section"] as string ?? "";
+    var canEdit = (bool?)ViewData["CanEdit"] ?? false;
+
+    var isNeeded = section == "Needed";
+    var isAcquired = section == "Acquired";
+    var isReturnQueue = section == "ReturnQueue";
+    var isReturned = section == "Returned";
+
+    bool IsImageReceipt(string? path) =>
+        !string.IsNullOrWhiteSpace(path) &&
+        (path.EndsWith(".jpg", StringComparison.OrdinalIgnoreCase)
+        || path.EndsWith(".jpeg", StringComparison.OrdinalIgnoreCase)
+        || path.EndsWith(".png", StringComparison.OrdinalIgnoreCase)
+        || path.EndsWith(".webp", StringComparison.OrdinalIgnoreCase));
+}
+
+<div class="mobile-item-card @(Model.NeedsAttention ? "needs-attention" : "") @(Model.HasPastReturnByDate ? "overdue" : "")">
+    <div class="mobile-item-top">
+        <div class="item-thumb-slot">
+            @if (!string.IsNullOrWhiteSpace(Model.ImageUrl))
+            {
+                <a href="#"
+                   data-bs-toggle="modal"
+                   data-bs-target="#itemPreviewModal"
+                   data-item-src="@Model.ImageUrl"
+                   data-item-title="@Model.Name"
+                   class="item-preview-trigger">
+                    <img src="@Model.ImageUrl"
+                         alt="@Model.Name"
+                         class="item-thumb rounded border bg-light" />
+                </a>
+            }
+            else
+            {
+                <div class="item-thumb item-thumb-placeholder rounded border bg-light"></div>
+            }
+        </div>
+
+        <div class="mobile-item-main">
+            <div class="mobile-item-name">@Model.Name</div>
+
+            <div class="mobile-item-badges mt-1">
+                @if (Model.IsInReturnQueue)
+                {
+                    <span class="badge bg-warning text-dark me-1">
+                        @(isReturnQueue ? "Return Pending" : "Return")
+                    </span>
+                }
+
+                @if (Model.IsReturned)
+                {
+                    <span class="badge bg-secondary me-1">Returned</span>
+                }
+            </div>
+
+            @if (!isReturned)
+            {
+                <div class="mobile-item-notes text-muted mt-2" id="mobile-description-display-@Model.Id">
+                    @if (string.IsNullOrWhiteSpace(Model.Description))
+                    {
+                        <span class="fst-italic">No notes</span>
+                    }
+                    else
+                    {
+                        @Model.Description
+                    }
+                </div>
+
+                <div class="mt-2 d-none" id="mobile-description-editor-@Model.Id">
+                    <textarea class="form-control form-control-sm mb-2 inline-description-input mobile-inline-description-input"
+                              id="mobile-description-input-@Model.Id"
+                              rows="2">@(Model.Description ?? "")</textarea>
+
+                    <div class="d-flex gap-1 flex-wrap">
+                        <button type="button"
+                                class="btn btn-sm btn-primary mobile-save-description-btn"
+                                data-id="@Model.Id">
+                            Save
+                        </button>
+
+                        <button type="button"
+                                class="btn btn-sm btn-outline-secondary mobile-cancel-description-btn"
+                                data-id="@Model.Id">
+                            Cancel
+                        </button>
+                    </div>
+
+                    <div class="form-text">Enter to save, Shift+Enter for new line.</div>
+                </div>
+
+                @if (canEdit)
+                {
+                    <div class="mt-1">
+                        @if (!string.IsNullOrWhiteSpace(Model.Description))
+                        {
+                            <button type="button"
+                                    class="btn btn-sm btn-link p-0 mobile-edit-description-btn"
+                                    data-id="@Model.Id">
+                                ✏️ Edit
+                            </button>
+                        }
+                        else
+                        {
+                            <button type="button"
+                                    class="btn btn-sm btn-link p-0 mobile-edit-description-btn text-muted"
+                                    data-id="@Model.Id">
+                                + Notes
+                            </button>
+                        }
+                    </div>
+                }
+            }
+        </div>
+    </div>
+
+    <div class="mobile-item-meta">
+        <div><span class="mobile-label">Qty:</span> @Model.Quantity</div>
+
+        @if (isNeeded || isAcquired)
+        {
+            <div><span class="mobile-label">Category:</span> @(string.IsNullOrWhiteSpace(Model.Category) ? "—" : Model.Category)</div>
+        }
+
+        @if (isNeeded)
+        {
+            <div><span class="mobile-label">Est.:</span> @Model.EstimatedCost?.ToString("C")</div>
+        }
+
+        @if (isAcquired)
+        {
+            <div>
+                <span class="mobile-label">Receipt:</span>
+                @if (IsImageReceipt(Model.PurchaseReceiptPath))
+                {
+                    <a href="#"
+                       data-bs-toggle="modal"
+                       data-bs-target="#receiptPreviewModal"
+                       data-receipt-src="@Model.PurchaseReceiptPath"
+                       data-receipt-title="@Model.Name - Purchase Receipt"
+                       class="receipt-preview-trigger ms-1">
+                        <img src="@Model.PurchaseReceiptPath"
+                             alt="Purchase Receipt"
+                             class="receipt-thumb rounded border bg-light d-inline-block align-middle" />
+                    </a>
+                }
+                else if (!string.IsNullOrWhiteSpace(Model.PurchaseReceiptPath))
+                {
+                    <a href="@Model.PurchaseReceiptPath" target="_blank" class="ms-1">Receipt</a>
+                }
+                else
+                {
+                    <span class="text-warning fw-semibold ms-1">Missing</span>
+                }
+            </div>
+        }
+
+        @if (isReturnQueue)
+        {
+            <div><span class="mobile-label">Return Location:</span> @(string.IsNullOrWhiteSpace(Model.ReturnLocation) ? "—" : Model.ReturnLocation)</div>
+
+            <div>
+                <span class="mobile-label">Purchase Receipt:</span>
+                @if (IsImageReceipt(Model.PurchaseReceiptPath))
+                {
+                    <a href="#"
+                       data-bs-toggle="modal"
+                       data-bs-target="#receiptPreviewModal"
+                       data-receipt-src="@Model.PurchaseReceiptPath"
+                       data-receipt-title="@Model.Name - Purchase Receipt"
+                       class="receipt-preview-trigger ms-1">
+                        <img src="@Model.PurchaseReceiptPath"
+                             alt="Purchase Receipt"
+                             class="receipt-thumb rounded border bg-light d-inline-block align-middle" />
+                    </a>
+                }
+                else if (!string.IsNullOrWhiteSpace(Model.PurchaseReceiptPath))
+                {
+                    <a href="@Model.PurchaseReceiptPath" target="_blank" class="ms-1">Receipt</a>
+                }
+                else
+                {
+                    <span class="text-warning fw-semibold ms-1">Missing</span>
+                }
+            </div>
+        }
+
+        @if (isReturned)
+        {
+            <div><span class="mobile-label">Returned:</span> @Model.ReturnedAt?.ToLocalTime().ToString("g")</div>
+
+            <div>
+                <span class="mobile-label">Return Receipt:</span>
+                @if (IsImageReceipt(Model.ReturnReceiptPath))
+                {
+                    <a href="#"
+                       data-bs-toggle="modal"
+                       data-bs-target="#receiptPreviewModal"
+                       data-receipt-src="@Model.ReturnReceiptPath"
+                       data-receipt-title="@Model.Name - Return Receipt"
+                       class="receipt-preview-trigger ms-1">
+                        <img src="@Model.ReturnReceiptPath"
+                             alt="Return Receipt"
+                             class="receipt-thumb rounded border bg-light d-inline-block align-middle" />
+                    </a>
+                }
+                else if (!string.IsNullOrWhiteSpace(Model.ReturnReceiptPath))
+                {
+                    <a href="@Model.ReturnReceiptPath" target="_blank" class="ms-1">Receipt</a>
+                }
+                else
+                {
+                    <span class="text-muted ms-1">—</span>
+                }
+            </div>
+
+            <div>
+                <span class="mobile-label">Status:</span>
+                @if (!string.IsNullOrWhiteSpace(Model.ReturnReceiptPath))
+                {
+                    <span class="text-success fw-semibold ms-1">Complete</span>
+                }
+                else
+                {
+                    <span class="text-warning fw-semibold ms-1">Missing</span>
+                }
+            </div>
+        }
+    </div>
+
+    <div class="mobile-item-actions">
+        @if (canEdit)
+        {
+            @if (isNeeded)
+            {
+                <form asp-controller="Items" asp-action="MarkAcquired" asp-route-id="@Model.Id" method="post" class="d-inline">
+                    @Html.AntiForgeryToken()
+                    <button type="submit" class="btn btn-sm btn-success btn-icon">+</button>
+                </form>
+
+                <a asp-controller="Items" asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-sm btn-outline-primary">
+                    Edit
+                </a>
+            }
+            else if (isAcquired)
+            {
+                <form asp-controller="Items" asp-action="MarkNeeded" asp-route-id="@Model.Id" method="post" class="d-inline">
+                    @Html.AntiForgeryToken()
+                    <button type="submit" class="btn btn-sm btn-outline-warning btn-icon">-</button>
+                </form>
+
+                <a asp-controller="Items" asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-sm btn-outline-primary">
+                    Edit
+                </a>
+            }
+            else if (isReturnQueue)
+            {
+                <a asp-controller="Items" asp-action="ReturnInfo" asp-route-id="@Model.Id" class="btn btn-sm btn-outline-primary">
+                    Return Info
+                </a>
+
+                <form asp-controller="Items" asp-action="MarkReturned" asp-route-id="@Model.Id" method="post" class="d-inline">
+                    @Html.AntiForgeryToken()
+                    <button type="submit" class="btn btn-sm btn-danger">Mark Returned</button>
+                </form>
+            }
+            else if (isReturned)
+            {
+                <a asp-controller="Items" asp-action="ReturnInfo" asp-route-id="@Model.Id" class="btn btn-sm btn-outline-primary">
+                    Return Info
+                </a>
+            }
+        }
+
+        <a asp-controller="Items" asp-action="Details" asp-route-id="@Model.Id" class="btn btn-sm btn-outline-secondary">
+            Details
+        </a>
+    </div>
+</div>

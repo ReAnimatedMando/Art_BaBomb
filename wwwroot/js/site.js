@@ -238,6 +238,106 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   });
 
+  document.querySelectorAll(".mobile-edit-description-btn").forEach(button => {
+  button.addEventListener("click", function () {
+    const itemId = this.dataset.id;
+    const display = document.getElementById(`mobile-description-display-${itemId}`);
+    const editor = document.getElementById(`mobile-description-editor-${itemId}`);
+    const editBtn = this;
+
+    if (display) display.classList.add("d-none");
+    if (editor) editor.classList.remove("d-none");
+    editBtn.classList.add("d-none");
+  });
+});
+
+document.querySelectorAll(".mobile-cancel-description-btn").forEach(button => {
+  button.addEventListener("click", function () {
+    const itemId = this.dataset.id;
+    const display = document.getElementById(`mobile-description-display-${itemId}`);
+    const editor = document.getElementById(`mobile-description-editor-${itemId}`);
+    const editBtn = document.querySelector(`.mobile-edit-description-btn[data-id="${itemId}"]`);
+    const input = document.getElementById(`mobile-description-input-${itemId}`);
+
+    if (editor) editor.classList.add("d-none");
+    if (display) display.classList.remove("d-none");
+    if (editBtn) editBtn.classList.remove("d-none");
+
+    if (input && display) {
+      input.value = display.textContent.trim() === "No notes"
+        ? ""
+        : display.textContent.trim();
+    }
+  });
+});
+
+document.querySelectorAll(".mobile-save-description-btn").forEach(button => {
+  button.addEventListener("click", async function () {
+    const itemId = this.dataset.id;
+    const input = document.getElementById(`mobile-description-input-${itemId}`);
+    const display = document.getElementById(`mobile-description-display-${itemId}`);
+    const editor = document.getElementById(`mobile-description-editor-${itemId}`);
+    const editBtn = document.querySelector(`.mobile-edit-description-btn[data-id="${itemId}"]`);
+    const tokenInput = document.querySelector('#antiForgeryForm input[name="__RequestVerificationToken"]');
+
+    if (!input || !display || !tokenInput || !updateDescriptionUrl) {
+      return;
+    }
+
+    try {
+      const response = await fetch(updateDescriptionUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
+          "RequestVerificationToken": tokenInput.value,
+          "X-Requested-With": "XMLHttpRequest"
+        },
+        body: new URLSearchParams({
+          id: itemId,
+          description: input.value
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error("Description update failed.");
+      }
+
+      const result = await response.json();
+
+      if (result.success) {
+        display.innerHTML = result.description && result.description.trim() !== ""
+          ? result.description
+          : '<span class="fst-italic">No notes</span>';
+
+        display.classList.remove("d-none");
+        if (editor) editor.classList.add("d-none");
+        if (editBtn) editBtn.classList.remove("d-none");
+
+        display.classList.add("text-success");
+        setTimeout(() => display.classList.remove("text-success"), 250);
+      }
+    } catch (error) {
+      console.error(error);
+      alert("Could not update notes. Please try again.");
+    }
+  });
+});
+
+document.querySelectorAll(".mobile-inline-description-input").forEach(input => {
+  input.addEventListener("keydown", function (e) {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+
+      const itemId = this.id.replace("mobile-description-input-", "");
+      const saveButton = document.querySelector(`.mobile-save-description-btn[data-id="${itemId}"]`);
+
+      if (saveButton) {
+        saveButton.click();
+      }
+    }
+  });
+});
+
   document.querySelectorAll(".inline-description-input").forEach(input => {
     input.addEventListener("keydown", function (e) {
       if (e.key === "Enter" && !e.shiftKey) {

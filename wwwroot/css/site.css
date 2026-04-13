@@ -352,4 +352,70 @@ body {
   .item-name-cell-content {
     min-width: 120px;
   }
+
+  .mobile-item-list {
+    display: grid;
+    gap: 0.75rem;
+  }
+
+  .mobile-item-card {
+    border: 1px solid #dee2e6;
+    border-radius: 0.5rem;
+    background: #fff;
+    padding: 0.75rem;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+  }
+
+  .mobile-item-card.needs-attention {
+    background-image: linear-gradient(to right, rgba(255, 193, 7, 0.08), rgba(255, 193, 7, 0));
+  }
+
+  .mobile-item-card.overdue {
+    box-shadow: inset 4px 0 0 #dc3545;
+  }
+
+  .mobile-item-top {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+
+  .mobile-item-main {
+    min-width: 0;
+    flex: 1;
+  }
+
+  .mobile-item-name {
+    font-weight: 600;
+    line-height: 1.25;
+    overflow-wrap: break-word;
+  }
+
+  .mobile-item-notes {
+    font-size: 0.9rem;
+    line-height: 1.35;
+    overflow-wrap: break-word;
+  }
+
+  .mobile-item-meta {
+    display: grid;
+    gap: 0.35rem;
+    margin-top: 0.75rem;
+    font-size: 0.9rem;
+  }
+
+  .mobile-label {
+    font-weight: 600;
+  }
+
+  .mobile-item-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+  }
+
+  .mobile-item-actions .btn {
+    min-width: 0;
+  }
 }
