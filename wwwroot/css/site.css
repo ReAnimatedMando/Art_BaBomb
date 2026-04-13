@@ -353,6 +353,7 @@ body {
     min-width: 120px;
   }
 
+  @media (max-width: 767.98px) {
   .mobile-item-list {
     display: grid;
     gap: 0.75rem;
@@ -360,10 +361,10 @@ body {
 
   .mobile-item-card {
     border: 1px solid #dee2e6;
-    border-radius: 0.5rem;
+    border-radius: 0.75rem;
     background: #fff;
     padding: 0.75rem;
-    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.06);
   }
 
   .mobile-item-card.needs-attention {
@@ -380,19 +381,38 @@ body {
     gap: 0.75rem;
   }
 
+  .mobile-item-top .item-thumb-slot {
+    width: 40px;
+    min-width: 40px;
+    flex: 0 0 40px;
+  }
+
+  .mobile-item-top .item-thumb,
+  .mobile-item-top .item-thumb-placeholder {
+    width: 40px;
+    height: 40px;
+  }
+
   .mobile-item-main {
     min-width: 0;
     flex: 1;
   }
 
   .mobile-item-name {
+    font-size: 0.98rem;
     font-weight: 600;
     line-height: 1.25;
     overflow-wrap: break-word;
   }
 
+  .mobile-item-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+  }
+
   .mobile-item-notes {
-    font-size: 0.9rem;
+    font-size: 0.88rem;
     line-height: 1.35;
     overflow-wrap: break-word;
   }
@@ -401,21 +421,68 @@ body {
     display: grid;
     gap: 0.35rem;
     margin-top: 0.75rem;
-    font-size: 0.9rem;
+    padding-top: 0.65rem;
+    border-top: 1px solid #f1f3f5;
+    font-size: 0.88rem;
+  }
+
+  .mobile-item-meta > div {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.35rem;
   }
 
   .mobile-label {
+    min-width: 6.25rem;
     font-weight: 600;
+    color: #495057;
+    flex: 0 0 6.25rem;
+  }
+
+  .mobile-item-meta .receipt-thumb {
+    width: 32px;
+    height: 32px;
+    vertical-align: middle;
   }
 
   .mobile-item-actions {
     display: flex;
     flex-wrap: wrap;
     gap: 0.5rem;
-    margin-top: 0.75rem;
+    margin-top: 0.8rem;
+    padding-top: 0.7rem;
+    border-top: 1px solid #f1f3f5;
+  }
+
+  .mobile-item-actions .btn,
+  .mobile-item-actions form {
+    flex: 1 1 auto;
+  }
+
+  .mobile-item-actions form .btn,
+  .mobile-item-actions .btn {
+    width: 100%;
+    min-width: 0;
   }
 
   .mobile-item-actions .btn {
-    min-width: 0;
+    font-size: 0.85rem;
+    padding: 0.35rem 0.6rem;
   }
+
+  .mobile-item-actions .btn.btn-icon {
+    max-width: 44px;
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  .mobile-item-card .edit-description-btn {
+    font-size: 0.82rem;
+  }
+
+  .mobile-item-card .form-text {
+    font-size: 0.75rem;
+  }
+}
+
 }
