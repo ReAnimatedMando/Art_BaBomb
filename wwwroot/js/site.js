@@ -61,6 +61,26 @@ document.addEventListener("DOMContentLoaded", function () {
 
   let activeItemId = null;
 
+  function updateNoteToggleVisibility() {
+    document.querySelectorAll(".note-toggle-btn").forEach(button => {
+      const targetId = button.dataset.target;
+      const target = document.getElementById(targetId);
+
+      if (!target) return;
+
+      target.classList.add("is-collapsed");
+
+      const isOverflowing = target.scrollHeight > target.clientHeight + 1;
+
+      if (!isOverflowing) {
+        button.style.display = "none";
+        target.classList.remove("is-collapsed");
+      } else {
+        button.style.display = "";
+      }
+    });
+  }
+
   async function triggerQtyUpdate(itemId, delta) {
     const tokenInput = document.querySelector('#antiForgeryForm input[name="__RequestVerificationToken"]');
     const qtyValue = document.getElementById(`qty-value-${itemId}`);
@@ -103,7 +123,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
       }
     } catch (error) {
-      console.error(error);
+      console.error("Quantity update error:", error);
       alert("Could not update quantity. Please try again.");
     }
   }
@@ -112,7 +132,6 @@ document.addEventListener("DOMContentLoaded", function () {
     button.addEventListener("click", function () {
       const itemId = this.dataset.id;
       const delta = this.dataset.delta;
-
       triggerQtyUpdate(itemId, delta);
     });
   });
@@ -159,10 +178,12 @@ document.addEventListener("DOMContentLoaded", function () {
       const display = document.getElementById(`description-display-${itemId}`);
       const editor = document.getElementById(`description-editor-${itemId}`);
       const editBtn = this;
+      const toggleBtn = document.querySelector(`.note-toggle-btn[data-target="description-display-${itemId}"]`);
 
       if (display) display.classList.add("d-none");
       if (editor) editor.classList.remove("d-none");
       editBtn.classList.add("d-none");
+      if (toggleBtn) toggleBtn.classList.add("d-none");
     });
   });
 
@@ -173,16 +194,25 @@ document.addEventListener("DOMContentLoaded", function () {
       const editor = document.getElementById(`description-editor-${itemId}`);
       const editBtn = document.querySelector(`.edit-description-btn[data-id="${itemId}"]`);
       const input = document.getElementById(`description-input-${itemId}`);
+      const toggleBtn = document.querySelector(`.note-toggle-btn[data-target="description-display-${itemId}"]`);
 
       if (editor) editor.classList.add("d-none");
       if (display) display.classList.remove("d-none");
       if (editBtn) editBtn.classList.remove("d-none");
+      if (toggleBtn) toggleBtn.classList.remove("d-none");
 
       if (input && display) {
         input.value = display.textContent.trim() === "No notes"
           ? ""
           : display.textContent.trim();
       }
+
+      if (editBtn && display) {
+        const hasNotes = display.textContent.trim() !== "No notes";
+        editBtn.innerHtml = hasNotes ? "✏️ Edit" : "➕ Add Notes";
+        editBtn.classList.toggle("text-muted", !hasNotes);
+      }
+
     });
   });
 
@@ -194,6 +224,7 @@ document.addEventListener("DOMContentLoaded", function () {
       const editor = document.getElementById(`description-editor-${itemId}`);
       const editBtn = document.querySelector(`.edit-description-btn[data-id="${itemId}"]`);
       const tokenInput = document.querySelector('#antiForgeryForm input[name="__RequestVerificationToken"]');
+      const toggleBtn = document.querySelector(`.note-toggle-btn[data-target="description-display-${itemId}"]`);
 
       if (!input || !display || !tokenInput || !updateDescriptionUrl) {
         return;
@@ -224,34 +255,199 @@ document.addEventListener("DOMContentLoaded", function () {
             ? result.description
             : '<span class="fst-italic">No notes</span>';
 
+        if (editBtn) {
+          if (result.description && result.description.trim() !== "") {
+            editBtn.innerHtml = "✏️ Edit";
+            editBtn.classList.remove("text-muted");
+          } else {
+            editBtn.innerHtml = "➕ Add Notes";
+            editBtn.classList.add("text-muted");
+          }
+        }
+
+          updateNoteToggleVisibility();
+
           display.classList.remove("d-none");
           if (editor) editor.classList.add("d-none");
           if (editBtn) editBtn.classList.remove("d-none");
+          if (toggleBtn) toggleBtn.classList.remove("d-none");
 
           display.classList.add("text-success");
           setTimeout(() => display.classList.remove("text-success"), 250);
         }
       } catch (error) {
-        console.error(error);
+        console.error("Description update error:", error);
         alert("Could not update notes. Please try again.");
       }
     });
   });
 
   document.querySelectorAll(".mobile-edit-description-btn").forEach(button => {
-  button.addEventListener("click", function () {
-    const itemId = this.dataset.id;
-    const display = document.getElementById(`mobile-description-display-${itemId}`);
-    const editor = document.getElementById(`mobile-description-editor-${itemId}`);
-    const editBtn = this;
-    const toggleBtn = document.querySelector(`.note-toggle-btn[data-target="mobile-description-display-${itemId}"]`);
+    button.addEventListener("click", function () {
+      const itemId = this.dataset.id;
+      const display = document.getElementById(`mobile-description-display-${itemId}`);
+      const editor = document.getElementById(`mobile-description-editor-${itemId}`);
+      const editBtn = this;
+      const toggleBtn = document.querySelector(`.note-toggle-btn[data-target="mobile-description-display-${itemId}"]`);
 
-    if (display) display.classList.add("d-none");
-    if (editor) editor.classList.remove("d-none");
-    editBtn.classList.add("d-none");
-    if (toggleBtn) toggleBtn.classList.add("d-none");
-
+      if (display) display.classList.add("d-none");
+      if (editor) editor.classList.remove("d-none");
+      editBtn.classList.add("d-none");
+      if (toggleBtn) toggleBtn.classList.add("d-none");
+    });
   });
+
+  document.querySelectorAll(".mobile-cancel-description-btn").forEach(button => {
+    button.addEventListener("click", function () {
+      const itemId = this.dataset.id;
+      const display = document.getElementById(`mobile-description-display-${itemId}`);
+      const editor = document.getElementById(`mobile-description-editor-${itemId}`);
+      const editBtn = document.querySelector(`.mobile-edit-description-btn[data-id="${itemId}"]`);
+      const input = document.getElementById(`mobile-description-input-${itemId}`);
+      const toggleBtn = document.querySelector(`.note-toggle-btn[data-target="mobile-description-display-${itemId}"]`);
+
+      if (editor) editor.classList.add("d-none");
+      if (display) display.classList.remove("d-none");
+      if (editBtn) editBtn.classList.remove("d-none");
+      if (toggleBtn) toggleBtn.classList.remove("d-none");
+
+      if (editBtn && display) {
+        const hasNotes = display.textContent.trim() !== "No notes";
+        editBtn.innerHtml = hasNotes ? "✏️ Edit" : "➕ Add Notes";
+        editBtn.classList.toggle("text-muted", !hasNotes);
+      }
+
+      if (input && display) {
+        input.value = display.textContent.trim() === "No notes"
+          ? ""
+          : display.textContent.trim();
+      }
+
+      
+
+    });
+  });
+
+  document.querySelectorAll(".mobile-save-description-btn").forEach(button => {
+    button.addEventListener("click", async function () {
+      const itemId = this.dataset.id;
+      const input = document.getElementById(`mobile-description-input-${itemId}`);
+      const display = document.getElementById(`mobile-description-display-${itemId}`);
+      const editor = document.getElementById(`mobile-description-editor-${itemId}`);
+      const editBtn = document.querySelector(`.mobile-edit-description-btn[data-id="${itemId}"]`);
+      const tokenInput = document.querySelector('#antiForgeryForm input[name="__RequestVerificationToken"]');
+      const toggleBtn = document.querySelector(`.note-toggle-btn[data-target="mobile-description-display-${itemId}"]`);
+
+      if (!input || !display || !tokenInput || !updateDescriptionUrl) {
+        return;
+      }
+
+      try {
+        const response = await fetch(updateDescriptionUrl, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
+            "RequestVerificationToken": tokenInput.value,
+            "X-Requested-With": "XMLHttpRequest"
+          },
+          body: new URLSearchParams({
+            id: itemId,
+            description: input.value
+          })
+        });
+
+        if (!response.ok) {
+          throw new Error("Description update failed.");
+        }
+
+        const result = await response.json();
+
+        if (result.success) {
+          display.innerHTML = result.description && result.description.trim() !== ""
+            ? result.description
+            : '<span class="fst-italic">No notes</span>';
+
+        if (editBtn) {
+          if (result.description && result.description.trim() !== "") {
+            editBtn.innerHtml = "✏️ Edit";
+            editBtn.classList.remove("text-muted");
+          } else {
+            editBtn.innerHtml = "➕ Add Notes";
+            editBtn.classList.add("text-muted");
+          }
+        }
+
+          updateNoteToggleVisibility();
+
+          display.classList.remove("d-none");
+          if (editor) editor.classList.add("d-none");
+          if (editBtn) editBtn.classList.remove("d-none");
+          if (toggleBtn) toggleBtn.classList.remove("d-none");
+
+          display.classList.add("text-success");
+          setTimeout(() => display.classList.remove("text-success"), 250);
+        }
+      } catch (error) {
+        console.error("Description update error:", error);
+        alert("Could not update notes. Please try again.");
+      }
+    });
+  });
+
+  document.querySelectorAll(".note-toggle-btn").forEach(button => {
+    button.addEventListener("click", function () {
+      const targetId = this.dataset.target;
+      const target = document.getElementById(targetId);
+
+      if (!target) {
+        return;
+      }
+
+      const isExpanded = this.dataset.expanded === "true";
+
+      if (isExpanded) {
+        target.classList.add("is-collapsed");
+        this.dataset.expanded = "false";
+        this.textContent = "Show more";
+      } else {
+        target.classList.remove("is-collapsed");
+        this.dataset.expanded = "true";
+        this.textContent = "Show less";
+      }
+    });
+  });
+
+  document.querySelectorAll(".mobile-inline-description-input").forEach(input => {
+    input.addEventListener("keydown", function (e) {
+      if (e.key === "Enter" && !e.shiftKey) {
+        e.preventDefault();
+
+        const itemId = this.id.replace("mobile-description-input-", "");
+        const saveButton = document.querySelector(`.mobile-save-description-btn[data-id="${itemId}"]`);
+
+        if (saveButton) {
+          saveButton.click();
+        }
+      }
+    });
+  });
+
+  document.querySelectorAll(".inline-description-input").forEach(input => {
+    input.addEventListener("keydown", function (e) {
+      if (e.key === "Enter" && !e.shiftKey) {
+        e.preventDefault();
+
+        const itemId = this.id.replace("description-input-", "");
+        const saveButton = document.querySelector(`.save-description-btn[data-id="${itemId}"]`);
+
+        if (saveButton) {
+          saveButton.click();
+        }
+      }
+    });
+  });
+
+  updateNoteToggleVisibility();
 });
 
 document.querySelectorAll(".mobile-cancel-description-btn").forEach(button => {
@@ -268,11 +464,19 @@ document.querySelectorAll(".mobile-cancel-description-btn").forEach(button => {
     if (editBtn) editBtn.classList.remove("d-none");
     if (toggleBtn) toggleBtn.classList.remove("d-none");
 
+    if (editBtn && display) {
+      const hasNotes = display.textContent.trim() !== "No notes";
+      editBtn.innerHtml = hasNotes ? "✏️ Edit" : "➕ Add Notes";
+      editBtn.classList.toggle("text-muted", !hasNotes);
+    }
+
     if (input && display) {
       input.value = display.textContent.trim() === "No notes"
         ? ""
         : display.textContent.trim();
     }
+
+
   });
 });
 
@@ -289,6 +493,27 @@ document.querySelectorAll(".mobile-save-description-btn").forEach(button => {
     if (!input || !display || !tokenInput || !updateDescriptionUrl) {
       return;
     }
+
+    function updateNoteToggleVisibility() {
+    document.querySelectorAll(".note-toggle-btn").forEach(button => {
+      const targetId = button.dataset.target;
+      const target = document.getElementById(targetId);
+
+      if (!target) return;
+
+      // Ensure we're measuring collapsed state
+      target.classList.add("is-collapsed");
+
+      const isOverflowing = target.scrollHeight > target.clientHeight + 1;
+
+      if (!isOverflowing) {
+        button.style.display = "none";
+        target.classList.remove("is-collapsed"); // optional polish
+      } else {
+        button.style.display = "";
+      }
+    });
+  }
 
     try {
       const response = await fetch(updateDescriptionUrl, {
@@ -315,6 +540,18 @@ document.querySelectorAll(".mobile-save-description-btn").forEach(button => {
           ? result.description
           : '<span class="fst-italic">No notes</span>';
 
+      if (editBtn) {
+          if (result.description && result.description.trim() !== "") {
+            editBtn.innerHtml = "✏️ Edit";
+            editBtn.classList.remove("text-muted");
+          } else {
+            editBtn.innerHtml = "➕ Add Notes";
+            editBtn.classList.add("text-muted");
+          }
+        }
+
+        updateNoteToggleVisibility();
+
         display.classList.remove("d-none");
         if (editor) editor.classList.add("d-none");
         if (editBtn) editBtn.classList.remove("d-none");
@@ -328,6 +565,8 @@ document.querySelectorAll(".mobile-save-description-btn").forEach(button => {
       alert("Could not update notes. Please try again.");
     }
   });
+
+  updateNoteToggleVisibility();
 });
 
 document.querySelectorAll(".note-toggle-btn").forEach(button => {
@@ -382,4 +621,3 @@ document.querySelectorAll(".mobile-inline-description-input").forEach(input => {
       }
     });
   });
-});
