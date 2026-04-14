@@ -244,10 +244,13 @@ document.addEventListener("DOMContentLoaded", function () {
     const display = document.getElementById(`mobile-description-display-${itemId}`);
     const editor = document.getElementById(`mobile-description-editor-${itemId}`);
     const editBtn = this;
+    const toggleBtn = document.querySelector(`.note-toggle-btn[data-target="mobile-description-display-${itemId}"]`);
 
     if (display) display.classList.add("d-none");
     if (editor) editor.classList.remove("d-none");
     editBtn.classList.add("d-none");
+    if (toggleBtn) toggleBtn.classList.add("d-none");
+
   });
 });
 
@@ -258,10 +261,12 @@ document.querySelectorAll(".mobile-cancel-description-btn").forEach(button => {
     const editor = document.getElementById(`mobile-description-editor-${itemId}`);
     const editBtn = document.querySelector(`.mobile-edit-description-btn[data-id="${itemId}"]`);
     const input = document.getElementById(`mobile-description-input-${itemId}`);
+    const toggleBtn = document.querySelector(`.note-toggle-btn[data-target="mobile-description-display-${itemId}"]`);
 
     if (editor) editor.classList.add("d-none");
     if (display) display.classList.remove("d-none");
     if (editBtn) editBtn.classList.remove("d-none");
+    if (toggleBtn) toggleBtn.classList.remove("d-none");
 
     if (input && display) {
       input.value = display.textContent.trim() === "No notes"
@@ -279,6 +284,7 @@ document.querySelectorAll(".mobile-save-description-btn").forEach(button => {
     const editor = document.getElementById(`mobile-description-editor-${itemId}`);
     const editBtn = document.querySelector(`.mobile-edit-description-btn[data-id="${itemId}"]`);
     const tokenInput = document.querySelector('#antiForgeryForm input[name="__RequestVerificationToken"]');
+    const toggleBtn = document.querySelector(`.note-toggle-btn[data-target="mobile-description-display-${itemId}"]`);
 
     if (!input || !display || !tokenInput || !updateDescriptionUrl) {
       return;
@@ -312,6 +318,7 @@ document.querySelectorAll(".mobile-save-description-btn").forEach(button => {
         display.classList.remove("d-none");
         if (editor) editor.classList.add("d-none");
         if (editBtn) editBtn.classList.remove("d-none");
+        if (toggleBtn) toggleBtn.classList.remove("d-none");
 
         display.classList.add("text-success");
         setTimeout(() => display.classList.remove("text-success"), 250);
@@ -319,6 +326,29 @@ document.querySelectorAll(".mobile-save-description-btn").forEach(button => {
     } catch (error) {
       console.error(error);
       alert("Could not update notes. Please try again.");
+    }
+  });
+});
+
+document.querySelectorAll(".note-toggle-btn").forEach(button => {
+  button.addEventListener("click", function () {
+    const targetId = this.dataset.target;
+    const target = document.getElementById(targetId);
+
+    if (!target) {
+      return;
+    }
+
+    const isExpanded = this.dataset.expanded === "true";
+
+    if (isExpanded) {
+      target.classList.add("is-collapsed");
+      this.dataset.expanded = "false";
+      this.textContent = "Show more";
+    } else {
+      target.classList.remove("is-collapsed");
+      this.dataset.expanded = "true";
+      this.textContent = "Show less";
     }
   });
 });

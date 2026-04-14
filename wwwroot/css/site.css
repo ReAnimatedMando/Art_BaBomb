@@ -296,6 +296,18 @@ body {
     max-width: 220px;
   }
 
+  .note-display-body.is-collapsed {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .note-toggle-btn {
+    font-size: 0.8rem;
+    text-decoration: none;
+  }
+
   .actions-col {
     min-width: 120px;
   }
@@ -478,6 +490,14 @@ body {
 
   .mobile-item-card .edit-description-btn {
     font-size: 0.82rem;
+  }
+
+  .mobile-item-actions .btn-danger {
+    font-weight: 600;
+  }
+
+  .mobile-item-actions .btn-success {
+    font-weight: 600;
   }
 
   .mobile-item-card .form-text {

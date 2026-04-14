@@ -297,14 +297,16 @@
                 }
                 else if (isReturnQueue)
                 {
-                    <a asp-controller="Items" asp-action="ReturnInfo" asp-route-id="@Model.Id" class="btn btn-sm btn-outline-primary">
-                        Return Info
-                    </a>
 
                     <form asp-controller="Items" asp-action="MarkReturned" asp-route-id="@Model.Id" method="post" class="d-inline">
                         @Html.AntiForgeryToken()
                         <button type="submit" class="btn btn-sm btn-danger">Mark Returned</button>
                     </form>
+
+                    <a asp-controller="Items" asp-action="ReturnInfo" asp-route-id="@Model.Id" class="btn btn-sm btn-outline-primary">
+                        Return Info
+                    </a>
+
                 }
                 else if (isReturned)
                 {
