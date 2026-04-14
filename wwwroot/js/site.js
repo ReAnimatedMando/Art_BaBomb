@@ -344,11 +344,11 @@ document.querySelectorAll(".note-toggle-btn").forEach(button => {
     if (isExpanded) {
       target.classList.add("is-collapsed");
       this.dataset.expanded = "false";
-      this.textContent = "Show more";
+      this.textContent = "Show More";
     } else {
       target.classList.remove("is-collapsed");
       this.dataset.expanded = "true";
-      this.textContent = "Show less";
+      this.textContent = "Show Less";
     }
   });
 });
