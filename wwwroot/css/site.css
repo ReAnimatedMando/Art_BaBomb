@@ -106,6 +106,25 @@ body {
 .notes-col .small {
   line-height: 1.35;
   overflow-wrap: anywhere;
+  margin-bottom: 0.2rem;
+}
+
+.notes-col .small, .mobile-item-notes {
+  line-height: 1.4;
+  color: #6c757d;
+}
+
+.mobile-item-notes {
+  font-size: 0.9rem;
+}
+
+.edit-description-btn, .mobile-edit-description-btn {
+  font-size: 0.8rem;
+  text-decoration: none;
+}
+
+.form-text {
+  font-size: 0.75rem;
 }
 
 #description-display,
