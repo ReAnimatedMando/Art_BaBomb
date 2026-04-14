@@ -72,8 +72,7 @@
     @if (!isReturned)
     {
         <td class="notes-col">
-            <div class="small text-muted note-display-body is-collapsed" id="description-display-@Model.Id">
-                
+            <div class="small text-muted" id="description-display-@Model.Id">     
                 @if (string.IsNullOrWhiteSpace(Model.Description))
                 {
                     <span class="fst-italic">No notes</span>
@@ -83,15 +82,6 @@
                     @Model.Description
                 }
             </div>
-
-            @if (!string.IsNullOrWhiteSpace(Model.Description))
-                {
-                    <div class="mt-1">
-                        <button type="button" class="btn btn-sm btn-link p-0 note-toggle-btn" data-id="@Model.Id" data-target="description-display-@Model.Id" data-expanded="false">
-                            Show More
-                        </button>
-                    </div>
-                }
 
             <div class="mt-1 d-none" id="description-editor-@Model.Id">
                 <textarea class="form-control form-control-sm mb-2 inline-description-input"

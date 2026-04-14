@@ -58,7 +58,7 @@
 
             @if (!isReturned)
             {
-                <div class="mobile-item-notes text-muted mt-2 note-display-body is-collapsed" id="mobile-description-display-@Model.Id">
+                <div class="mobile-item-notes text-muted mt-2" id="mobile-description-display-@Model.Id">
                     @if (string.IsNullOrWhiteSpace(Model.Description))
                     {
                         <span class="fst-italic">No notes</span>
@@ -68,15 +68,6 @@
                         @Model.Description
                     }
                 </div>
-
-                @if (!string.IsNullOrWhiteSpace(Model.Description))
-                {
-                    <div class="mt-1">
-                        <button type="button" class="btn btn-sm btn-link p-0 note-toggle-btn" data-id="@Model.Id" data-target="mobile-description-display-@Model.Id" data-expanded="false">
-                            Show More
-                        </button>
-                    </div>
-                }
 
                 <div class="mt-2 d-none" id="mobile-description-editor-@Model.Id">
                     <textarea class="form-control form-control-sm mb-2 inline-description-input mobile-inline-description-input"
