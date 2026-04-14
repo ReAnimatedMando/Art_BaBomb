@@ -72,7 +72,7 @@
     @if (!isReturned)
     {
         <td class="notes-col">
-            <div class="small text-muted" id="description-display-@Model.Id">     
+            <div class="small text-muted note-clamp" id="description-display-@Model.Id">     
                 @if (string.IsNullOrWhiteSpace(Model.Description))
                 {
                     <span class="fst-italic">No notes</span>

@@ -114,6 +114,25 @@ body {
   color: #6c757d;
 }
 
+/* Notes clamp */
+@media (min-width: 768px) {
+  .notes-col .small.note-clamp {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+}
+
+@media (max-width: 767.98px) {
+  .mobile-item-notes.note-clamp {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+}
+
 .mobile-item-notes {
   font-size: 0.9rem;
 }

@@ -58,7 +58,7 @@
 
             @if (!isReturned)
             {
-                <div class="mobile-item-notes text-muted mt-2" id="mobile-description-display-@Model.Id">
+                <div class="mobile-item-notes text-muted mt-2 note-clamp" id="mobile-description-display-@Model.Id">
                     @if (string.IsNullOrWhiteSpace(Model.Description))
                     {
                         <span class="fst-italic">No notes</span>
