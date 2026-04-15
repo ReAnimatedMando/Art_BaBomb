@@ -348,6 +348,29 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   });
 
+  document.querySelectorAll(".note-toggle-btn").forEach(button => {
+  button.addEventListener("click", function () {
+    const targetId = this.dataset.target;
+    const target = document.getElementById(targetId);
+
+    if (!target) {
+      return;
+    }
+
+    const isExpanded = this.dataset.expanded === "true";
+
+    if (isExpanded) {
+      target.classList.remove("is-expanded");
+      this.dataset.expanded = "false";
+      this.textContent = "Show more";
+    } else {
+      target.classList.add("is-expanded");
+      this.dataset.expanded = "true";
+      this.textContent = "Show less";
+    }
+  });
+});
+
   document.querySelectorAll(".mobile-inline-description-input").forEach(input => {
     input.addEventListener("keydown", function (e) {
       if (e.key === "Enter" && !e.shiftKey) {

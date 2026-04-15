@@ -8,6 +8,10 @@
     var isAcquired = section == "Acquired";
     var isReturnQueue = section == "ReturnQueue";
     var isReturned = section == "Returned";
+    var useStackedMobileActions = isReturnQueue || isReturned;
+    var mobileActionClass = useStackedMobileActions
+        ? "mobile-item-actions mobile-item-actions-stacked"
+        : "mobile-item-actions";
 
     bool IsImageReceipt(string? path) =>
         !string.IsNullOrWhiteSpace(path) &&
@@ -68,6 +72,15 @@
                         @Model.Description
                     }
                 </div>
+
+                @if (!string.IsNullOrWhiteSpace(Model.Description))
+                {
+                    <div class="mt-1">
+                        <button type="button" class="btn btn-sm btn-link p-0 note-toggle-btn" data-target="mobile-description-display-@Model.Id" data-expanded="false">
+                            Show more
+                        </button>
+                    </div>
+                }
 
                 <div class="mt-2 d-none" id="mobile-description-editor-@Model.Id">
                     <textarea class="form-control form-control-sm mb-2 inline-description-input mobile-inline-description-input"
@@ -230,7 +243,7 @@
         }
     </div>
 
-    <div class="mobile-item-actions">
+    <div class="@mobileActionClass">
         @if (canEdit)
         {
             @if (isNeeded)

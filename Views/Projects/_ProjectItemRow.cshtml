@@ -83,6 +83,15 @@
                 }
             </div>
 
+            @if (!string.IsNullOrWhiteSpace(Model.Description))
+            {
+                <div class="mt-1">
+                    <button type="button" class="btn btn-sm btn-link p-0 note-toggle-btn" data-target="description-display-@Model.Id" data-expanded="false">
+                        Show more
+                    </button>
+                </div>
+            }
+
             <div class="mt-1 d-none" id="description-editor-@Model.Id">
                 <textarea class="form-control form-control-sm mb-2 inline-description-input"
                           id="description-input-@Model.Id"
