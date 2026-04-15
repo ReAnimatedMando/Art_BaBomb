@@ -440,6 +440,7 @@ body {
     font-size: 0.98rem;
     font-weight: 600;
     line-height: 1.25;
+    overflow-wrap: anywhere;
     overflow-wrap: break-word;
   }
 
@@ -452,6 +453,7 @@ body {
   .mobile-item-notes {
     font-size: 0.88rem;
     line-height: 1.35;
+    overflow-wrap: anywhere;
     overflow-wrap: break-word;
   }
 
@@ -520,6 +522,21 @@ body {
   .mobile-item-actions:not(.mobile-item-actions-stacked) > a,
   .mobile-item-actions:not(.mobile-item-actions-stacked) > form {
     flex: 0 0 auto;
+  }
+
+  .mobile-item-list > * {
+    min-width: 0;
+  }
+
+  .mobile-item-card {
+    min-width: 0;
+    width: 100%;
+  }
+
+  .mobile-item-notes,
+  .mobile-item-name {
+    overflow-wrap: anywhere;
+    word-break: break-word;
   }
 
   /* Return Queue / Returned: stacked full-width actions */
