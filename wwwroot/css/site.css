@@ -140,6 +140,33 @@ h2 {
   overflow: visible;
 }
 
+/* Notes UX polish */
+.note-clamp {
+  position: relative;
+  transition: max-height 0.2s ease;
+}
+
+.note-clamp:not(.is-expanded)::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1.4em;
+  pointer-events: none;
+  background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,1));
+}
+
+.note-toggle-btn {
+  font-size: 0.75rem;
+  text-decoration: none;
+  color: #0d6efd;
+}
+
+.note-toggle-btn:hover {
+  text-decoration: underline;
+}
+
 .mobile-item-notes {
   font-size: 0.9rem;
 }

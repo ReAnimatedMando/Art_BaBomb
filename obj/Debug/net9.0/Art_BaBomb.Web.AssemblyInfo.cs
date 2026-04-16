@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Art_BaBomb.Web")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+5645b5ccb74b00a29ae82d67c3cd92163ba705c6")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+66c9e4cb2b2951f8c1b49fdd1a9580caee403726")]
 [assembly: System.Reflection.AssemblyProductAttribute("Art_BaBomb.Web")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Art_BaBomb.Web")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
