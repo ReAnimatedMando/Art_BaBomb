@@ -161,31 +161,20 @@ function updateNoteToggleVisibility() {
       return;
     }
 
-    // Skip notes that are not currently visible at this breakpoint/state
     const targetStyle = window.getComputedStyle(target);
     if (targetStyle.display === "none" || target.offsetParent === null) {
       button.style.display = "none";
       return;
     }
 
-    const wasExpanded = target.classList.contains("is-expanded");
-
-    // Measure in collapsed state
+    // Always measure collapsed state
     target.classList.remove("is-expanded");
+    button.dataset.expanded = "false";
+    button.textContent = "Show more";
 
     const isOverflowing = target.scrollHeight > target.clientHeight + 1;
 
-    // Restore previous state
-    if (wasExpanded) {
-      target.classList.add("is-expanded");
-    }
-
     button.style.display = isOverflowing ? "" : "none";
-
-    if (!isOverflowing) {
-      button.dataset.expanded = "false";
-      button.textContent = "Show more";
-    }
   });
 }
 
@@ -378,7 +367,7 @@ function updateNoteToggleVisibility() {
           if (editBtn) editBtn.classList.remove("d-none");
 
           requestAnimationFrame(() => updateNoteToggleVisibility());
-          
+
           display.classList.add("text-success");
           setTimeout(() => display.classList.remove("text-success"), 250);
         }
@@ -441,5 +430,24 @@ function updateNoteToggleVisibility() {
       }
     });
   });
+
+  let noteToggleResizeTimer;
+
+  function refreshNoteTogglesAfterLayout() {
+    clearTimeout(noteToggleResizeTimer);
+
+    noteToggleResizeTimer = setTimeout(() => {
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          updateNoteToggleVisibility();
+        });
+      });
+    }, 150);
+  }
+
+  window.addEventListener("resize", refreshNoteTogglesAfterLayout);
+  window.addEventListener("orientationchange", refreshNoteTogglesAfterLayout);
+
   updateNoteToggleVisibility();
+
 });
