@@ -152,12 +152,21 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 
-  function updateNoteToggleVisibility() {
+function updateNoteToggleVisibility() {
   document.querySelectorAll(".note-toggle-btn").forEach(button => {
     const targetId = button.dataset.target;
     const target = document.getElementById(targetId);
 
-    if (!target) return;
+    if (!target) {
+      return;
+    }
+
+    // Skip notes that are not currently visible at this breakpoint/state
+    const targetStyle = window.getComputedStyle(target);
+    if (targetStyle.display === "none" || target.offsetParent === null) {
+      button.style.display = "none";
+      return;
+    }
 
     const wasExpanded = target.classList.contains("is-expanded");
 
@@ -166,14 +175,13 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const isOverflowing = target.scrollHeight > target.clientHeight + 1;
 
-    // Restore prior expanded state
+    // Restore previous state
     if (wasExpanded) {
       target.classList.add("is-expanded");
     }
 
     button.style.display = isOverflowing ? "" : "none";
 
-    // If not overflowing, normalize button state
     if (!isOverflowing) {
       button.dataset.expanded = "false";
       button.textContent = "Show more";
@@ -265,11 +273,11 @@ document.addEventListener("DOMContentLoaded", function () {
             editBtn.classList.toggle("text-muted", !hasNotes);
           }
 
-          updateNoteToggleVisibility();
-
           display.classList.remove("d-none");
           if (editor) editor.classList.add("d-none");
           if (editBtn) editBtn.classList.remove("d-none");
+
+          requestAnimationFrame(() => updateNoteToggleVisibility());
 
           display.classList.add("text-success");
           setTimeout(() => display.classList.remove("text-success"), 250);
@@ -365,12 +373,12 @@ document.addEventListener("DOMContentLoaded", function () {
             editBtn.classList.toggle("text-muted", !hasNotes);
           }
 
-          updateNoteToggleVisibility();
-
           display.classList.remove("d-none");
           if (editor) editor.classList.add("d-none");
           if (editBtn) editBtn.classList.remove("d-none");
 
+          requestAnimationFrame(() => updateNoteToggleVisibility());
+          
           display.classList.add("text-success");
           setTimeout(() => display.classList.remove("text-success"), 250);
         }
