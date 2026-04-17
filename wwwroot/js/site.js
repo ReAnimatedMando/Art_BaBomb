@@ -152,6 +152,35 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 
+  function updateNoteToggleVisibility() {
+  document.querySelectorAll(".note-toggle-btn").forEach(button => {
+    const targetId = button.dataset.target;
+    const target = document.getElementById(targetId);
+
+    if (!target) return;
+
+    const wasExpanded = target.classList.contains("is-expanded");
+
+    // Measure in collapsed state
+    target.classList.remove("is-expanded");
+
+    const isOverflowing = target.scrollHeight > target.clientHeight + 1;
+
+    // Restore prior expanded state
+    if (wasExpanded) {
+      target.classList.add("is-expanded");
+    }
+
+    button.style.display = isOverflowing ? "" : "none";
+
+    // If not overflowing, normalize button state
+    if (!isOverflowing) {
+      button.dataset.expanded = "false";
+      button.textContent = "Show more";
+    }
+  });
+}
+
   // Desktop notes
   document.querySelectorAll(".edit-description-btn").forEach(button => {
     button.addEventListener("click", function () {
@@ -235,6 +264,8 @@ document.addEventListener("DOMContentLoaded", function () {
             editBtn.innerHTML = hasNotes ? "✏️ Edit" : "+ Notes";
             editBtn.classList.toggle("text-muted", !hasNotes);
           }
+
+          updateNoteToggleVisibility();
 
           display.classList.remove("d-none");
           if (editor) editor.classList.add("d-none");
@@ -334,6 +365,8 @@ document.addEventListener("DOMContentLoaded", function () {
             editBtn.classList.toggle("text-muted", !hasNotes);
           }
 
+          updateNoteToggleVisibility();
+
           display.classList.remove("d-none");
           if (editor) editor.classList.add("d-none");
           if (editBtn) editBtn.classList.remove("d-none");
@@ -400,4 +433,5 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     });
   });
+  updateNoteToggleVisibility();
 });
