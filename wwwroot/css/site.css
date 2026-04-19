@@ -628,6 +628,85 @@ h2 {
 }
 
 /* =========================
+   Cross-Page Consistency Sweep
+========================= */
+
+.page-title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  line-height: 1.2;
+  margin-bottom: 0.25rem;
+}
+
+.page-subtitle {
+  color: #6c757d;
+  line-height: 1.4;
+}
+
+.section-card-title,
+.card-title {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #212529;
+}
+
+.card.shadow-sm {
+  border: 1px solid #e9ecef;
+  border-radius: 0.85rem;
+}
+
+.card.shadow-sm .card-body {
+  padding: 1rem;
+}
+
+.btn {
+  border-radius: 0.5rem;
+}
+
+.btn-sm {
+  border-radius: 0.45rem;
+}
+
+.badge.fs-6 {
+  font-size: 0.78rem !important;
+  font-weight: 600;
+  padding: 0.45em 0.65em;
+}
+
+.text-muted,
+.small.text-muted,
+.form-text {
+  color: #6c757d !important;
+}
+
+.empty-state-text {
+  color: #6c757d;
+  margin-bottom: 0;
+}
+
+.receipt-action-btn {
+  min-width: 150px;
+}
+
+.status-label {
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: #6c757d;
+}
+
+@media (max-width: 767.98px) {
+  .page-title {
+    font-size: 1.5rem;
+  }
+
+  .card.shadow-sm .card-body {
+    padding: 0.9rem;
+  }
+}
+
+/* =========================
    Section + Card Polish
 ========================= */
 

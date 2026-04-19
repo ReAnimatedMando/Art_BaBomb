@@ -23,7 +23,7 @@
 
 <div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-3 item-details-header">
     <div>
-        <h1 class="mb-1">@Model.Name</h1>
+        <h1 class="page-title mb-1">@Model.Name</h1>
         <div class="text-muted">
             Project: <strong>@Model.Project?.Name</strong>
         </div>
@@ -199,7 +199,7 @@
                     }
 
 
-                    <a href="@Model.PurchaseReceiptPath" target="_blank" class="btn btn-sm btn-outline-primary receipt-link-btn">
+                    <a href="@Model.PurchaseReceiptPath" target="_blank" class="btn btn-sm btn-outline-primary receipt-link-btn receipt-action-btn">
                         View Purchase Receipt
                     </a>
 
@@ -213,7 +213,7 @@
                 }
                 else
                 {
-                    <p class="text-muted mb-0">No purchase receipt uploaded.</p>
+                    <p class="empty-state-text">No purchase receipt uploaded.</p>
                 }
             </div>
         </div>
@@ -246,7 +246,7 @@
                         </a>
                     }
 
-                    <a href="@Model.ReturnReceiptPath" target="_blank" class="btn btn-sm btn-outline-danger receipt-link-btn">
+                    <a href="@Model.ReturnReceiptPath" target="_blank" class="btn btn-sm btn-outline-danger receipt-link-btn receipt-action-btn">
                         View Return Receipt
                     </a>
 
@@ -260,7 +260,7 @@
                 }
                 else
                 {
-                    <p class="text-muted mb-0">No return receipt uploaded.</p>
+                    <p class="empty-state-text">No return receipt uploaded.</p>
                 }
             </div>
             

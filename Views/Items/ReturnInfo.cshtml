@@ -14,7 +14,7 @@
 }
 
 <div class="item-page-header mb-4">
-    <h1 class="mb-1">Return Info</h1>
+    <h1 class="page-title mb-1">Return Info</h1>
     <div class="item-page-subtitle">
         <div><strong>@Model.Name</strong></div>
         <div class="text-muted">
@@ -187,7 +187,7 @@
                     }
 
                     <div class="d-flex gap-2 flex-wrap">
-                        <a href="@Model.ReturnReceiptPath" target="_blank" class="btn btn-sm btn-outline-danger receipt-link-btn">
+                        <a href="@Model.ReturnReceiptPath" target="_blank" class="btn btn-sm btn-outline-danger receipt-link-btn receipt-action-btn">
                             View Receipt
                         </a>
                     </div>
@@ -202,7 +202,7 @@
                 }
                 else
                 {
-                    <p class="text-muted mb-0">No return receipt uploaded.</p>
+                    <p class="empty-state-text">No return receipt uploaded.</p>
                 }
             </div>
         </div>

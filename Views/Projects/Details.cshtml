@@ -64,11 +64,17 @@
     var returnedAttentionCount = returnedItems.Count(i => i.NeedsAttention);
 }
 
-<h1>@Model.Name</h1>
-
 <div class="mb-4">
-    <p><strong>Description:</strong> @Model.Description</p>
-    <p><strong>Created:</strong> @Model.CreatedAt.ToLocalTime().ToString("g")</p>
+    <h1 class="page-title">@Model.Name</h1>
+    <div class="page-subtitle">
+        <div>
+            <strong>Description:</strong>
+            @(string.IsNullOrWhiteSpace(Model.Description) ? "—" : Model.Description)
+        </div>
+        <div>
+            <strong>Created:</strong> @Model.CreatedAt.ToLocalTime().ToString("g")
+        </div>
+    </div>
 </div>
 
 @if (TempData["WarningMessage"] != null)
