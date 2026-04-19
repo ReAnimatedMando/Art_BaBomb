@@ -13,17 +13,18 @@
         || Model.ReturnReceiptPath.EndsWith(".webp", StringComparison.OrdinalIgnoreCase));
 }
 
-<h1>Return Info</h1>
-
-<div class="mb-4">
-    <h4 class="mb-1">@Model.Name</h4>
-    <div class="text-muted">
-        Project: <strong>@Model.Project?.Name</strong>
+<div class="item-page-header mb-4">
+    <h1 class="mb-1">Return Info</h1>
+    <div class="item-page-subtitle">
+        <div><strong>@Model.Name</strong></div>
+        <div class="text-muted">
+            Project: <strong>@Model.Project?.Name</strong>
+        </div>
+        @if (!string.IsNullOrWhiteSpace(Model.Category))
+        {
+            <div class="text-muted">@Model.Category</div>
+        }
     </div>
-    @if (!string.IsNullOrWhiteSpace(Model.Category))
-    {
-        <div class="text-muted">@Model.Category</div>
-    }
 </div>
 
 @if (Model.IsReturned && string.IsNullOrWhiteSpace(Model.ReturnReceiptPath))
@@ -37,6 +38,8 @@
     <div class="col-lg-7">
         <div class="card shadow-sm">
             <div class="card-body">
+                <h5 class="card-title mb-3">Return Workflow</h5>
+
                 <form asp-action="ReturnInfo" enctype="multipart/form-data">
                     <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
@@ -104,32 +107,46 @@
 
                     @if (Model.IsReturned && Model.ReturnedAt.HasValue)
                     {
-                        <div class="alert alert-light border mb-4">
+                        <div class="item-inline-status mb-4">
                             <strong>Returned At:</strong> @Model.ReturnedAt.Value.ToLocalTime().ToString("g")
                         </div>
                     }
 
-                    <div class="d-flex gap-2 flex-wrap mt-4">
-                        <button type="submit" class="btn btn-primary">Save Return Info</button>
+                    <div class="item-actions-panel mt-4">
+                        <div class="item-actions-group">
+                            <div class="item-actions-group-label">Save</div>
+
+                            <button type="submit" class="btn btn-primary">
+                                Save Return Info
+                            </button>
+                        </div>
 
                         @if (Model.IsReturnRequired || Model.IsReturned)
                         {
-                            <button type="submit"
-                                name="removeFromReturnWorkflow"
-                                value="true"
-                                class="btn btn-outline-secondary"
-                                onclick="return confirm('This will remove the item from the return workflow and clear return details. Continue?');">
-                            Undo Return Workflow
-                        </button>
+                            <div class="item-actions-group">
+                                <div class="item-actions-group-label">Workflow</div>
+
+                                <button type="submit"
+                                        name="removeFromReturnWorkflow"
+                                        value="true"
+                                        class="btn btn-outline-secondary"
+                                        onclick="return confirm('This will remove the item from the return workflow and clear return details. Continue?');">
+                                    Undo Return Workflow
+                                </button>
+                            </div>
                         }
 
-                        <a 
-                            asp-action="Details"
+                        <div class="item-actions-group item-actions-group-secondary">
+                            <div class="item-actions-group-label">Navigation</div>
+
+                            <a asp-action="Details"
                             asp-route-id="@Model.Id"
                             class="btn btn-outline-dark">
-                            Back to Item
-                        </a>
+                                Back to Item
+                            </a>
+                        </div>
                     </div>
+
                 </form>
             </div>
         </div>
@@ -138,7 +155,7 @@
     <div class="col-lg-5">
         <div class="card shadow-sm">
             <div class="card-body">
-                <h5 class="card-title">Current Return Receipt</h5>
+                <h5 class="card-title mb-3">Current Return Receipt</h5>
 
                 @if (hasReturnReceipt)
                 {

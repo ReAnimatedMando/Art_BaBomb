@@ -393,4 +393,4 @@ C:\DEV\Repos\Art_BaBomb\Art_BaBomb.Web\bin\Debug\net9.0\runtimes\win-x64\native\
 C:\DEV\Repos\Art_BaBomb\Art_BaBomb.Web\bin\Debug\net9.0\runtimes\win-x86\native\Microsoft.Data.SqlClient.SNI.dll
 C:\DEV\Repos\Art_BaBomb\Art_BaBomb.Web\bin\Debug\net9.0\runtimes\win\lib\net6.0\System.Runtime.Caching.dll
 C:\DEV\Repos\Art_BaBomb\Art_BaBomb.Web\obj\Debug\net9.0\compressed\9av9xdytj2-{0}-61pvsa5mfd-61pvsa5mfd.gz
-C:\DEV\Repos\Art_BaBomb\Art_BaBomb.Web\obj\Debug\net9.0\compressed\nyv39txait-{0}-7r97vruy71-7r97vruy71.gz
+C:\DEV\Repos\Art_BaBomb\Art_BaBomb.Web\obj\Debug\net9.0\compressed\nyv39txait-{0}-53u3parqlq-53u3parqlq.gz

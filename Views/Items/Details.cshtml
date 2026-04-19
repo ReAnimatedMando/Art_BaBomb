@@ -279,40 +279,60 @@
             <div class="card-body">
                 <h5 class="card-title mb-3">Actions</h5>
 
-                <div class="d-grid gap-2">
+                <div class="item-actions-panel">
                     @if (!Model.IsReturnRequired && !Model.IsReturned)
                     {
-                        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-outline-secondary">
-                            Edit Item
-                        </a>
+                        <div class="item-actions-group">
+                            <div class="item-actions-group-label">Item</div>
 
-                        <a asp-action="ReturnInfo" asp-route-id="@Model.Id" class="btn btn-warning">
-                            Start Return Workflow
-                        </a>
+                            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-outline-secondary">
+                                Edit Item
+                            </a>
+                        </div>
+
+                        <div class="item-actions-group">
+                            <div class="item-actions-group-label">Return Workflow</div>
+
+                            <a asp-action="ReturnInfo" asp-route-id="@Model.Id" class="btn btn-warning">
+                                Start Return Workflow
+                            </a>
+                        </div>
                     }
                     else if (Model.IsReturnRequired && !Model.IsReturned)
                     {
-                        <a asp-action="ReturnInfo" asp-route-id="@Model.Id" class="btn btn-outline-warning">
-                            Edit Return Info
-                        </a>
+                        <div class="item-actions-group">
+                            <div class="item-actions-group-label">Return Workflow</div>
 
-                        <form asp-action="MarkReturned" asp-route-id="@Model.Id" method="post">
-                            @Html.AntiForgeryToken()
-                            <button type="submit" class="btn btn-danger w-100">
-                                Mark Returned
-                            </button>
-                        </form>
+                            <form asp-action="MarkReturned" asp-route-id="@Model.Id" method="post">
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="btn btn-danger w-100">
+                                    Mark Returned
+                                </button>
+                            </form>
+
+                            <a asp-action="ReturnInfo" asp-route-id="@Model.Id" class="btn btn-outline-warning">
+                                Edit Return Info
+                            </a>
+                        </div>
                     }
                     else if (Model.IsReturned)
                     {
-                        <a asp-action="ReturnInfo" asp-route-id="@Model.Id" class="btn btn-outline-warning">
-                            View / Update Return Info
-                        </a>
+                        <div class="item-actions-group">
+                            <div class="item-actions-group-label">Return Workflow</div>
+
+                            <a asp-action="ReturnInfo" asp-route-id="@Model.Id" class="btn btn-outline-warning">
+                                View / Update Return Info
+                            </a>
+                        </div>
                     }
 
-                    <a asp-controller="Projects" asp-action="Details" asp-route-id="@Model.ProjectId" class="btn btn-outline-dark">
-                        Back to Project
-                    </a>
+                    <div class="item-actions-group item-actions-group-secondary">
+                        <div class="item-actions-group-label">Navigation</div>
+
+                        <a asp-controller="Projects" asp-action="Details" asp-route-id="@Model.ProjectId" class="btn btn-outline-dark">
+                            Back to Project
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
