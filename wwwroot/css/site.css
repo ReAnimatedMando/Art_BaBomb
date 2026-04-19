@@ -365,6 +365,104 @@ h2 {
   overflow-wrap: break-word;
 }
 
+/* =========================
+   Section + Card Polish
+========================= */
+
+.project-section-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.75rem;
+}
+
+.project-section-title h2,
+.project-section-title .h2-like {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.project-group-card {
+  border: 1px solid #e9ecef;
+  border-radius: 0.75rem;
+  overflow: hidden;
+}
+
+.project-group-card .card-header {
+  padding: 0.75rem 1rem;
+  background-color: #f8f9fa;
+}
+
+.project-group-card .card-body {
+  background: #fff;
+}
+
+/* =========================
+   Desktop Table Polish
+========================= */
+
+.project-items-table thead th {
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: #6c757d;
+  background-color: #fcfcfd;
+  border-bottom-width: 1px;
+}
+
+.project-items-table tbody td {
+  padding-top: 0.65rem;
+  padding-bottom: 0.65rem;
+}
+
+.project-items-table .qty-value {
+  font-size: 0.95rem;
+}
+
+.item-name-text > div:first-child {
+  font-weight: 600;
+  color: #212529;
+}
+
+.receipt-cell .text-warning,
+.project-items-table .text-warning.fw-semibold {
+  font-size: 0.85rem;
+}
+
+/* =========================
+   Button + Badge Polish
+========================= */
+
+.btn.btn-sm {
+  border-radius: 0.45rem;
+}
+
+.btn-outline-primary,
+.btn-outline-secondary,
+.btn-outline-warning {
+  border-color: #dcdfe3;
+}
+
+.badge {
+  font-size: 0.72rem;
+}
+
+.btn-icon {
+  font-weight: 700;
+}
+
+/* =========================
+   Empty State Polish
+========================= */
+
+.project-empty-state {
+  padding: 0.75rem 0;
+  color: #6c757d;
+}
+
 /* =============================
    ITEM TEXT HIERARCHY
 ============================= */

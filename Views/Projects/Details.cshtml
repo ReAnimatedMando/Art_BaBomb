@@ -122,18 +122,20 @@
 </form>
 
 <!-- ===================== NEEDED ===================== -->
-<h2>
-    Needed Items (@neededItems.Count)
-    @if (neededAttentionCount > 0)
-    {
-        <span class="badge bg-warning text-dark ms-2">@neededAttentionCount attention</span>
-    }
-</h2>
+<div class="project-section-title">
+    <h2>
+        Needed Items (@neededItems.Count)
+        @if (neededAttentionCount > 0)
+        {
+            <span class="badge bg-warning text-dark ms-2">@neededAttentionCount attention</span>
+        }
+    </h2>
+</div>
 @if (neededGroups.Any())
 {
     @foreach (var group in neededGroups)
     {
-        <div class="card shadow-sm mb-4">
+        <div class="card shadow-sm mb-4 project-group-card">
             <div class="card-header d-flex align-item-center justify-content-between">
                 <h5 class="mb-0">@group.Key</h5>
                 <span class="badge bg-secondary">@group.Count()</span>
@@ -182,22 +184,24 @@
 }
 else
 {
-    <p>No needed items yet.</p>
+    <p class="project-empty-state">No needed items yet.</p>
 }
 
 <!-- ===================== ACQUIRED ===================== -->
-<h2>
-    Acquired Items (@acquiredItems.Count)
-    @if (acquiredAttentionCount > 0)
-    {
-        <span class="badge bg-warning text-dark ms-2">@acquiredAttentionCount attention</span>
-    }
-</h2>
+<div class="project-section-title">
+    <h2>
+        Acquired Items (@acquiredItems.Count)
+        @if (acquiredAttentionCount > 0)
+        {
+            <span class="badge bg-warning text-dark ms-2">@acquiredAttentionCount attention</span>
+        }
+    </h2>
+</div>
 @if (acquiredGroups.Any())
 {
     @foreach (var group in acquiredGroups)
     {
-        <div class="card shadow-sm mb-4">
+        <div class="card shadow-sm mb-4 project-group-card">
             <div class="card-header d-flex align-item-center justify-content-between">
                 <h5 class="mb-0">@group.Key</h5>
                 <span class="badge bg-secondary">@group.Count()</span>
@@ -247,22 +251,24 @@ else
 }
 else
 {
-    <p>No acquired items yet.</p>
+    <p class="project-empty-state">No acquired items yet.</p>
 }
 
 <!-- ===================== RETURN QUEUE ===================== -->
-<h2>
-    Return Queue (@returnItems.Count)
-    @if (returnAttentionCount > 0)
-    {
-        <span class="badge bg-warning text-dark ms-2">@returnAttentionCount attention</span>
-    }
-</h2>
+<div class="project-section-title">
+    <h2>
+        Return Queue (@returnItems.Count)
+        @if (returnAttentionCount > 0)
+        {
+            <span class="badge bg-warning text-dark ms-2">@returnAttentionCount attention</span>
+        }
+    </h2>
+</div>
 @if (returnGroups.Any())
 {
     @foreach (var group in returnGroups)
     {
-        <div class="card shadow-sm mb-4">
+        <div class="card shadow-sm mb-4 project-group-card">
             <div class="card-header d-flex align-item-center justify-content-between">
                 <h5 class="mb-0">@group.Key</h5>
                 <span class="badge bg-secondary">@group.Count()</span>
@@ -312,22 +318,24 @@ else
 }
 else
 {
-    <p>No items in the return queue.</p>
+    <p class="project-empty-state">No items in the return queue.</p>
 }
 
 <!-- ===================== RETURNED ITEMS ===================== -->
-<h2>
-    Returned Items (@returnedItems.Count)
-    @if (returnedAttentionCount > 0)
-    {
-        <span class="badge bg-warning text-dark ms-2">@returnedAttentionCount attention</span>
-    }
-</h2>
+<div class="project-section-title">
+    <h2>
+        Returned Items (@returnedItems.Count)
+        @if (returnedAttentionCount > 0)
+        {
+            <span class="badge bg-warning text-dark ms-2">@returnedAttentionCount attention</span>
+        }
+    </h2>
+</div>
 @if (returnedGroups.Any())
 {
     @foreach (var group in returnedGroups)
     {
-        <div class="card shadow-sm mb-4">
+        <div class="card shadow-sm mb-4 project-group-card">
             <div class="card-header d-flex justify-content-between align-items-center">
                 <h5 class="mb-0">@group.Key</h5>
                 <span class="badge bg-secondary">@group.Count() items</span>
@@ -378,7 +386,7 @@ else
 }
 else
 {
-    <p>No returned items yet.</p>
+    <p class="project-empty-state">No returned items yet.</p>
 }
 
 <!-- 🔷 Budget Summary Cards -->
