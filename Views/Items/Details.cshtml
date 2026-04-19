@@ -29,32 +29,7 @@
         </div>
     </div>
 
-    @if (Model.IsReturnRequired && !Model.IsReturned && !Model.ReturnByDate.HasValue)
-        {
-            <div class="alert alert-warning text-center fw-bold mb-4 shadow-sm">
-                This item is in the return workflow but has no return-by date.
-            </div>
-        }
-        else if (Model.IsReturnRequired && !Model.IsReturned && Model.ReturnByDate.HasValue && Model.ReturnByDate.Value.Date < DateTime.Today)
-        {
-            <div class="alert alert-warning text-center fw-bold mb-4 shadow-sm">
-                This item has a return-by date in the past.
-            </div>
-        }
-        else if (Model.IsReturned && string.IsNullOrWhiteSpace(Model.ReturnReceiptPath))
-        {
-            <div class="alert alert-warning text-center fw-bold mb-4 shadow-sm">
-                This item is missing a return receipt.
-            </div>
-        }
-        else if (Model.ActualCost.HasValue && string.IsNullOrWhiteSpace(Model.PurchaseReceiptPath))
-        {
-            <div class="alert alert-warning text-center fw-bold mb-4 shadow-sm">
-                This item has an actual cost but is missing a purchase receipt.
-            </div>
-        }
-
-    <div class="text-end">
+    <div class="text-end item-details-status-badges">
         @if (string.IsNullOrWhiteSpace(Model.Status) || Model.Status.Trim().Equals("Needed", StringComparison.OrdinalIgnoreCase))
         {
             <span class="badge bg-secondary fs-6">Needed</span>
@@ -76,22 +51,60 @@
     </div>
 </div>
 
-@if (Model.IsReturned)
-{
-    <div class="alert alert-danger text-center fw-bold fs-4 mb-4 shadow-sm">
-        RETURNED
-        @if (Model.ReturnedAt.HasValue)
+@{
+    string? statusPanelClass = null;
+    string? statusPanelTitle = null;
+    string? statusPanelMessage = null;
+
+    if (Model.IsReturned)
+    {
+        statusPanelClass = "item-status-panel item-status-panel-danger";
+        statusPanelTitle = "Returned";
+        statusPanelMessage = Model.ReturnedAt.HasValue
+            ? $"Returned on {Model.ReturnedAt.Value.ToLocalTime():g}"
+            : "This item has been marked as returned.";
+    }
+    else if (Model.IsReturnRequired)
+    {
+        statusPanelClass = "item-status-panel item-status-panel-warning";
+        statusPanelTitle = "In Return Queue";
+
+        if (!Model.ReturnByDate.HasValue)
         {
-            <div class="fs-6 fw-normal mt-2">
-                Returned on @Model.ReturnedAt.Value.ToLocalTime().ToString("g")
-            </div>
+            statusPanelMessage = "This item is in the return workflow but has no return-by date.";
         }
-    </div>
+        else if (Model.ReturnByDate.Value.Date < DateTime.Today)
+        {
+            statusPanelMessage = "This item has a return-by date in the past.";
+        }
+        else
+        {
+            statusPanelMessage = $"Return by {Model.ReturnByDate.Value:d}.";
+        }
+    }
+    else if (Model.ActualCost.HasValue && string.IsNullOrWhiteSpace(Model.PurchaseReceiptPath))
+    {
+        statusPanelClass = "item-status-panel item-status-panel-warning";
+        statusPanelTitle = "Purchase Receipt Needed";
+        statusPanelMessage = "This item has an actual cost but is missing a purchase receipt.";
+    }
+
+    if (Model.IsReturned && string.IsNullOrWhiteSpace(Model.ReturnReceiptPath))
+    {
+        statusPanelClass = "item-status-panel item-status-panel-warning";
+        statusPanelTitle = "Return Receipt Needed";
+        statusPanelMessage = "This item is missing a return receipt.";
+    }
 }
-else if (Model.IsReturnRequired)
+
+@if (!string.IsNullOrWhiteSpace(statusPanelTitle))
 {
-    <div class="alert alert-warning text-center fw-bold fs-5 mb-4 shadow-sm">
-        IN RETURN QUEUE
+    <div class="@statusPanelClass mb-4">
+        <div class="item-status-panel-title">@statusPanelTitle</div>
+        @if (!string.IsNullOrWhiteSpace(statusPanelMessage))
+        {
+            <div class="item-status-panel-message">@statusPanelMessage</div>
+        }
     </div>
 }
 

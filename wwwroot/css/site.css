@@ -228,6 +228,74 @@ h2 {
   display: block;
 }
 
+/* =========================
+   Item Details Status Panel
+========================= */
+
+.item-details-status-badges {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.35rem;
+}
+
+.item-details-status-badges .badge {
+  margin-left: 0 !important;
+}
+
+.item-status-panel {
+  border: 1px solid #e9ecef;
+  border-left-width: 4px;
+  border-radius: 0.75rem;
+  padding: 0.9rem 1rem;
+  background: #fff;
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.04);
+}
+
+.item-status-panel-title {
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.item-status-panel-message {
+  margin-top: 0.35rem;
+  color: #6c757d;
+  line-height: 1.4;
+}
+
+.item-status-panel-warning {
+  border-left-color: #e0a800;
+  background: #fffdf5;
+}
+
+.item-status-panel-warning .item-status-panel-title {
+  color: #9a6b00;
+}
+
+.item-status-panel-danger {
+  border-left-color: #dc3545;
+  background: #fff5f5;
+}
+
+.item-status-panel-danger .item-status-panel-title {
+  color: #b02a37;
+}
+
+@media (max-width: 767.98px) {
+  .item-details-status-badges {
+    justify-content: flex-start;
+  }
+
+  .item-status-panel {
+    padding: 0.8rem 0.9rem;
+  }
+
+  .item-status-panel-title {
+    font-size: 0.95rem;
+  }
+}
+
 @media (max-width: 767.98px) {
   .receipt-preview-surface {
     min-height: 120px;
