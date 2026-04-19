@@ -103,6 +103,66 @@ h2 {
   height: 44px;
 }
 
+/* =========================
+   Thumb + Receipt Consistency
+========================= */
+
+.thumb-frame {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border: 1px solid #dee2e6;
+  border-radius: 0.5rem;
+  background: #f8f9fa;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.thumb-frame img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.thumb-frame-placeholder {
+  color: #adb5bd;
+  font-size: 0.8rem;
+}
+
+.receipt-link-btn {
+  min-width: 72px;
+}
+
+.receipt-status-missing,
+.receipt-status-complete {
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+.receipt-status-complete {
+  color: #198754;
+}
+
+.receipt-status-missing {
+  color: #e0a800; /* slightly deeper yellow for better weight */
+}
+
+.item-preview-trigger,
+.receipt-preview-trigger {
+  display: inline-flex;
+  text-decoration: none;
+}
+
+.item-preview-trigger:hover .thumb-frame,
+.receipt-preview-trigger:hover .thumb-frame {
+  border-color: #c6d4f7;
+  box-shadow: 0 0 0 0.15rem rgba(13, 110, 253, 0.08);
+}
+
 .notes-col {
   min-width: 220px;
   max-width: 320px;

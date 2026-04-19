@@ -34,12 +34,14 @@
                    class="item-preview-trigger">
                     <img src="@Model.ImageUrl"
                          alt="@Model.Name"
-                         class="item-thumb rounded border bg-light" />
+                         class="item-thumb" />
                 </a>
             }
             else
             {
-                <div class="item-thumb item-thumb-placeholder rounded border bg-light"></div>
+                <div class="thumb-frame">
+                    <span class="thumb-frame-placeholder">—</span>
+                </div>
             }
         </div>
 
@@ -156,7 +158,7 @@
                        class="receipt-preview-trigger ms-1">
                         <img src="@Model.PurchaseReceiptPath"
                              alt="Purchase Receipt"
-                             class="receipt-thumb rounded border bg-light d-inline-block align-middle" />
+                             class="receipt-thumb" />
                     </a>
                 }
                 else if (!string.IsNullOrWhiteSpace(Model.PurchaseReceiptPath))
@@ -165,7 +167,7 @@
                 }
                 else
                 {
-                    <span class="text-warning fw-semibold ms-1">Missing</span>
+                    <span class="receipt-status-missing">Missing</span>
                 }
             </div>
         }
@@ -186,7 +188,7 @@
                        class="receipt-preview-trigger ms-1">
                         <img src="@Model.PurchaseReceiptPath"
                              alt="Purchase Receipt"
-                             class="receipt-thumb rounded border bg-light d-inline-block align-middle" />
+                             class="receipt-thumb" />
                     </a>
                 }
                 else if (!string.IsNullOrWhiteSpace(Model.PurchaseReceiptPath))
@@ -195,7 +197,7 @@
                 }
                 else
                 {
-                    <span class="text-warning fw-semibold ms-1">Missing</span>
+                    <span class="receipt-status-missing">Missing</span>
                 }
             </div>
         }
@@ -216,7 +218,7 @@
                        class="receipt-preview-trigger ms-1">
                         <img src="@Model.ReturnReceiptPath"
                              alt="Return Receipt"
-                             class="receipt-thumb rounded border bg-light d-inline-block align-middle" />
+                             class="receipt-thumb" />
                     </a>
                 }
                 else if (!string.IsNullOrWhiteSpace(Model.ReturnReceiptPath))
@@ -233,11 +235,11 @@
                 <span class="mobile-label">Status:</span>
                 @if (!string.IsNullOrWhiteSpace(Model.ReturnReceiptPath))
                 {
-                    <span class="text-success fw-semibold ms-1">Complete</span>
+                    <span class="receipt-status-complete">Complete</span>
                 }
                 else
                 {
-                    <span class="text-warning fw-semibold ms-1">Missing</span>
+                    <span class="receipt-status-missing">Missing</span>
                 }
             </div>
         }
