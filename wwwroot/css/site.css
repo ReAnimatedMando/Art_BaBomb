@@ -180,6 +180,66 @@ h2 {
   color: #6c757d;
 }
 
+/* =========================
+   Item Details / Receipt Preview
+========================= */
+
+.item-details-header .badge {
+  align-self: flex-start;
+}
+
+.item-detail-list dt {
+  font-weight: 600;
+  color: #6c757d;
+}
+
+.item-detail-list dd {
+  color: #212529;
+}
+
+.item-detail-list dt, .item-detail-list dd {
+  margin-bottom: 0.9rem;
+}
+
+.receipt-preview-large {
+  display: block;
+  width: 100%;
+  margin-bottom: 0.75rem;
+}
+
+.receipt-preview-surface {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 180px;
+  max-height: 340px;
+  padding: 0.5rem;
+  border: 1px solid #dee2e6;
+  border-radius: 0.75rem;
+  background: #f8f9fa;
+  overflow: hidden;
+}
+
+.receipt-preview-image {
+  max-width: 100%;
+  max-height: 320px;
+  object-fit: contain;
+  display: block;
+}
+
+@media (max-width: 767.98px) {
+  .receipt-preview-surface {
+    min-height: 120px;
+    max-height: 220px;
+    padding: 0.35rem;
+  }
+
+  .receipt-preview-image {
+    max-height: 200px;
+  }
+}
+
 /* Notes clamp */
 @media (min-width: 768px) {
   .notes-col .small.note-clamp:not(.is-expanded) {

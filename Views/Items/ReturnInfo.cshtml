@@ -160,15 +160,17 @@
                         data-bs-target="#receiptPreviewModal"
                         data-receipt-src="@Model.ReturnReceiptPath"
                         data-receipt-title="@Model.Name - Return Receipt"
-                        class="receipt-preview-trigger">
-                            <img src="@Model.ReturnReceiptPath"
-                                alt="Return Receipt"
-                                class="img-fluid rounded border mb-3" />
+                        class="receipt-preview-trigger receipt-preview-large">
+                            <span class="receipt-preview-surface">
+                                <img src="@Model.ReturnReceiptPath"
+                                    alt="Return Receipt"
+                                    class="receipt-preview-image" />
+                            </span>
                         </a>
                     }
 
                     <div class="d-flex gap-2 flex-wrap">
-                        <a href="@Model.ReturnReceiptPath" target="_blank" class="btn btn-sm btn-outline-danger">
+                        <a href="@Model.ReturnReceiptPath" target="_blank" class="btn btn-sm btn-outline-danger receipt-link-btn">
                             View Receipt
                         </a>
                     </div>

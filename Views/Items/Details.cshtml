@@ -21,7 +21,7 @@
         || Model.ReturnReceiptPath.EndsWith(".webp", StringComparison.OrdinalIgnoreCase));
 }
 
-<div class="d-flex justify-content-between align-items-start mb-3">
+<div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-3 item-details-header">
     <div>
         <h1 class="mb-1">@Model.Name</h1>
         <div class="text-muted">
@@ -101,7 +101,7 @@ else if (Model.IsReturnRequired)
             <div class="card-body">
                 <h5 class="card-title mb-3">Item Information</h5>
 
-                <dl class="row mb-0">
+                <dl class="row mb-0 item-detail-list">
 
                     <dt class="col-sm-4">Category</dt>
                     <dd class="col-sm-8">@Model.Category</dd>
@@ -113,10 +113,10 @@ else if (Model.IsReturnRequired)
                     <dd class="col-sm-8">@Model.Status</dd>
 
                     <dt class="col-sm-4">Estimated Cost</dt>
-                    <dd class="col-sm-8 text-end">@Model.EstimatedCost?.ToString("C")</dd>
+                    <dd class="col-sm-8">@Model.EstimatedCost?.ToString("C")</dd>
 
                     <dt class="col-sm-4">Actual Cost</dt>
-                    <dd class="col-sm-8 text-end">@Model.ActualCost?.ToString("C")</dd>
+                    <dd class="col-sm-8">@Model.ActualCost?.ToString("C")</dd>
 
                     @if (!string.IsNullOrWhiteSpace(Model.ImageUrl))
                     {
@@ -135,7 +135,7 @@ else if (Model.IsReturnRequired)
                 <div class="card-body">
                     <h5 class="card-title mb-3">Return Information</h5>
 
-                    <dl class="row mb-0">
+                    <dl class="row mb-0 item-detail-list">
                         <dt class="col-sm-4">Return Location</dt>
                         <dd class="col-sm-8">
                             @(string.IsNullOrWhiteSpace(Model.ReturnLocation) ? "—" : Model.ReturnLocation)
@@ -176,15 +176,17 @@ else if (Model.IsReturnRequired)
                         data-bs-target="#receiptPreviewModal"
                         data-receipt-src="@Model.PurchaseReceiptPath"
                         data-receipt-title="@Model.Name - Purchase Receipt"
-                        class="receipt-preview-trigger">
-                            <img src="@Model.PurchaseReceiptPath"
-                                alt="Purchase Receipt"
-                                class="img-fluid rounded border mb-3" />
+                        class="receipt-preview-trigger receipt-preview-large">
+                            <span class="receipt-preview-surface">
+                                <img src="@Model.PurchaseReceiptPath"
+                                    alt="Purchase Receipt"
+                                    class="receipt-preview-image" />
+                            </span>
                         </a>
                     }
 
 
-                    <a href="@Model.PurchaseReceiptPath" target="_blank" class="btn btn-sm btn-outline-primary">
+                    <a href="@Model.PurchaseReceiptPath" target="_blank" class="btn btn-sm btn-outline-primary receipt-link-btn">
                         View Purchase Receipt
                     </a>
 
@@ -222,14 +224,16 @@ else if (Model.IsReturnRequired)
                         data-bs-target="#receiptPreviewModal"
                         data-receipt-src="@Model.ReturnReceiptPath"
                         data-receipt-title="@Model.Name - Return Receipt"
-                        class="receipt-preview-trigger">
-                            <img src="@Model.ReturnReceiptPath"
-                                alt="Return Receipt"
-                                class="img-fluid rounded border mb-3" />
+                        class="receipt-preview-trigger receipt-preview-large">
+                            <span class="receipt-preview-surface">
+                                <img src="@Model.ReturnReceiptPath"
+                                    alt="Return Receipt"
+                                    class="receipt-preview-image" />
+                            </span>
                         </a>
                     }
 
-                    <a href="@Model.ReturnReceiptPath" target="_blank" class="btn btn-sm btn-outline-danger">
+                    <a href="@Model.ReturnReceiptPath" target="_blank" class="btn btn-sm btn-outline-danger receipt-link-btn">
                         View Return Receipt
                     </a>
 
