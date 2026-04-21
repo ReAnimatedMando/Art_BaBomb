@@ -163,6 +163,10 @@ h2 {
   box-shadow: 0 0 0 0.15rem rgba(13, 110, 253, 0.08);
 }
 
+/* .receipt-preview-large {
+  min-height: 220px;
+} */
+
 .notes-col {
   min-width: 220px;
   max-width: 320px;
