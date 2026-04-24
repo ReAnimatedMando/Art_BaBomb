@@ -27,22 +27,35 @@
         .ToList();
 
     var neededGroups = neededItems
-        .GroupBy(i => string.IsNullOrWhiteSpace(i.Category) ? "Uncategorized" : i.Category.Trim())
-        .OrderBy(g => g.Key)
+        .GroupBy(i =>
+            string.IsNullOrWhiteSpace(i.Category)
+                ? "Unassigned Scene"
+                : i.Category.Trim(),
+            StringComparer.OrdinalIgnoreCase)
         .ToList();
 
     var acquiredGroups = acquiredItems
-        .GroupBy(i => string.IsNullOrWhiteSpace(i.Category) ? "Uncategorized" : i.Category.Trim())
-        .OrderBy(g => g.Key)
+        .GroupBy(i =>
+            string.IsNullOrWhiteSpace(i.Category)
+                ? "Unassigned Scene"
+                : i.Category.Trim(),
+            StringComparer.OrdinalIgnoreCase)
         .ToList();
 
     var returnGroups = returnItems
-        .GroupBy(i => string.IsNullOrWhiteSpace(i.Category) ? "Uncategorized" : i.Category.Trim())
-        .OrderBy(g => g.Key)
+        .GroupBy(i =>
+            string.IsNullOrWhiteSpace(i.Category)
+                ? "Unassigned Scene"
+                : i.Category.Trim(),
+            StringComparer.OrdinalIgnoreCase)
         .ToList();
 
     var returnedGroups = returnedItems
-        .GroupBy(i => string.IsNullOrWhiteSpace(i.Category) ? "Uncategorized" : i.Category.Trim())
+        .GroupBy(i =>
+            string.IsNullOrWhiteSpace(i.Category)
+                ? "Unassigned Scene"
+                : i.Category.Trim(),
+            StringComparer.OrdinalIgnoreCase)
         .OrderBy(g => g.Key)
         .ToList();
 
@@ -154,7 +167,7 @@
                                 <th>Name</th>
                                 <th>Notes</th>
                                 <th class="text-center">Qty</th>
-                                <th>Category</th>
+                                <th>Scene</th>
                                 <th class="text-end">Est.</th>
                                 <th class="actions-col"></th>
                             </tr>
@@ -221,7 +234,7 @@ else
                                 <th>Name</th>
                                 <th>Notes</th>
                                 <th class="text-center">Qty</th>
-                                <th>Category</th>
+                                <th>Scene</th>
                                 <th class="text-nowrap">Receipt</th>
                                 <th class="actions-col"></th>
                             </tr>

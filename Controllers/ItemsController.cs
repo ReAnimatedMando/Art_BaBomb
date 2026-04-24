@@ -123,6 +123,8 @@ namespace Art_BaBomb.Web.Controllers
         {
             if (ModelState.IsValid)
             {
+                item.Category = item.Category?.Trim();
+
                 _context.Items.Add(item);
                 await _context.SaveChangesAsync();
 
@@ -210,6 +212,9 @@ namespace Art_BaBomb.Web.Controllers
 
             if (ModelState.IsValid)
             {
+                // Normalize scene/category text before saving
+                item.Category = item.Category?.Trim();
+
                 if (purchaseReceiptFile != null && purchaseReceiptFile.Length > 0)
                 {
                     DeleteUploadedFile(existingItem.PurchaseReceiptPath);
