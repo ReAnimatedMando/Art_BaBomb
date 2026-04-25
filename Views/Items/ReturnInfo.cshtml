@@ -20,9 +20,9 @@
         <div class="text-muted">
             Project: <strong>@Model.Project?.Name</strong>
         </div>
-        @if (!string.IsNullOrWhiteSpace(Model.Category))
+        @if (!string.IsNullOrWhiteSpace(Model.Scene))
         {
-            <div class="text-muted">@Model.Category</div>
+            <div class="text-muted">@Model.Scene</div>
         }
     </div>
 </div>
@@ -46,7 +46,7 @@
                     <input type="hidden" asp-for="Id" />
                     <input type="hidden" asp-for="ProjectId" />
                     <input type="hidden" asp-for="Name" />
-                    <input type="hidden" asp-for="Category" />
+                    <input type="hidden" asp-for="Scene" />
                     <input type="hidden" asp-for="Description" />
                     <input type="hidden" asp-for="EstimatedCost" />
                     <input type="hidden" asp-for="ActualCost" />

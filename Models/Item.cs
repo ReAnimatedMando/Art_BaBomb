@@ -20,7 +20,7 @@ namespace Art_BaBomb.Web.Models
         public int Quantity { get; set; } = 1;
 
         [StringLength(100)]
-        public string? Category { get; set; }
+        public string? Scene { get; set; }
 
         [StringLength(2000)]
         public string? Description { get; set; }

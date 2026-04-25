@@ -28,33 +28,33 @@
 
     var neededGroups = neededItems
         .GroupBy(i =>
-            string.IsNullOrWhiteSpace(i.Category)
+            string.IsNullOrWhiteSpace(i.Scene)
                 ? "Unassigned Scene"
-                : i.Category.Trim(),
+                : i.Scene.Trim(),
             StringComparer.OrdinalIgnoreCase)
         .ToList();
 
     var acquiredGroups = acquiredItems
         .GroupBy(i =>
-            string.IsNullOrWhiteSpace(i.Category)
+            string.IsNullOrWhiteSpace(i.Scene)
                 ? "Unassigned Scene"
-                : i.Category.Trim(),
+                : i.Scene.Trim(),
             StringComparer.OrdinalIgnoreCase)
         .ToList();
 
     var returnGroups = returnItems
         .GroupBy(i =>
-            string.IsNullOrWhiteSpace(i.Category)
+            string.IsNullOrWhiteSpace(i.Scene)
                 ? "Unassigned Scene"
-                : i.Category.Trim(),
+                : i.Scene.Trim(),
             StringComparer.OrdinalIgnoreCase)
         .ToList();
 
     var returnedGroups = returnedItems
         .GroupBy(i =>
-            string.IsNullOrWhiteSpace(i.Category)
+            string.IsNullOrWhiteSpace(i.Scene)
                 ? "Unassigned Scene"
-                : i.Category.Trim(),
+                : i.Scene.Trim(),
             StringComparer.OrdinalIgnoreCase)
         .OrderBy(g => g.Key)
         .ToList();
