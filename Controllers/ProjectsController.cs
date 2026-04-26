@@ -22,9 +22,18 @@ namespace Art_BaBomb.Web.Controllers
         }
 
         // GET: Projects
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(ProjectDepartment? department)
         {
-            return View(await _context.Projects.ToListAsync());
+            var projects = _context.Projects.AsQueryable();
+
+            if (department.HasValue)
+            {
+                projects = projects.Where(p => p.Department == department.Value);
+            }
+
+            ViewData["SelectedDepartment"] = department;
+
+            return View(await projects.ToListAsync());
         }
 
         // GET: Projects/Details/5

@@ -14,6 +14,27 @@
         <a asp-action="Create" class="btn btn-primary">+ Project</a>
     }
 </p>
+
+<form asp-action="Index" method="get" class="mt-3 mb-4">
+    <div class="d-flex gap-2 align-items-center flex-wrap">
+        <label for="department" class="form-label mb-0 fw-semibold">Filter:</label>
+
+        <select name="department" id="department" class="form-select" style="max-width: 220px;">
+            <option value="">All Departments</option>
+            <option value="SetDec" selected="@(ViewData["SelectedDepartment"]?.ToString() == "SetDec")">Set Dec</option>
+            <option value="Props" selected="@(ViewData["SelectedDepartment"]?.ToString() == "Props")">Props</option>
+        </select>
+
+        <button type="submit" class="btn btn-outline-primary">
+            Apply
+        </button>
+
+        <a asp-action="Index" class="btn btn-outline-secondary">
+            Clear
+        </a>
+    </div>
+</form>
+
 <table class="table">
     <thead>
         <tr>
