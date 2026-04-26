@@ -1,5 +1,6 @@
 @model Art_BaBomb.Web.Models.Project
 @using Microsoft.AspNetCore.Mvc.ViewFeatures
+@using Art_BaBomb.Web.Models;
 
 @{
     ViewData["Title"] = "Project Details";
@@ -78,7 +79,12 @@
 }
 
 <div class="mb-4">
-    <h1 class="page-title">@Model.Name</h1>
+    <h1 class="d-flex align-items-center gap-2 flex-wrap">
+        @Model.Name
+        <span class="badge @(Model.Department == ProjectDepartment.SetDec ? "bg-primary" : "bg-warning text-dark") fs-6">
+            @(Model.Department == ProjectDepartment.SetDec ? "Set Dec" : "Props")
+        </span>
+    </h1>
     <div class="page-subtitle">
         <div>
             <strong>Description:</strong>

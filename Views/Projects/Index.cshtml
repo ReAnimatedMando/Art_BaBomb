@@ -1,3 +1,5 @@
+@using Art_BaBomb.Web.Models;
+
 @model IEnumerable<Art_BaBomb.Web.Models.Project>
 
 @{
@@ -18,6 +20,9 @@
             <th>
                 @Html.DisplayNameFor(model => model.Name)
             </th>
+            <th class="text-center">
+                @Html.DisplayNameFor(model => model.Department)
+            </th>
             <th>
                 @Html.DisplayNameFor(model => model.Description)
             </th>
@@ -35,6 +40,12 @@
         <tr>
             <td>
                 @Html.DisplayFor(modelItem => item.Name)
+                
+            </td>
+            <td class="text-center">
+                <span class="badge @(item.Department == ProjectDepartment.SetDec ? "bg-primary" : "bg-warning text-dark") fs-6">
+                    @(item.Department == ProjectDepartment.SetDec ? "Set Dec" : "Props")
+                </span>
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Description)
