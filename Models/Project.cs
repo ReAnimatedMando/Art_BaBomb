@@ -10,6 +10,8 @@ namespace Art_BaBomb.Web.Models
         [StringLength(200)]
         public string Name { get; set; } = string.Empty;
 
+        public ProjectDepartment Department { get; set; } = ProjectDepartment.SetDec;
+
         [StringLength(1000)]
         public string? Description { get; set; }
 
