@@ -60,7 +60,7 @@ namespace Art_BaBomb.Web.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Create([Bind("Id,Name,Description,Budget,CreatedAt")] Project project)
+        public async Task<IActionResult> Create([Bind("Id,Name,Department,Description,Budget,CreatedAt")] Project project)
         {
             if (ModelState.IsValid)
             {
@@ -94,7 +94,7 @@ namespace Art_BaBomb.Web.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Description,Budget,CreatedAt")] Project project)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Department,Description,Budget,CreatedAt")] Project project)
         {
             if (id != project.Id)
             {
