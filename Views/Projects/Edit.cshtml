@@ -4,7 +4,12 @@
     ViewData["Title"] = "Edit";
 }
 
-<h1>Edit</h1>
+<h1 class="d-flex align-items-center gap-2 flex-wrap">
+    Edit Project
+    <span class="badge @(Model.Department == ProjectDepartment.SetDec ? "bg-primary" : "bg-warning text-dark") fs-6">
+        @(Model.Department == ProjectDepartment.SetDec ? "Set Dec" : "Props")
+    </span>
+</h1>
 
 <h4>Project</h4>
 <hr />
