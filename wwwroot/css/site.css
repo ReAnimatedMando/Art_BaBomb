@@ -103,6 +103,15 @@ h2 {
   height: 44px;
 }
 
+.collapse-icon {
+  display: inline-block;
+  transition: transform 0.2s ease;
+}
+
+button[aria-expanded="true"] .collapse-icon {
+  transform: rotate(90deg);
+}
+
 /* =========================
    Thumb + Receipt Consistency
 ========================= */

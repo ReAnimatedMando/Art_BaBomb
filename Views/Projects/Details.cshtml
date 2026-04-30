@@ -160,50 +160,62 @@
 {
     @foreach (var group in neededGroups)
     {
+        var sceneCollapseId = $"needed-scene-{group.Key.Replace(" ", "-").Replace("/", "-").Replace(".", "-").ToLower()}";
+
         <div class="card shadow-sm mb-4 project-group-card">
-            <div class="card-header d-flex align-item-center justify-content-between">
-                <h5 class="mb-0">@group.Key</h5>
+            <button class="card-header d-flex align-items-center justify-content-between w-100 border-0 text-start" type="button" data-bs-toggle="collapse" data-bs-target="#@sceneCollapseId" aria-expanded="false" aria-controls="@sceneCollapseId">
+
+                <div class="d-flex align-items-center gap-2">
+                    <span class="collapse-icon">▶</span>
+                    <h5 class="mb-0">@group.Key</h5>
+                </div>
+
                 <span class="badge bg-secondary">@group.Count()</span>
-            </div>
-            <div class="card-body p-0 d-none d-md-block">
-                <div class="table-responsive">
-                    <table class="table table-striped table-hover align-middle mb-0 table-sm project-items-table">
-                        <thead>
-                            <tr>
-                                <th>Name</th>
-                                <th>Notes</th>
-                                <th class="text-center">Qty</th>
-                                <th>Scene</th>
-                                <th class="text-end">Est.</th>
-                                <th class="actions-col"></th>
-                            </tr>
-                        </thead>
-                        <tbody>
+            </button>
+
+            <div id="@sceneCollapseId" class="collapse">
+                <div class="card-body p-0 d-none d-md-block">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover align-middle mb-0 table-sm project-items-table">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Notes</th>
+                                    <th class="text-center">Qty</th>
+                                    <th>Scene</th>
+                                    <th class="text-end">Est.</th>
+                                    <th class="actions-col"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            @foreach (var item in group)
+                            {
+                                @await Html.PartialAsync("_ProjectItemRow", item, new ViewDataDictionary(ViewData)
+                                {
+                                    ["Section"] = "Needed",
+                                    ["CanEdit"] = User.IsInRole("Admin") || User.IsInRole("Shopper")
+                                })
+                            }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            
+
+                <div class="card-body d-md-none">
+                    <div class="mobile-item-list">
                         @foreach (var item in group)
                         {
-                            @await Html.PartialAsync("_ProjectItemRow", item, new ViewDataDictionary(ViewData)
+                            @await Html.PartialAsync("_ProjectItemMobileCard", item, new ViewDataDictionary(ViewData)
                             {
                                 ["Section"] = "Needed",
                                 ["CanEdit"] = User.IsInRole("Admin") || User.IsInRole("Shopper")
                             })
                         }
-                        </tbody>
-                    </table>
+                    </div>
                 </div>
             </div>
 
-            <div class="card-body d-md-none">
-                <div class="mobile-item-list">
-                    @foreach (var item in group)
-                    {
-                        @await Html.PartialAsync("_ProjectItemMobileCard", item, new ViewDataDictionary(ViewData)
-                        {
-                            ["Section"] = "Needed",
-                            ["CanEdit"] = User.IsInRole("Admin") || User.IsInRole("Shopper")
-                        })
-                    }
-                </div>
-            </div>
         </div>
     }
 }
@@ -226,51 +238,59 @@ else
 {
     @foreach (var group in acquiredGroups)
     {
-        <div class="card shadow-sm mb-4 project-group-card">
-            <div class="card-header d-flex align-item-center justify-content-between">
-                <h5 class="mb-0">@group.Key</h5>
-                <span class="badge bg-secondary">@group.Count()</span>
-            </div>
+        var sceneCollapseId = $"acquired-scene-{group.Key.Replace(" ", "-").Replace("/", "-").Replace(".", "-").ToLower()}";
 
-            <div class="card-body p-0 d-none d-md-block">
-                <div class="table-responsive">
-                    <table class="table table-striped table-hover align-middle mb-0 table-sm project-items-table">
-                        <thead>
-                            <tr>
-                                <th>Name</th>
-                                <th>Notes</th>
-                                <th class="text-center">Qty</th>
-                                <th>Scene</th>
-                                <th class="text-nowrap">Receipt</th>
-                                <th class="actions-col"></th>
-                            </tr>
-                        </thead>
-                        <tbody>
+        <div class="card shadow-sm mb-4 project-group-card">
+            <button class="card-header d-flex align-items-center justify-content-between w-100 border-0 text-start" type="button" data-bs-toggle="collapse" data-bs-target="#@sceneCollapseId" aria-expanded="false" aria-controls="@sceneCollapseId">
+                <div class="d-flex align-items-center gap-2">
+                    <span class="collapse-icon">▶</span>
+                    <h5 class="mb-0">@group.Key</h5>
+                </div>
+                <span class="badge bg-secondary">@group.Count()</span>
+            </button>
+
+            <div id="@sceneCollapseId" class="collapse">
+                <div class="card-body p-0 d-none d-md-block">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover align-middle mb-0 table-sm project-items-table">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Notes</th>
+                                    <th class="text-center">Qty</th>
+                                    <th>Scene</th>
+                                    <th class="text-nowrap">Receipt</th>
+                                    <th class="actions-col"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            @foreach (var item in group)
+                            {
+                                @await Html.PartialAsync("_ProjectItemRow", item, new ViewDataDictionary(ViewData)
+                                {
+                                    ["Section"] = "Acquired",
+                                    ["CanEdit"] = User.IsInRole("Admin") || User.IsInRole("Shopper")
+                                })
+                            }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="card-body d-md-none">
+                    <div class="mobile-item-list">
                         @foreach (var item in group)
                         {
-                            @await Html.PartialAsync("_ProjectItemRow", item, new ViewDataDictionary(ViewData)
+                            @await Html.PartialAsync("_ProjectItemMobileCard", item, new ViewDataDictionary(ViewData)
                             {
                                 ["Section"] = "Acquired",
                                 ["CanEdit"] = User.IsInRole("Admin") || User.IsInRole("Shopper")
                             })
                         }
-                        </tbody>
-                    </table>
+                    </div>
                 </div>
             </div>
 
-            <div class="card-body d-md-none">
-                <div class="mobile-item-list">
-                    @foreach (var item in group)
-                    {
-                        @await Html.PartialAsync("_ProjectItemMobileCard", item, new ViewDataDictionary(ViewData)
-                        {
-                            ["Section"] = "Acquired",
-                            ["CanEdit"] = User.IsInRole("Admin") || User.IsInRole("Shopper")
-                        })
-                    }
-                </div>
-            </div>
         </div>
     }
 }
@@ -293,51 +313,59 @@ else
 {
     @foreach (var group in returnGroups)
     {
+        var sceneCollapseId = $"return-scene-{group.Key.Replace(" ", "-").Replace("/", "-").Replace(".", "-").ToLower()}";
+        
         <div class="card shadow-sm mb-4 project-group-card">
-            <div class="card-header d-flex align-item-center justify-content-between">
-                <h5 class="mb-0">@group.Key</h5>
+            <button class="card-header d-flex align-items-center justify-content-between w-100 border-0 text-start" type="button" data-bs-toggle="collapse" data-bs-target="#@sceneCollapseId" aria-expanded="false" aria-controls="@sceneCollapseId">
+                <div class="d-flex align-items-center gap-2">
+                    <span class="collapse-icon">▶</span>
+                    <h5 class="mb-0">@group.Key</h5>
+                </div>
                 <span class="badge bg-secondary">@group.Count()</span>
-            </div>
-            <div class="card-body p-0 d-none d-md-block">
-                <div class="table-responsive">
-                    <table class="table table-striped table-hover align-middle mb-0 table-sm project-items-table">
-                        <thead>
-                            <tr>
-                                <th>Name</th>
-                                <th>Notes</th>
-                                <th class="text-center">Qty</th>
-                                <th>Return Location</th>
-                                <th class="text-nowrap">Purchase Receipt</th>
-                                <th class="actions-col"></th>
-                            </tr>
-                        </thead>
-                        <tbody>
+            </button>
+
+            <div id="@sceneCollapseId" class="collapse">
+                <div class="card-body p-0 d-none d-md-block">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover align-middle mb-0 table-sm project-items-table">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Notes</th>
+                                    <th class="text-center">Qty</th>
+                                    <th>Return Location</th>
+                                    <th class="text-nowrap">Purchase Receipt</th>
+                                    <th class="actions-col"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            @foreach (var item in group)
+                            {
+                                @await Html.PartialAsync("_ProjectItemRow", item, new ViewDataDictionary(ViewData)
+                                {
+                                    ["Section"] = "ReturnQueue",
+                                    ["CanEdit"] = User.IsInRole("Admin") || User.IsInRole("Shopper")
+                                })
+                            }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="card-body d-md-none">
+                    <div class="mobile-item-list">
                         @foreach (var item in group)
                         {
-                            @await Html.PartialAsync("_ProjectItemRow", item, new ViewDataDictionary(ViewData)
+                            @await Html.PartialAsync("_ProjectItemMobileCard", item, new ViewDataDictionary(ViewData)
                             {
                                 ["Section"] = "ReturnQueue",
                                 ["CanEdit"] = User.IsInRole("Admin") || User.IsInRole("Shopper")
                             })
                         }
-                        </tbody>
-                    </table>
+                    </div>
                 </div>
             </div>
-        
 
-            <div class="card-body d-md-none">
-                <div class="mobile-item-list">
-                    @foreach (var item in group)
-                    {
-                        @await Html.PartialAsync("_ProjectItemMobileCard", item, new ViewDataDictionary(ViewData)
-                        {
-                            ["Section"] = "ReturnQueue",
-                            ["CanEdit"] = User.IsInRole("Admin") || User.IsInRole("Shopper")
-                        })
-                    }
-                </div>
-            </div>
         </div>
     }
 }
@@ -360,51 +388,58 @@ else
 {
     @foreach (var group in returnedGroups)
     {
-        <div class="card shadow-sm mb-4 project-group-card">
-            <div class="card-header d-flex justify-content-between align-items-center">
-                <h5 class="mb-0">@group.Key</h5>
-                <span class="badge bg-secondary">@group.Count() items</span>
-            </div>
+        var sceneCollapseId = $"returned-scene-{group.Key.Replace(" ", "-").Replace("/", "-").Replace(".", "-").ToLower()}";
 
-            <div class="card-body p-0 d-none d-md-block">
-                <div class="table-responsive">
-                    <table class="table table-striped table-hover align-middle mb-0 table-sm project-items-table">
-                        <thead>
-                            <tr>
-                                <th>Name</th>
-                                <th class="text-center">Qty</th>
-                                <th class="text-nowrap">Returned At</th>
-                                <th class="text-nowrap">Receipt</th>
-                                <th class="text-nowrap">Receipt Status</th>
-                                <th class="actions-col"></th>
-                            </tr>
-                        </thead>
-                        <tbody>
+        <div class="card shadow-sm mb-4 project-group-card">
+            <button class="card-header d-flex align-items-center justify-content-between w-100 border-0 text-start" type="button" data-bs-toggle="collapse" data-bs-target="#@sceneCollapseId" aria-expanded="false" aria-controls="@sceneCollapseId">
+                <div class="d-flex align-items-center gap-2">
+                    <span class="collapse-icon">▶</span>
+                    <h5 class="mb-0">@group.Key</h5>
+                </div>
+                <span class="badge bg-secondary">@group.Count() items</span>
+            </button>
+            <div id="@sceneCollapseId" class="collapse">
+                <div class="card-body p-0 d-none d-md-block">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover align-middle mb-0 table-sm project-items-table">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th class="text-center">Qty</th>
+                                    <th class="text-nowrap">Returned At</th>
+                                    <th class="text-nowrap">Receipt</th>
+                                    <th class="text-nowrap">Receipt Status</th>
+                                    <th class="actions-col"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            @foreach (var item in group)
+                            {
+                                @await Html.PartialAsync("_ProjectItemRow", item, new ViewDataDictionary(ViewData)
+                                {
+                                    ["Section"] = "Returned",
+                                    ["CanEdit"] = User.IsInRole("Admin") || User.IsInRole("Shopper")
+                                })
+                            }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="card-body d-md-none">
+                    <div class="mobile-item-list">
                         @foreach (var item in group)
                         {
-                            @await Html.PartialAsync("_ProjectItemRow", item, new ViewDataDictionary(ViewData)
+                            @await Html.PartialAsync("_ProjectItemMobileCard", item, new ViewDataDictionary(ViewData)
                             {
                                 ["Section"] = "Returned",
                                 ["CanEdit"] = User.IsInRole("Admin") || User.IsInRole("Shopper")
                             })
                         }
-                        </tbody>
-                    </table>
+                    </div>
                 </div>
             </div>
 
-            <div class="card-body d-md-none">
-                <div class="mobile-item-list">
-                    @foreach (var item in group)
-                    {
-                        @await Html.PartialAsync("_ProjectItemMobileCard", item, new ViewDataDictionary(ViewData)
-                        {
-                            ["Section"] = "Returned",
-                            ["CanEdit"] = User.IsInRole("Admin") || User.IsInRole("Shopper")
-                        })
-                    }
-                </div>
-            </div>
         </div>
 
     }
