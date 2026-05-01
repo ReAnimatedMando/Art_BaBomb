@@ -131,11 +131,33 @@
                     <dt class="col-sm-4">Actual Cost</dt>
                     <dd class="col-sm-8">@Model.ActualCost?.ToString("C")</dd>
 
-                    @if (!string.IsNullOrWhiteSpace(Model.ImageUrl))
+                    @if (!string.IsNullOrWhiteSpace(Model.ImagePath))
                     {
-                        <dt class="col-sm-4">Image URL</dt>
+                        <dt class="col-sm-4">Item Image</dt>
                         <dd class="col-sm-8">
-                            <a href="@Model.ImageUrl" target="_blank">@Model.ImageUrl</a>
+                            <img src="@Url.Content(Model.ImagePath)" alt="@Model.Name" class="img-fluid rounded shadow-sm" style="max-height: 260px;" />
+
+                            <div class="small text-muted mt-2">
+                                @Model.ImageFileName
+                                @if (Model.ImageSizeBytes.HasValue)
+                                {
+                                    <span>• @FileSizeHelper.FormatFileSize(Model.ImageSizeBytes)</span>
+                                }
+                            </div>
+                        </dd>
+                    }
+                    else if (!string.IsNullOrWhiteSpace(Model.ImageUrl))
+                    {
+                        <dt class="col-sm-4">Item Image</dt>
+                        <dd class="col-sm-8">
+                            <img src="@Model.ImageUrl"
+                                alt="@Model.Name"
+                                class="img-fluid rounded shadow-sm"
+                                style="max-height: 260px;" />
+
+                            <div class="small mt-2">
+                                <a href="@Model.ImageUrl" target="_blank">Open image URL</a>
+                            </div>
                         </dd>
                     }
                 </dl>

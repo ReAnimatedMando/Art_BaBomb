@@ -35,6 +35,12 @@ namespace Art_BaBomb.Web.Models
         [StringLength(50)]
         public string Status { get; set; } = "Needed";
 
+        public string? ImageFileName { get; set; }
+
+        public string? ImagePath { get; set; }
+
+        public long? ImageSizeBytes { get; set; }
+
         [StringLength(500)]
         public string? ImageUrl { get; set; }
 

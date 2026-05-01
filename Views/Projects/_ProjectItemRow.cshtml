@@ -30,17 +30,30 @@
     <td>
         <div class="item-name-cell-content">
             <div class="item-thumb-slot">
-                @if (!string.IsNullOrWhiteSpace(Model.ImageUrl))
+                @if (!string.IsNullOrWhiteSpace(Model.ImagePath))
                 {
                     <a href="#"
-                       data-bs-toggle="modal"
-                       data-bs-target="#itemPreviewModal"
-                       data-item-src="@Model.ImageUrl"
-                       data-item-title="@Model.Name"
-                       class="item-preview-trigger">
+                    data-bs-toggle="modal"
+                    data-bs-target="#itemPreviewModal"
+                    data-item-src="@Url.Content(Model.ImagePath)"
+                    data-item-title="@Model.Name"
+                    class="item-preview-trigger">
+                        <img src="@Url.Content(Model.ImagePath)"
+                            alt="@Model.Name"
+                            class="item-thumb" />
+                    </a>
+                }
+                else if (!string.IsNullOrWhiteSpace(Model.ImageUrl))
+                {
+                    <a href="#"
+                    data-bs-toggle="modal"
+                    data-bs-target="#itemPreviewModal"
+                    data-item-src="@Model.ImageUrl"
+                    data-item-title="@Model.Name"
+                    class="item-preview-trigger">
                         <img src="@Model.ImageUrl"
-                             alt="@Model.Name"
-                             class="item-thumb" />
+                            alt="@Model.Name"
+                            class="item-thumb" />
                     </a>
                 }
                 else

@@ -121,11 +121,29 @@ namespace Art_BaBomb.Web.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin,Shopper")]
-        public async Task<IActionResult> Create([Bind("ProjectId,Name,Quantity,Scene,Description,EstimatedCost,ActualCost,Status,ImageUrl")] Item item)
+        public async Task<IActionResult> Create([Bind("ProjectId,Name,Quantity,Scene,Description,EstimatedCost,ActualCost,Status,ImageUrl")] Item item, IFormFile? imageFile)
         {
+
+            if (!IsValidReceiptFile(imageFile, out var imageError))
+            {
+                ModelState.AddModelError("imageFile", imageError);
+            }
+
             if (ModelState.IsValid)
             {
                 item.Scene = item.Scene?.Trim();
+
+                if (imageFile != null && imageFile.Length > 0)
+                {
+                    var savedImage = await SaveUploadedFileAsync(imageFile, "items");
+                    
+                    if (savedImage.HasValue)
+                    {
+                        item.ImageFileName = savedImage.Value.fileName;
+                        item.ImagePath = savedImage.Value.relativePath;
+                        item.ImageSizeBytes = imageFile.Length;
+                    }
+                }
 
                 _context.Items.Add(item);
                 await _context.SaveChangesAsync();
@@ -187,7 +205,7 @@ namespace Art_BaBomb.Web.Controllers
         public async Task<IActionResult> Edit(
             int id,
             [Bind("Id,ProjectId,Name,Quantity,Scene,Description,EstimatedCost,ActualCost,Status,ImageUrl,PurchaseReceiptFileName,PurchaseReceiptPath")] Item item,
-            IFormFile? purchaseReceiptFile)
+            IFormFile? purchaseReceiptFile, IFormFile? imageFile)
         {
             if (id != item.Id)
             {
@@ -214,15 +232,39 @@ namespace Art_BaBomb.Web.Controllers
             item.PurchaseReceiptPath = existingItem.PurchaseReceiptPath;
             item.PurchaseReceiptSizeBytes = existingItem.PurchaseReceiptSizeBytes;
 
+            // Preserve existing image values unless a new file is uploaded
+            item.ImageFileName = existingItem.ImageFileName;
+            item.ImagePath = existingItem.ImagePath;
+            item.ImageSizeBytes = existingItem.ImageSizeBytes;
+
             if (!IsValidReceiptFile(purchaseReceiptFile, out var purchaseReceiptError))
             {
                 ModelState.AddModelError("purchaseReceiptFile", purchaseReceiptError);
+            }
+
+            if (!IsValidReceiptFile(imageFile, out var imageError))
+            {
+                ModelState.AddModelError("imageFile", imageError);
             }
 
             if (ModelState.IsValid)
             {
                 // Normalize scene text before saving
                 item.Scene = item.Scene?.Trim();
+
+                if (imageFile != null && imageFile.Length > 0)
+                {
+                    DeleteUploadedFile(existingItem.ImagePath);
+
+                    var savedImage = await SaveUploadedFileAsync(imageFile, "items");
+                    
+                    if (savedImage.HasValue)
+                    {
+                        item.ImageFileName = savedImage.Value.fileName;
+                        item.ImagePath = savedImage.Value.relativePath;
+                        item.ImageSizeBytes = imageFile.Length;
+                    }
+                }
 
                 if (purchaseReceiptFile != null && purchaseReceiptFile.Length > 0)
                 {
