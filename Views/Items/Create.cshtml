@@ -29,7 +29,13 @@
 
             <div class="form-group mb-3">
                 <label asp-for="Scene" class="control-label"></label>
-                <input asp-for="Scene" class="form-control" />
+                <input asp-for="Scene" class="form-control" list="sceneOptions" placeholder="Kitchen, Scene 12, INT. Office..." />
+                <datalist id="sceneOptions">
+                    @foreach (var scene in ViewBag.ExistingScenes as List<string>)
+                    {
+                        <option value="@scene"></option>
+                    }
+                </datalist>
                 <span asp-validation-for="Scene" class="text-danger"></span>
             </div>
 

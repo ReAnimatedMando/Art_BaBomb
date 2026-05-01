@@ -53,7 +53,12 @@
 
                     <div class="mb-3">
                         <label asp-for="Scene" class="form-label"></label>
-                        <input asp-for="Scene" class="form-control" />
+                        <input asp-for="Scene" class="form-control" list="sceneOptions" placeholder="Kitchen, Scene 12, INT. Office..." />
+                        <datalist id="sceneOptions">
+                            @foreach (var scene in ViewBag.ExistingScenes ?? new List<string>())
+                            {
+                                <option value="@scene"></option>
+                            }
                     </div>
 
                     <div class="mb-3">

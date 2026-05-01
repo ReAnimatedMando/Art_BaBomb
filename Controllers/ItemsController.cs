@@ -110,6 +110,8 @@ namespace Art_BaBomb.Web.Controllers
 
             ViewBag.ProjectName = project.Name;
 
+            await LoadSceneOptionAsync(projectId.Value);
+
             return View(item);
         }
 
@@ -140,8 +142,12 @@ namespace Art_BaBomb.Web.Controllers
                 return RedirectToAction("Details", "Projects", new { id = item.ProjectId });
             }
 
+            item.Scene = item.Scene?.Trim();
+
             var project = await _context.Projects.FindAsync(item.ProjectId);
             ViewBag.ProjectName = project?.Name;
+
+            await LoadSceneOptionAsync(item.ProjectId);
 
             return View(item);
         }
@@ -167,6 +173,9 @@ namespace Art_BaBomb.Web.Controllers
             }
 
             ViewData["ProjectId"] = new SelectList(_context.Projects, "Id", "Name", item.ProjectId);
+
+            await LoadSceneOptionAsync(item.ProjectId);
+
             return View(item);
         }
 
@@ -256,7 +265,21 @@ namespace Art_BaBomb.Web.Controllers
             }
 
             ViewData["ProjectId"] = new SelectList(_context.Projects, "Id", "Name", item.ProjectId);
+
+            await LoadSceneOptionAsync(item.ProjectId);
+
             return View(item);
+        }
+
+        // Get: load existing scenes for selected project
+        private async Task LoadSceneOptionAsync(int projectId)
+        {
+            ViewBag.ExistingScenes = await _context.Items
+                .Where(i => i.ProjectId == projectId && !string.IsNullOrWhiteSpace(i.Scene))
+                .Select(i => i.Scene!.Trim())
+                .Distinct()
+                .OrderBy(s => s)
+                .ToListAsync();
         }
 
         // POST: Adjust Quantity
