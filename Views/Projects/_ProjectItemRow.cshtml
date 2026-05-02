@@ -25,7 +25,7 @@
 
 <tr tabindex="0"
     class="item-row @(Model.NeedsAttention ? "needs-attention" : "") @(Model.HasPastReturnByDate ? "overdue" : "")"
-    data-item-id="@Model.Id">
+    data-item-id="@Model.Id" id="item-@Model.Id">
 
     <td>
         <div class="item-name-cell-content">

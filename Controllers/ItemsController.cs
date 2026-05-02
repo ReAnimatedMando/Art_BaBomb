@@ -157,7 +157,11 @@ namespace Art_BaBomb.Web.Controllers
                     TempData["SuccessMessage"] = $"\"{item.Name}\" created successfully.";
                 }
 
-                return RedirectToAction("Details", "Projects", new { id = item.ProjectId });
+                return RedirectToAction("Details", "Projects", new
+                {
+                    id = item.ProjectId,
+                    focusItemId = item.Id
+                });
             }
 
             item.Scene = item.Scene?.Trim();
@@ -303,7 +307,11 @@ namespace Art_BaBomb.Web.Controllers
                     TempData["SuccessMessage"] = $"\"{item.Name}\" updated successfully.";
                 }
 
-                return RedirectToAction("Details", "Projects", new { id = item.ProjectId });
+                return RedirectToAction("Details", "Projects", new
+                {
+                    id = item.ProjectId,
+                    focusItemId = item.Id
+                });
             }
 
             ViewData["ProjectId"] = new SelectList(_context.Projects, "Id", "Name", item.ProjectId);
@@ -347,7 +355,11 @@ namespace Art_BaBomb.Web.Controllers
                 return Json(new { success = true, itemId = item.Id, quantity = item.Quantity });
             }
 
-            return RedirectToAction("Details", "Projects", new { id = item.ProjectId });
+            return RedirectToAction("Details", "Projects", new
+            {
+                id = item.ProjectId,
+                focusItemId = item.Id
+            });
         }
 
         // POST: Mark as Acquired / Mark as Needed
@@ -369,7 +381,12 @@ namespace Art_BaBomb.Web.Controllers
             await _context.SaveChangesAsync();
 
             TempData["SuccessMessage"] = $"Marked \"{item.Name}\" as acquired.";
-            return RedirectToAction("Details", "Projects", new { id = item.ProjectId });
+
+            return RedirectToAction("Details", "Projects", new
+            {
+                id = item.ProjectId,
+                focusItemId = item.Id
+            });
         }
 
         // POST: Mark as Needed
@@ -390,7 +407,12 @@ namespace Art_BaBomb.Web.Controllers
             await _context.SaveChangesAsync();
 
             TempData["SuccessMessage"] = $"Moved \"{item.Name}\" back to needed.";
-            return RedirectToAction("Details", "Projects", new { id = item.ProjectId });
+
+            return RedirectToAction("Details", "Projects", new
+            {
+                id = item.ProjectId,
+                focusItemId = item.Id
+            });
         }
 
         // GET: Items/Delete/5
@@ -463,7 +485,11 @@ namespace Art_BaBomb.Web.Controllers
                 });
             }
 
-            return RedirectToAction("Details", "Projects", new { id = item.ProjectId });
+            return RedirectToAction("Details", "Projects", new
+            {
+                id = item.ProjectId,
+                focusItemId = item.Id
+            });
         }
 
         // GET: Items/PurchaseReceipt/5
@@ -738,7 +764,11 @@ namespace Art_BaBomb.Web.Controllers
                         TempData["SuccessMessage"] = $"\"{item.Name}\" return info updated successfully.";
                     }
 
-                    return RedirectToAction(nameof(Details), new { id = item.Id });
+                    return RedirectToAction("Details", "Projects", new
+                    {
+                        id = item.ProjectId,
+                        focusItemId = item.Id
+                    });
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -783,7 +813,11 @@ namespace Art_BaBomb.Web.Controllers
                 TempData["SuccessMessage"] = $"\"{item.Name}\" marked as returned.";
             }
 
-            return RedirectToAction(nameof(Details), new { id = item.Id });
+            return RedirectToAction("Details", "Projects", new
+            {
+                id = item.ProjectId,
+                focusItemId = item.Id
+            });
         }
     }
 }

@@ -449,5 +449,36 @@ function updateNoteToggleVisibility() {
   window.addEventListener("orientationchange", refreshNoteTogglesAfterLayout);
 
   updateNoteToggleVisibility();
+});
 
+document.addEventListener("DOMContentLoaded", function () {
+    const params = new URLSearchParams(window.location.search);
+    const focusItemId = params.get("focusItemId");
+
+    if (!focusItemId) return;
+
+    const target = document.querySelector(`#item-${focusItemId}`);
+    if (!target) return;
+
+    const collapse = target.closest(".collapse");
+
+    const scrollToTarget = function () {
+        target.scrollIntoView({ behavior: "smooth", block: "center" });
+        target.classList.add("item-highlight");
+
+        setTimeout(function () {
+            target.classList.remove("item-highlight");
+        }, 2500);
+    };
+
+    if (collapse && !collapse.classList.contains("show")) {
+        const bsCollapse = bootstrap.Collapse.getOrCreateInstance(collapse, {
+            toggle: false
+        });
+
+        collapse.addEventListener("shown.bs.collapse", scrollToTarget, { once: true });
+        bsCollapse.show();
+    } else {
+        scrollToTarget();
+    }
 });
