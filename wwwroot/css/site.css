@@ -39,6 +39,12 @@ h2 {
   text-align: start;
 }
 
+.page-alert-stack {
+  position: sticky;
+  top: 1rem;
+  z-index: 1030;
+}
+
 /* =========================
    Project / Item Tables
 ========================= */
