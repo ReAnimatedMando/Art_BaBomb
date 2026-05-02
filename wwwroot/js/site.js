@@ -482,3 +482,19 @@ document.addEventListener("DOMContentLoaded", function () {
         scrollToTarget();
     }
 });
+
+document.addEventListener("DOMContentLoaded", function () {
+    const alerts = document.querySelectorAll(".alert");
+
+    alerts.forEach(function (alert) {
+        // Skip if user hovers (we’ll cancel dismiss)
+        let timeout = setTimeout(function () {
+            const bsAlert = new bootstrap.Alert(alert);
+            bsAlert.close();
+        }, 4000); // 4 seconds
+
+        alert.addEventListener("mouseenter", function () {
+            clearTimeout(timeout);
+        });
+    });
+});

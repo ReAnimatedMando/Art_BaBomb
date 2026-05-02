@@ -45,6 +45,10 @@ h2 {
   z-index: 1030;
 }
 
+.alert {
+  transition: opacity 0.3s ease;
+}
+
 /* =========================
    Project / Item Tables
 ========================= */
