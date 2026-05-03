@@ -898,6 +898,95 @@ button[aria-expanded="true"] .collapse-icon {
 }
 
 /* =========================
+   Project Index
+========================= */
+
+.project-index-hero,
+.project-index-toolbar,
+.project-index-card {
+  border: 1px solid var(--art-border);
+  border-radius: 1.25rem;
+  background: linear-gradient(145deg, rgba(28, 37, 51, 0.96), rgba(21, 28, 39, 0.96));
+  box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.18);
+}
+
+.project-index-hero {
+  padding: 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  gap: 1.25rem;
+  align-items: center;
+}
+
+.project-index-title {
+  color: var(--art-text);
+  font-size: clamp(2.25rem, 5vw, 4rem);
+  font-weight: 900;
+  letter-spacing: -0.055em;
+  line-height: 1;
+  margin-bottom: 0.75rem;
+}
+
+.project-index-subtitle {
+  color: var(--art-muted);
+  max-width: 48rem;
+  margin-bottom: 0;
+  line-height: 1.55;
+}
+
+.project-index-toolbar {
+  padding: 1rem 1.25rem;
+}
+
+.project-index-toolbar label {
+  color: var(--art-text);
+}
+
+.project-filter-select {
+  max-width: 220px;
+}
+
+.project-index-card {
+  overflow: hidden;
+}
+
+.project-index-table {
+  --bs-table-bg: transparent;
+  --bs-table-striped-bg: rgba(255, 255, 255, 0.025);
+  --bs-table-hover-bg: rgba(249, 115, 22, 0.08);
+  border-color: var(--art-border);
+}
+
+.project-index-table thead th {
+  color: var(--art-muted);
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-color: var(--art-border);
+}
+
+.project-index-table tbody td {
+  color: var(--art-text);
+  border-color: var(--art-border);
+}
+
+.project-index-description {
+  color: var(--art-muted) !important;
+  max-width: 420px;
+}
+
+@media (max-width: 767.98px) {
+  .project-index-hero {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .project-index-hero .btn {
+    width: 100%;
+  }
+}
+
+/* =========================
    App Shell / Home Page
 ========================= */
 
@@ -1022,7 +1111,7 @@ button[aria-expanded="true"] .collapse-icon {
   background: var(--art-orange);
   border-color: var(--art-orange);
   color: #111827;
-  font-weight: 800;
+  font-weight: 1000;
 }
 
 .btn-art-primary:hover {
@@ -1110,6 +1199,99 @@ button[aria-expanded="true"] .collapse-icon {
 .footer,
 .footer a {
   color: var(--art-muted) !important;
+}
+
+/* =========================
+   Shared Form Pages
+========================= */
+
+.form-hero,
+.form-shell,
+.form-section-card {
+  border: 1px solid var(--art-border);
+  border-radius: 1.25rem;
+  background: linear-gradient(145deg, rgba(28, 37, 51, 0.96), rgba(21, 28, 39, 0.96));
+  box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.16);
+}
+
+.form-hero {
+  padding: 1.5rem;
+}
+
+.form-hero-title {
+  color: var(--art-text);
+  font-size: clamp(2rem, 4vw, 3.5rem);
+  font-weight: 900;
+  letter-spacing: -0.055em;
+  line-height: 1;
+  margin-bottom: 0.75rem;
+}
+
+.form-hero-subtitle {
+  color: var(--art-muted);
+  margin-bottom: 0;
+}
+
+.form-hero-subtitle strong {
+  color: var(--art-text);
+}
+
+.form-shell {
+  padding: 1rem;
+  max-width: 900px;
+}
+
+.form-section-card {
+  padding: 1.25rem;
+  margin-bottom: 1rem;
+  box-shadow: none;
+}
+
+.form-section-card h2 {
+  color: var(--art-text);
+  font-size: 1rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin-bottom: 1rem;
+}
+
+.form-section-card .form-label {
+  color: var(--art-text);
+  font-weight: 650;
+}
+
+.form-section-card .form-text {
+  color: var(--art-muted) !important;
+}
+
+.form-section-card .form-control,
+.form-section-card .form-select {
+  background-color: rgba(255, 255, 255, 0.96);
+  border-color: transparent;
+}
+
+.form-section-card .form-control:focus,
+.form-section-card .form-select:focus {
+  border-color: var(--art-orange);
+  box-shadow: 0 0 0 0.2rem rgba(249, 115, 22, 0.22);
+}
+
+.form-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  padding: 0.25rem;
+}
+
+@media (max-width: 767.98px) {
+  .form-shell {
+    padding: 0.75rem;
+  }
+
+  .form-actions .btn {
+    width: 100%;
+  }
 }
 
 /* =========================
