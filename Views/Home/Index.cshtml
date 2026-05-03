@@ -2,7 +2,68 @@
     ViewData["Title"] = "Home";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Your new ASP.NET MVC project is ready.</p>
-</div>
+<section class="home-hero">
+    <div class="home-hero-content">
+        <div class="eyebrow">Art Department Workflow</div>
+
+        <h1>Art Ba-Bomb</h1>
+
+        <p class="home-hero-lead">
+            Track set dec and props shopping, receipts, returns, scenes, and budgets from one production-ready workspace.
+        </p>
+
+        <div class="home-hero-actions">
+            <a asp-controller="Projects" asp-action="Index" class="btn btn-art-primary btn-lg">
+                View Projects
+            </a>
+
+            <a asp-controller="Projects" asp-action="Create" class="btn btn-art-outline btn-lg">
+                Create Project
+            </a>
+        </div>
+    </div>
+
+    <div class="home-hero-panel">
+        <div class="panel-label">Production Pulse</div>
+
+        <div class="pulse-row">
+            <span>Departments</span>
+            <strong>Set Dec / Props</strong>
+        </div>
+
+        <div class="pulse-row">
+            <span>Workflow</span>
+            <strong>Needed → Acquired → Returned</strong>
+        </div>
+
+        <div class="pulse-row">
+            <span>Receipts</span>
+            <strong>Tracked + Flagged</strong>
+        </div>
+
+        <div class="pulse-row">
+            <span>Scenes</span>
+            <strong>Grouped + Collapsible</strong>
+        </div>
+    </div>
+</section>
+
+<section class="home-feature-grid">
+    <div class="home-feature-card">
+        <div class="feature-icon">🎬</div>
+        <h2>Project Control</h2>
+        <p>Create Set Dec and Props projects with clean department separation.</p>
+    </div>
+
+    <div class="home-feature-card">
+        <div class="feature-icon">🧾</div>
+        <h2>Receipt Tracking</h2>
+        <p>Keep purchase and return receipts visible, previewable, and accountable.</p>
+    </div>
+
+    <div class="home-feature-card">
+        <div class="feature-icon">📍</div>
+        <h2>Scene Organization</h2>
+        <p>Group items by scene so shoppers can move quickly through large projects.</p>
+    </div>
+</section>
