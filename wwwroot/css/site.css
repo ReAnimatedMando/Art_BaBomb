@@ -866,6 +866,19 @@ button[aria-expanded="true"] .collapse-icon {
   color: var(--art-orange) !important;
 }
 
+.app-nav-user {
+  color: var(--art-muted) !important;
+}
+
+.app-navbar .navbar-nav {
+  gap: 0.25rem;
+}
+
+.app-navbar .nav-link,
+.app-navbar .btn-link {
+  font-weight: 600;
+}
+
 .app-brand {
   font-weight: 800;
   letter-spacing: 0.03em;
@@ -905,6 +918,21 @@ button[aria-expanded="true"] .collapse-icon {
   border-radius: 999px;
   background: var(--art-orange-soft);
   filter: blur(4px);
+}
+
+.home-hero-wide {
+  grid-template-columns: 1fr;
+}
+
+.home-hero-wide .home-hero-content {
+  min-height: 420px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.home-hero-wide .home-hero h1, .home-hero-wide h1 {
+  max-width: 100%;
 }
 
 .eyebrow {
