@@ -21,35 +21,42 @@
         || Model.ReturnReceiptPath.EndsWith(".webp", StringComparison.OrdinalIgnoreCase));
 }
 
-<div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-3 item-details-header">
-    <div>
-        <h1 class="page-title mb-1">@Model.Name</h1>
-        <div class="text-muted">
-            Project: <strong>@Model.Project?.Name</strong>
+<section class="form-hero mb-4">
+    <div class="d-flex flex-wrap justify-content-between align-items-start gap-3">
+        <div>
+            <div class="eyebrow">Item Details</div>
+            <h1 class="form-hero-title">@Model.Name</h1>
+            <p class="form-hero-subtitle">
+                Project: <strong>@Model.Project?.Name</strong>
+                @if (!string.IsNullOrWhiteSpace(Model.Scene))
+                {
+                    <span> — @Model.Scene</span>
+                }
+            </p>
+        </div>
+
+        <div class="item-details-status-badges">
+            @if (string.IsNullOrWhiteSpace(Model.Status) || Model.Status.Trim().Equals("Needed", StringComparison.OrdinalIgnoreCase))
+            {
+                <span class="badge bg-secondary fs-6">Needed</span>
+            }
+            else if ((Model.Status ?? "").Trim().Equals("Acquired", StringComparison.OrdinalIgnoreCase))
+            {
+                <span class="badge bg-success fs-6">Acquired</span>
+            }
+
+            @if (Model.IsReturnRequired && !Model.IsReturned)
+            {
+                <span class="badge bg-warning text-dark fs-6">In Return Queue</span>
+            }
+
+            @if (Model.IsReturned)
+            {
+                <span class="badge bg-danger fs-6">Returned</span>
+            }
         </div>
     </div>
-
-    <div class="text-end item-details-status-badges">
-        @if (string.IsNullOrWhiteSpace(Model.Status) || Model.Status.Trim().Equals("Needed", StringComparison.OrdinalIgnoreCase))
-        {
-            <span class="badge bg-secondary fs-6">Needed</span>
-        }
-        else if ((Model.Status ?? "").Trim().Equals("Acquired", StringComparison.OrdinalIgnoreCase))
-        {
-            <span class="badge bg-success fs-6">Acquired</span>
-        }
-
-        @if (Model.IsReturnRequired && !Model.IsReturned)
-        {
-            <span class="badge bg-warning text-dark fs-6 ms-1">In Return Queue</span>
-        }
-
-        @if (Model.IsReturned)
-        {
-            <span class="badge bg-danger fs-6 ms-1">Returned</span>
-        }
-    </div>
-</div>
+</section>
 
 @{
     string? statusPanelClass = null;
@@ -110,9 +117,9 @@
 
 <div class="row g-4">
     <div class="col-lg-7">
-        <div class="card shadow-sm">
-            <div class="card-body">
-                <h5 class="card-title mb-3">Item Information</h5>
+        <div class="form-shell">
+            <section class="form-section-card">
+                <h2>Item Information</h2>
 
                 <dl class="row mb-0 item-detail-list">
 
@@ -161,14 +168,14 @@
                         </dd>
                     }
                 </dl>
-            </div>
+            </section>
         </div>
 
         @if (Model.IsReturnRequired || Model.IsReturned)
         {
-            <div class="card shadow-sm mt-4">
-                <div class="card-body">
-                    <h5 class="card-title mb-3">Return Information</h5>
+            <div class="form-shell">
+                <section class="form-section-card">
+                    <h2>Return Information</h2>
 
                     <dl class="row mb-0 item-detail-list">
                         <dt class="col-sm-4">Return Location</dt>
@@ -192,15 +199,15 @@
                             <dd class="col-sm-8">@Model.ReturnedAt?.ToLocalTime().ToString("g")</dd>
                         }
                     </dl>
-                </div>
+                </section>
             </div>
         }
     </div>
 
-    <div class="col-lg-5">
-        <div class="card shadow-sm">
-            <div class="card-body">
-                <h5 class="card-title mb-3">Purchase Receipt</h5>
+    <div class="col-lg-5 item-details-side-stack">
+        <div class="form-shell">
+            <section class="form-section-card">
+                <h2>Purchase Receipt</h2>
 
                 @if (Model.IsReturned && !hasPurchaseReceipt)
                 {
@@ -242,18 +249,18 @@
                 {
                     <p class="empty-state-text">No purchase receipt uploaded.</p>
                 }
-            </div>
+            </section>
         </div>
 
-        <div class="mt-3">
-            <a asp-action="PurchaseReceipt" asp-route-id="@Model.Id" class="btn btn-sm btn-outline-primary">
+        <div>
+            <a asp-action="PurchaseReceipt" asp-route-id="@Model.Id" class="btn btn-sm btn-art-primary">
                 Update Purchase Receipt
             </a>
         </div>
 
-        <div class="card shadow-sm mt-4">
-            <div class="card-body">
-                <h5 class="card-title mb-3">Return Receipt</h5>
+        <div class="form-shell">
+            <section class="form-section-card">
+                <h2>Return Receipt</h2>
 
                 @if (hasReturnReceipt)
                 {
@@ -288,22 +295,22 @@
                 {
                     <p class="empty-state-text">No return receipt uploaded.</p>
                 }
-            </div>
+            </section>
         </div>
 
         @if (Model.IsReturnRequired || Model.IsReturned)
         {
-            <div class="mt-3">
+            <div>
                 <a asp-action="ReturnInfo" asp-route-id="@Model.Id" class="btn btn-sm btn-outline-danger">
                     Update Return Receipt
                 </a>
             </div>
         }
-    </div>
+    
 
-        <div class="card shadow-sm mt-4">
-            <div class="card-body">
-                <h5 class="card-title mb-3">Actions</h5>
+        <div class="form-shell">
+            <section class="form-section-card">
+                <h2>Actions</h2>
 
                 <div class="item-actions-panel">
                     @if (!Model.IsReturnRequired && !Model.IsReturned)
@@ -311,7 +318,7 @@
                         <div class="item-actions-group">
                             <div class="item-actions-group-label">Item</div>
 
-                            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-outline-secondary">
+                            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-art-outline">
                                 Edit Item
                             </a>
                         </div>
@@ -355,12 +362,14 @@
                     <div class="item-actions-group item-actions-group-secondary">
                         <div class="item-actions-group-label">Navigation</div>
 
-                        <a asp-controller="Projects" asp-action="Details" asp-route-id="@Model.ProjectId" class="btn btn-outline-dark">
+                        <a asp-controller="Projects" asp-action="Details" asp-route-id="@Model.ProjectId" class="btn btn-art-outline">
                             Back to Project
                         </a>
                     </div>
                 </div>
-            </div>
+            </section>
         </div>
+    </div>
+
 </div>
 

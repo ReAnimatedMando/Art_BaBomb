@@ -323,6 +323,11 @@ button[aria-expanded="true"] .collapse-icon {
   color: #b02a37;
 }
 
+.item-details-side-stack {
+  display: grid;
+  gap: 1.25rem;
+}
+
 /* =========================
    Item Details Actions Card
 ========================= */
@@ -1292,6 +1297,19 @@ button[aria-expanded="true"] .collapse-icon {
   .form-actions .btn {
     width: 100%;
   }
+}
+
+.form-section-card .item-detail-list dt {
+  color: var(--art-muted);
+}
+
+.form-section-card .item-detail-list dd {
+  color: var(--art-text);
+}
+
+.form-section-card .small.text-muted,
+.form-section-card .empty-state-text {
+  color: var(--art-muted) !important;
 }
 
 /* =========================
