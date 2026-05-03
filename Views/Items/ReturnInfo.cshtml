@@ -13,19 +13,23 @@
         || Model.ReturnReceiptPath.EndsWith(".webp", StringComparison.OrdinalIgnoreCase));
 }
 
-<div class="item-page-header mb-4">
-    <h1 class="page-title mb-1">Return Info</h1>
-    <div class="item-page-subtitle">
-        <div><strong>@Model.Name</strong></div>
-        <div class="text-muted">
-            Project: <strong>@Model.Project?.Name</strong>
-        </div>
-        @if (!string.IsNullOrWhiteSpace(Model.Scene))
-        {
-            <div class="text-muted">@Model.Scene</div>
-        }
+<section class="form-hero mb-4">
+    <div>
+        <div class="eyebrow">Return Workflow</div>
+        <h1 class="form-hero-title">Return Info</h1>
+        <p class="form-hero-subtitle">
+            Manage return details for <strong>@Model.Name</strong>
+            @if (!string.IsNullOrWhiteSpace(Model.Project?.Name))
+            {
+                <span> in <strong>@Model.Project.Name</strong></span>
+            }
+            @if (!string.IsNullOrWhiteSpace(Model.Scene))
+            {
+                <span> — @Model.Scene</span>
+            }
+        </p>
     </div>
-</div>
+</section>
 
 @if (Model.IsReturned && string.IsNullOrWhiteSpace(Model.ReturnReceiptPath))
 {
@@ -36,9 +40,9 @@
 
 <div class="row g-4">
     <div class="col-lg-7">
-        <div class="card shadow-sm">
-            <div class="card-body">
-                <h5 class="card-title mb-3">Return Workflow</h5>
+        <div class="form-shell">
+            <section class="form-section-card">
+                <h2>Return Workflow</h2>
 
                 <form asp-action="ReturnInfo" enctype="multipart/form-data">
                     <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
@@ -116,7 +120,7 @@
                         <div class="item-actions-group">
                             <div class="item-actions-group-label">Save</div>
 
-                            <button type="submit" class="btn btn-primary">
+                            <button type="submit" class="btn btn-art-primary">
                                 Save Return Info
                             </button>
                         </div>
@@ -129,7 +133,7 @@
                                 <button type="submit"
                                         name="removeFromReturnWorkflow"
                                         value="true"
-                                        class="btn btn-outline-secondary"
+                                        class="btn btn-art-outline"
                                         onclick="return confirm('This will remove the item from the return workflow and clear return details. Continue?');">
                                     Undo Return Workflow
                                 </button>
@@ -141,21 +145,21 @@
 
                             <a asp-action="Details"
                             asp-route-id="@Model.Id"
-                            class="btn btn-outline-dark">
+                            class="btn btn-art-outline">
                                 Back to Item
                             </a>
                         </div>
                     </div>
 
                 </form>
-            </div>
+            </section>
         </div>
     </div>
 
     <div class="col-lg-5">
-        <div class="card shadow-sm">
-            <div class="card-body">
-                <h5 class="card-title mb-3">Current Return Receipt</h5>
+        <div class="form-shell">
+            <section class="form-section-card">
+                <h2>Current Return Receipt</h2>
 
                 @if (hasReturnReceipt)
                 {
@@ -204,7 +208,7 @@
                 {
                     <p class="empty-state-text">No return receipt uploaded.</p>
                 }
-            </div>
+            </section>
         </div>
     </div>
 </div>
