@@ -116,6 +116,14 @@ namespace Art_BaBomb.Web.Areas.Identity.Pages.Account
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("User logged in.");
+
+                    if (string.IsNullOrWhiteSpace(returnUrl) ||
+                        returnUrl == Url.Content("~/") ||
+                        returnUrl.Contains("/Logout", StringComparison.OrdinalIgnoreCase))
+                    {
+                        return LocalRedirect("~/");
+                    }
+
                     return LocalRedirect(returnUrl);
                 }
                 if (result.RequiresTwoFactor)

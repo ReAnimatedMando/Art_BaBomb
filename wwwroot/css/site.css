@@ -1060,6 +1060,81 @@ button[aria-expanded="true"] .collapse-icon {
   color: var(--art-muted) !important;
 }
 
+/* =========================
+   Auth Pages
+========================= */
+
+.auth-page {
+  min-height: calc(100vh - 180px);
+  display: grid;
+  place-items: center;
+  padding: 2rem 0;
+}
+
+.auth-card {
+  width: min(100%, 460px);
+  border: 1px solid var(--art-border);
+  border-radius: 1.25rem;
+  background: linear-gradient(145deg, rgba(28, 37, 51, 0.96), rgba(21, 28, 39, 0.96));
+  box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.28);
+  padding: 2rem;
+}
+
+.auth-header {
+  margin-bottom: 1.5rem;
+}
+
+.auth-header h1 {
+  color: var(--art-text);
+  font-size: 2rem;
+  font-weight: 850;
+  letter-spacing: -0.04em;
+  margin-bottom: 0.5rem;
+}
+
+.auth-header p {
+  color: var(--art-muted);
+  margin-bottom: 0;
+  line-height: 1.5;
+}
+
+.auth-card .form-label,
+.auth-card .form-check-label {
+  color: var(--art-muted);
+}
+
+.auth-card .form-control {
+  background-color: rgba(255, 255, 255, 0.95);
+  border-color: transparent;
+}
+
+.auth-card .form-control:focus {
+  border-color: var(--art-orange);
+  box-shadow: 0 0 0 0.2rem rgba(249, 115, 22, 0.22);
+}
+
+.auth-card .form-floating > label {
+  color: #6b7280;
+}
+
+.auth-links {
+  display: grid;
+  gap: 0.4rem;
+  margin-top: 1rem;
+  text-align: center;
+}
+
+.auth-links a {
+  color: var(--art-muted);
+  font-size: 0.9rem;
+  text-decoration: none;
+}
+
+.auth-links a:hover {
+  color: var(--art-orange);
+  text-decoration: underline;
+}
+
 @media (max-width: 991.98px) {
   .home-hero {
     grid-template-columns: 1fr;
