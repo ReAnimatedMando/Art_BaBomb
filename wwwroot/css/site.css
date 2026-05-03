@@ -846,6 +846,58 @@ button[aria-expanded="true"] .collapse-icon {
 }
 
 /* =========================
+   Project Details Header
+========================= */
+
+.project-hero {
+  border: 1px solid var(--art-border);
+  border-radius: 1.25rem;
+  padding: 1.5rem;
+  background: linear-gradient(145deg, rgba(28, 37, 51, 0.96), rgba(21, 28, 39, 0.96));
+  box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.2);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 1.25rem;
+  align-items: center;
+}
+
+.project-hero-title {
+  color: var(--art-text);
+  font-size: clamp(2rem, 4vw, 3.25rem);
+  font-weight: 900;
+  letter-spacing: -0.05em;
+  line-height: 1;
+}
+
+.project-hero-meta {
+  margin-top: 1rem;
+  color: var(--art-muted);
+  display: grid;
+  gap: 0.25rem;
+}
+
+.project-hero-meta strong {
+  color: var(--art-text);
+}
+
+.project-hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.65rem;
+}
+
+@media (max-width: 767.98px) {
+  .project-hero {
+    grid-template-columns: 1fr;
+  }
+
+  .project-hero-actions {
+    justify-content: flex-start;
+  }
+}
+
+/* =========================
    App Shell / Home Page
 ========================= */
 

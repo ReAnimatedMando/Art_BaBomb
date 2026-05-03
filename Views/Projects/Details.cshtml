@@ -71,30 +71,58 @@
         || path.EndsWith(".png", StringComparison.OrdinalIgnoreCase)
         || path.EndsWith(".webp", StringComparison.OrdinalIgnoreCase));
 
-    // ✅ NEW: Use model logic instead of local helper functions
     var neededAttentionCount = neededItems.Count(i => i.NeedsAttention);
     var acquiredAttentionCount = acquiredItems.Count(i => i.NeedsAttention);
     var returnAttentionCount = returnItems.Count(i => i.NeedsAttention);
     var returnedAttentionCount = returnedItems.Count(i => i.NeedsAttention);
 }
 
-<div class="mb-4">
-    <h1 class="d-flex align-items-center gap-2 flex-wrap">
-        @Model.Name
-        <span class="badge @(Model.Department == ProjectDepartment.SetDec ? "bg-primary" : "bg-warning text-dark") fs-6">
-            @(Model.Department == ProjectDepartment.SetDec ? "Set Dec" : "Props")
-        </span>
-    </h1>
-    <div class="page-subtitle">
-        <div>
-            <strong>Description:</strong>
-            @(string.IsNullOrWhiteSpace(Model.Description) ? "—" : Model.Description)
+<section class="project-hero mb-4">
+    <div class="project-hero-main">
+        <div class="eyebrow">Project Details</div>
+
+        <div class="d-flex align-items-center gap-2 flex-wrap">
+            <h1 class="project-hero-title mb-0">@Model.Name</h1>
+
+            <span class="badge @(Model.Department == ProjectDepartment.SetDec ? "bg-primary" : "bg-warning text-dark") fs-6">
+                @(Model.Department == ProjectDepartment.SetDec ? "Set Dec" : "Props")
+            </span>
         </div>
-        <div>
-            <strong>Created:</strong> @Model.CreatedAt.ToLocalTime().ToString("g")
+
+        <div class="project-hero-meta">
+            <div>
+                <strong>Description:</strong>
+                @(string.IsNullOrWhiteSpace(Model.Description) ? "—" : Model.Description)
+            </div>
+            <div>
+                <strong>Created:</strong> @Model.CreatedAt.ToLocalTime().ToString("g")
+            </div>
         </div>
     </div>
-</div>
+
+    <div class="project-hero-actions">
+        @if (User.IsInRole("Admin") || User.IsInRole("Shopper"))
+        {
+            <a asp-controller="Items"
+               asp-action="Create"
+               asp-route-projectId="@Model.Id"
+               class="btn btn-art-primary">
+                + Add Item
+            </a>
+        }
+
+        @if (User.IsInRole("Admin"))
+        {
+            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-art-outline">
+                Edit Project
+            </a>
+        }
+
+        <a asp-action="Index" class="btn btn-art-outline">
+            Back to Projects
+        </a>
+    </div>
+</section>
 
 <div class="page-alert-stack">
     @if (TempData["WarningMessage"] != null)
@@ -112,29 +140,6 @@
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
     }
-</div>
-
-<div class="d-flex flex-wrap gap-2 mb-3">
-    @if (User.IsInRole("Admin") || User.IsInRole("Shopper"))
-    {
-        <a asp-controller="Items"
-           asp-action="Create"
-           asp-route-projectId="@Model.Id"
-           class="btn btn-primary">
-            + Add Item
-        </a>
-    }
-
-    @if (User.IsInRole("Admin"))
-    {
-        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-outline-secondary">
-            Edit Project
-        </a>
-    }
-
-    <a asp-action="Index" class="btn btn-outline-dark">
-        Back to Projects
-    </a>
 </div>
 
 <hr />
