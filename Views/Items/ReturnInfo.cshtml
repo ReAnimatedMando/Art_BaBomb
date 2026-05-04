@@ -188,13 +188,17 @@
                                     class="receipt-preview-image" />
                             </span>
                         </a>
-                    }
 
-                    <div class="d-flex gap-2 flex-wrap">
-                        <a href="@Model.ReturnReceiptPath" target="_blank" class="btn btn-sm btn-outline-danger receipt-link-btn receipt-action-btn">
-                            View Receipt
-                        </a>
-                    </div>
+                        <div class="small text-muted mt-2">
+                            Click the receipt preview to enlarge it.
+                        </div>
+                    }
+                    else 
+                    {
+                        <div class="receipt-preview-surface receipt-preview-large d-flex align-items-center justify-content-center text-muted small">
+                            Receipt uploaded
+                        </div>
+                    }
 
                     <div class="small text-muted mt-2">
                         @Model.ReturnReceiptFileName

@@ -13,67 +13,81 @@
         || Model.PurchaseReceiptPath.EndsWith(".webp", StringComparison.OrdinalIgnoreCase));
 }
 
-<h1>Manage Purchase Receipt</h1>
-<h4 class="text-muted">@Model.Name</h4>
-<hr />
+<section class="form-hero mb-4">
+    <div>
+        <div class="eyebrow">Receipt Workflow</div>
+        <h1 class="form-hero-title">Purchase Receipt</h1>
+        <p class="form-hero-subtitle">
+            Upload or manage the purchase receipt for <strong>@Model.Name</strong>.
+        </p>
+    </div>
+</section>
 
-<div class="card shadow-sm">
-    <div class="card-body">
+<div class="form-shell">
+    <section class="form-section-card">
+        <h2>Upload Receipt</h2>
+
         <form asp-action="PurchaseReceipt" asp-route-id="@Model.Id" method="post" enctype="multipart/form-data">
             @Html.AntiForgeryToken()
 
             <div class="mb-3">
-                <label class="form-label">Upload Purchase Receipt</label>
+                <label class="form-label">Purchase Receipt</label>
 
                 <div id="purchaseReceiptDropZone" class="receipt-drop-zone" role="button" tabindex="0">
                     <div class="fw-semibold">Drag & drop receipt here</div>
                     <div class="text-muted small">or click to choose a file</div>
 
                     <input type="file"
-                        id="purchaseReceiptFile"
-                        name="purchaseReceiptFile"
-                        class="d-none"
-                        accept=".jpg,.jpeg,.png,.webp,.pdf" />
+                           id="purchaseReceiptFile"
+                           name="purchaseReceiptFile"
+                           class="d-none"
+                           accept=".jpg,.jpeg,.png,.webp,.pdf" />
                 </div>
 
                 @Html.ValidationMessage("purchaseReceiptFile", new { @class = "text-danger d-block mt-1" })
-                <div id="purchaseReceiptSelectedFile" class="form-text">Upload purchase receipt image or PDF.</div>
+                <div id="purchaseReceiptSelectedFile" class="form-text">
+                    Upload purchase receipt image or PDF.
+                </div>
             </div>
 
-            <div class="d-flex gap-2 mt-3">
-                <button type="submit" class="btn btn-primary">Save Purchase Receipt</button>
-                <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-outline-secondary">Back to Item</a>
+            <div class="form-actions">
+                <button type="submit" class="btn btn-art-primary">
+                    Save Purchase Receipt
+                </button>
+
+                <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-art-outline">
+                    Back to Item
+                </a>
             </div>
         </form>
+    </section>
+
+    <section class="form-section-card">
+        <h2>Current Receipt</h2>
 
         @if (hasPurchaseReceipt)
         {
-            <hr />
-
             @if (purchaseReceiptIsImage)
             {
                 <a href="#"
-                data-bs-toggle="modal"
-                data-bs-target="#receiptPreviewModal"
-                data-receipt-src="@Model.PurchaseReceiptPath"
-                data-receipt-title="@Model.Name - Purchase Receipt"
-                class="receipt-preview-trigger">
-                    <img src="@Model.PurchaseReceiptPath"
-                        alt="Purchase Receipt"
-                        class="img-fluid rounded border mb-3" />
+                   data-bs-toggle="modal"
+                   data-bs-target="#receiptPreviewModal"
+                   data-receipt-src="@Model.PurchaseReceiptPath"
+                   data-receipt-title="@Model.Name - Purchase Receipt"
+                   class="receipt-preview-trigger receipt-preview-large">
+                    <span class="receipt-preview-surface">
+                        <img src="@Model.PurchaseReceiptPath"
+                             alt="Purchase Receipt"
+                             class="receipt-preview-image" />
+                    </span>
                 </a>
             }
-
-            <a href="@Model.PurchaseReceiptPath" target="_blank" class="btn btn-sm btn-outline-primary">
-                View Current Receipt
-            </a>
-
-            <form asp-action="DeletePurchaseReceipt" asp-route-id="@Model.Id" method="post" class="mt-3">
-                @Html.AntiForgeryToken()
-                <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Delete this purchase receipt?');">
-                    Delete Receipt
-                </button>
-            </form>
+            else
+            {
+                <div class="receipt-preview-surface receipt-preview-large text-muted small">
+                    Receipt uploaded
+                </div>
+            }
 
             <div class="small text-muted mt-2">
                 @Model.PurchaseReceiptFileName
@@ -82,58 +96,21 @@
                     <span>• @FileSizeHelper.FormatFileSize(Model.PurchaseReceiptSizeBytes)</span>
                 }
             </div>
+
+            <div class="form-actions mt-3">
+                <form asp-action="DeletePurchaseReceipt" asp-route-id="@Model.Id" method="post">
+                    @Html.AntiForgeryToken()
+                    <button type="submit"
+                            class="btn btn-sm btn-outline-danger"
+                            onclick="return confirm('Delete this purchase receipt?');">
+                        Delete Receipt
+                    </button>
+                </form>
+            </div>
         }
         else
         {
-            <hr />
-            <p class="text-muted mb-0">No purchase receipt uploaded.</p>
+            <p class="empty-state-text">No purchase receipt uploaded.</p>
         }
-    </div>
+    </section>
 </div>
-
-@section Scripts {
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            const fileInput = document.getElementById("purchaseReceiptFile");
-            const dropZone = document.getElementById("purchaseReceiptDropZone");
-            const selectedFile = document.getElementById("purchaseReceiptSelectedFile");
-
-            if (!fileInput || !dropZone || !selectedFile) return;
-
-            dropZone.addEventListener("click", function () {
-                fileInput.click();
-            });
-
-            fileInput.addEventListener("change", function () {
-                selectedFile.textContent = this.files.length > 0
-                    ? `Selected: ${this.files[0].name}`
-                    : "Upload purchase receipt image or PDF.";
-            });
-
-            ["dragenter", "dragover"].forEach(eventName => {
-                dropZone.addEventListener(eventName, function (e) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    dropZone.classList.add("dragover");
-                });
-            });
-
-            ["dragleave", "drop"].forEach(eventName => {
-                dropZone.addEventListener(eventName, function (e) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    dropZone.classList.remove("dragover");
-                });
-            });
-
-            dropZone.addEventListener("drop", function (e) {
-                const files = e.dataTransfer.files;
-                if (files && files.length > 0) {
-                    fileInput.files = files;
-                    selectedFile.textContent = `Selected: ${files[0].name}`;
-                }
-            });
-        });
-
-    </script>
-}

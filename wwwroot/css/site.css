@@ -592,6 +592,7 @@ button[aria-expanded="true"] .collapse-icon {
 }
 
 .project-items-table {
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.4);
   min-width: 600px;
 }
 
@@ -772,18 +773,34 @@ button[aria-expanded="true"] .collapse-icon {
 }
 
 .project-group-card {
-  border: 1px solid #e9ecef;
+  background: linear-gradient(145deg, #1b2636, #121a26);
+  border: 1px solid rgba(255,255,255,0.06);
   border-radius: 0.75rem;
   overflow: hidden;
 }
 
 .project-group-card .card-header {
+  background: transparent;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
   padding: 0.75rem 1rem;
   background-color: #f8f9fa;
+  transition: background 0.2s ease;
+}
+
+.project-group-card .card-header:hover {
+  background: rgba(255,255,255,0.03);
 }
 
 .project-group-card .card-body {
   background: #fff;
+}
+
+.project-items-table.table-striped tbody tr:nth-of-type(odd) {
+  background-color: #f4f6f9;
+}
+
+.project-items-table.table-hover tbody tr:hover {
+  background-color: #e9edf3;
 }
 
 /* =========================
@@ -795,12 +812,13 @@ button[aria-expanded="true"] .collapse-icon {
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.03em;
-  color: #6c757d;
-  background-color: #fcfcfd;
+  color: #495057;
+  background: #eef1f5;
   border-bottom-width: 1px;
 }
 
 .project-items-table tbody td {
+  color: #212529;
   padding-top: 0.65rem;
   padding-bottom: 0.65rem;
 }
@@ -1219,6 +1237,10 @@ button[aria-expanded="true"] .collapse-icon {
   box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.16);
 }
 
+.form-section-card.border-danger-subtle {
+  border-color: rgba(220, 53, 69, 0.35);
+}
+
 .form-hero {
   padding: 1.5rem;
 }
@@ -1478,6 +1500,8 @@ button[aria-expanded="true"] .collapse-icon {
   }
 
   .project-items-table {
+    background: #f8f9fb; 
+    border-radius: 0.5rem;
     font-size: 0.875rem;
   }
 

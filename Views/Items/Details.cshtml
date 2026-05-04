@@ -323,6 +323,13 @@
                             </a>
                         </div>
 
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-outline-danger">
+                                Delete Item
+                            </a>
+                        }
+
                         <div class="item-actions-group">
                             <div class="item-actions-group-label">Return Workflow</div>
 
