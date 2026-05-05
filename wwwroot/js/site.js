@@ -486,7 +486,21 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     if (section) {
+        const scene = params.get("scene");
         const sectionHeader = document.querySelector(`[data-section="${section}"]`);
+
+        if (scene) {
+            const collapse = document.getElementById(`${section}-scene-${scene}`);
+
+            if (collapse && !collapse.classList.contains("show")) {
+              const bsCollapse = bootstrap.Collapse.getOrCreateInstance(collapse, {
+                  toggle: false
+              });
+
+              bsCollapse.show();
+            }
+        }
+
         if (!sectionHeader) return;
 
         sectionHeader.scrollIntoView({ behavior: "smooth", block: "start" });

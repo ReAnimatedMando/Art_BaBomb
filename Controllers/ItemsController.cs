@@ -436,6 +436,10 @@ namespace Art_BaBomb.Web.Controllers
 
                 var section = item.IsReturned ? "returned" : item.IsInReturnQueue ? "return" : item.IsAcquired ? "acquired" : "needed";
 
+                var sceneKey = string.IsNullOrWhiteSpace(item.Scene) ? "Unassigned Scene" : item.Scene.Trim();
+
+                var sceneSlug = sceneKey.Replace(" ", "-").Replace("/", "-").Replace(".", "-").ToLower();
+
                 _context.Items.Remove(item);
                 await _context.SaveChangesAsync();
 
@@ -444,7 +448,8 @@ namespace Art_BaBomb.Web.Controllers
                 return RedirectToAction("Details", "Projects", new 
                 {
                     id = projectId,
-                    section = section
+                    section = section,
+                    scene = sceneSlug
                 });
             }
 
