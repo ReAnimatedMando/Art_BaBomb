@@ -1,56 +1,75 @@
 @model Art_BaBomb.Web.Models.Project
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Create Project";
 }
 
-<h1>Create</h1>
+<section class="form-hero mb-4">
+    <div>
+        <div class="eyebrow">New Production Workspace</div>
+        <h1 class="form-hero-title">Create Project</h1>
+        <p class="form-hero-subtitle">
+            Start a Set Dec or Props project and define the budget before adding items.
+        </p>
+    </div>
+</section>
 
-<h4>Project</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="Name" class="control-label"></label>
+<div class="form-shell">
+    <form asp-action="Create">
+        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+        <section class="form-section-card stack-md">
+            <h2>Project Basics</h2>
+
+            <div>
+                <label asp-for="Name" class="form-label">Project Name</label>
                 <input asp-for="Name" class="form-control" autofocus />
                 <span asp-validation-for="Name" class="text-danger"></span>
             </div>
-            <div class="form-group stack-md">
-                <label asp-for="Department" class="control-label">Department</label>
+
+            <div>
+                <label asp-for="Department" class="form-label">Department</label>
                 <select asp-for="Department" class="form-select">
                     <option value="SetDec">Set Dec</option>
                     <option value="Props">Props</option>
                 </select>
+                <div class="form-text">Choose the primary department responsible for this project.</div>
                 <span asp-validation-for="Department" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="Description" class="control-label"></label>
-                <input asp-for="Description" class="form-control" />
+
+            <div>
+                <label asp-for="Description" class="form-label"></label>
+                <textarea asp-for="Description"
+                          class="form-control"
+                          rows="4"
+                          placeholder="Commercial name, episode, scene range, notes, etc."></textarea>
                 <span asp-validation-for="Description" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="Budget" class="control-label"></label>
-                <input asp-for="Budget" class="form-control" />
+        </section>
+
+        <section class="form-section-card stack-md">
+            <h2>Budget</h2>
+
+            <div>
+                <label asp-for="Budget" class="form-label"></label>
+                <input asp-for="Budget" class="form-control" type="number" step="0.01" min="0" />
+                <div class="form-text">You can update this later as the project evolves.</div>
                 <span asp-validation-for="Budget" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="CreatedAt" class="control-label"></label>
-                <input asp-for="CreatedAt" class="form-control" />
-                <span asp-validation-for="CreatedAt" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-art-primary" />
-            </div>
-        </form>
-    </div>
-</div>
+        </section>
 
-<div>
-    <a asp-action="Index">Back to List</a>
+        <div class="form-actions">
+            <button type="submit" class="btn btn-art-primary">
+                Create Project
+            </button>
+
+            <a asp-action="Index" class="btn btn-art-outline">
+                Cancel
+            </a>
+        </div>
+    </form>
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
 }
