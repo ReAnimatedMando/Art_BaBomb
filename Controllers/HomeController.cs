@@ -9,9 +9,5 @@ namespace Art_BaBomb.Web.Controllers
             return View();
         }
 
-        public IActionResult Privacy()
-        {
-            return View();
-        }
     }
 }

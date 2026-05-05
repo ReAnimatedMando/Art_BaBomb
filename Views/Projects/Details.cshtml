@@ -154,7 +154,7 @@
 </form>
 
 <!-- ===================== NEEDED ===================== -->
-<div class="project-section-title">
+<div class="project-section-title" data-section="needed">
     <h2>
         Needed Items (@neededItems.Count)
         @if (neededAttentionCount > 0)
@@ -232,7 +232,7 @@ else
 }
 
 <!-- ===================== ACQUIRED ===================== -->
-<div class="project-section-title">
+<div class="project-section-title" data-section="acquired">
     <h2>
         Acquired Items (@acquiredItems.Count)
         @if (acquiredAttentionCount > 0)
@@ -307,7 +307,7 @@ else
 }
 
 <!-- ===================== RETURN QUEUE ===================== -->
-<div class="project-section-title">
+<div class="project-section-title" data-section="return">
     <h2>
         Return Queue (@returnItems.Count)
         @if (returnAttentionCount > 0)
@@ -382,7 +382,7 @@ else
 }
 
 <!-- ===================== RETURNED ITEMS ===================== -->
-<div class="project-section-title">
+<div class="project-section-title" data-section="returned">
     <h2>
         Returned Items (@returnedItems.Count)
         @if (returnedAttentionCount > 0)

@@ -454,32 +454,42 @@ function updateNoteToggleVisibility() {
 document.addEventListener("DOMContentLoaded", function () {
     const params = new URLSearchParams(window.location.search);
     const focusItemId = params.get("focusItemId");
+    const section = params.get("section");
 
-    if (!focusItemId) return;
+    if (focusItemId) {
+        const target = document.querySelector(`#item-${focusItemId}`);
+        if (!target) return;
 
-    const target = document.querySelector(`#item-${focusItemId}`);
-    if (!target) return;
+        const collapse = target.closest(".collapse");
 
-    const collapse = target.closest(".collapse");
+        const scrollToTarget = function () {
+            target.scrollIntoView({ behavior: "smooth", block: "center" });
+            target.classList.add("item-highlight");
 
-    const scrollToTarget = function () {
-        target.scrollIntoView({ behavior: "smooth", block: "center" });
-        target.classList.add("item-highlight");
+            setTimeout(function () {
+                target.classList.remove("item-highlight");
+            }, 2500);
+        };
 
-        setTimeout(function () {
-            target.classList.remove("item-highlight");
-        }, 2500);
-    };
+        if (collapse && !collapse.classList.contains("show")) {
+            const bsCollapse = bootstrap.Collapse.getOrCreateInstance(collapse, {
+                toggle: false
+            });
 
-    if (collapse && !collapse.classList.contains("show")) {
-        const bsCollapse = bootstrap.Collapse.getOrCreateInstance(collapse, {
-            toggle: false
-        });
+            collapse.addEventListener("shown.bs.collapse", scrollToTarget, { once: true });
+            bsCollapse.show();
+        } else {
+            scrollToTarget();
+        }
 
-        collapse.addEventListener("shown.bs.collapse", scrollToTarget, { once: true });
-        bsCollapse.show();
-    } else {
-        scrollToTarget();
+        return;
+    }
+
+    if (section) {
+        const sectionHeader = document.querySelector(`[data-section="${section}"]`);
+        if (!sectionHeader) return;
+
+        sectionHeader.scrollIntoView({ behavior: "smooth", block: "start" });
     }
 });
 

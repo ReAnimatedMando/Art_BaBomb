@@ -1,62 +1,86 @@
+@using Art_BaBomb.Web.Models
 @model Art_BaBomb.Web.Models.Project
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Edit Project";
 }
 
-<h1 class="d-flex align-items-center gap-2 flex-wrap">
-    Edit Project
-    <span class="badge @(Model.Department == ProjectDepartment.SetDec ? "bg-primary" : "bg-warning text-dark") fs-6">
-        @(Model.Department == ProjectDepartment.SetDec ? "Set Dec" : "Props")
-    </span>
-</h1>
+<section class="form-hero page-gap">
+    <div>
+        <div class="eyebrow">Project Settings</div>
 
-<h4>Project</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Edit">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="Id" />
-            <div class="form-group">
-                <label asp-for="Name" class="control-label"></label>
+        <div class="d-flex align-items-center gap-2 flex-wrap">
+            <h1 class="form-hero-title mb-0">Edit Project</h1>
+
+            <span class="badge @(Model.Department == ProjectDepartment.SetDec ? "bg-primary" : "bg-warning text-dark") fs-6">
+                @(Model.Department == ProjectDepartment.SetDec ? "Set Dec" : "Props")
+            </span>
+        </div>
+
+        <p class="form-hero-subtitle">
+            Update department, description, and budget for <strong>@Model.Name</strong>.
+        </p>
+    </div>
+</section>
+
+<div class="form-shell">
+    <form asp-action="Edit" class="stack-md">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+        <input type="hidden" asp-for="Id" />
+
+        <section class="form-section-card stack-md">
+            <h2>Project Basics</h2>
+
+            <div>
+                <label asp-for="Name" class="form-label">Project Name</label>
                 <input asp-for="Name" class="form-control" />
                 <span asp-validation-for="Name" class="text-danger"></span>
             </div>
-            <div class="form-group stack-md">
-                <label asp-for="Department" class="control-label">Department</label>
+
+            <div>
+                <label asp-for="Department" class="form-label">Department</label>
                 <select asp-for="Department" class="form-select">
                     <option value="SetDec">Set Dec</option>
                     <option value="Props">Props</option>
                 </select>
+                <div class="form-text">Choose the primary department responsible for this project.</div>
                 <span asp-validation-for="Department" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="Description" class="control-label"></label>
-                <input asp-for="Description" class="form-control" />
+
+            <div>
+                <label asp-for="Description" class="form-label"></label>
+                <textarea asp-for="Description"
+                          class="form-control"
+                          rows="4"
+                          placeholder="Commercial name, episode, scene range, notes, etc."></textarea>
                 <span asp-validation-for="Description" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="Budget" class="control-label"></label>
-                <input asp-for="Budget" class="form-control" />
+        </section>
+
+        <section class="form-section-card stack-md">
+            <h2>Budget</h2>
+
+            <div>
+                <label asp-for="Budget" class="form-label"></label>
+                <input asp-for="Budget" class="form-control" type="number" step="0.01" min="0" value="@Model.Budget.ToString("F2"))" />
+                <div class="form-text">Update this as the project evolves.</div>
                 <span asp-validation-for="Budget" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="CreatedAt" class="control-label"></label>
-                <input asp-for="CreatedAt" class="form-control" />
-                <span asp-validation-for="CreatedAt" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-art-primary" />
-            </div>
-        </form>
-    </div>
-</div>
+        </section>
 
-<div>
-    <a asp-action="Index">Back to List</a>
+        <div class="form-actions">
+            <button type="submit" class="btn btn-art-primary">
+                Save Project
+            </button>
+
+            <a asp-action="Index" class="btn btn-art-outline">
+                Cancel
+            </a>
+        </div>
+    </form>
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
 }

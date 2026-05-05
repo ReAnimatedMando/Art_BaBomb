@@ -52,19 +52,7 @@ namespace Art_BaBomb.Web.Controllers
         // GET: Items
         public async Task<IActionResult> Index(int? projectId)
         {
-            var query = _context.Items.Include(i => i.Project).AsQueryable();
-
-            if (projectId.HasValue)
-            {
-                query = query.Where(i => i.ProjectId == projectId.Value);
-                ViewBag.ProjectId = projectId.Value;
-                ViewBag.ProjectName = await _context.Projects
-                    .Where(p => p.Id == projectId.Value)
-                    .Select(p => p.Name)
-                    .FirstOrDefaultAsync();
-            }
-
-            return View(await query.ToListAsync());
+            return RedirectToAction("Index", "Projects");
         }
 
         // GET: Items/Details/5
@@ -444,11 +432,23 @@ namespace Art_BaBomb.Web.Controllers
             var item = await _context.Items.FindAsync(id);
             if (item != null)
             {
+                var projectId = item.ProjectId;
+
+                var section = item.IsReturned ? "returned" : item.IsInReturnQueue ? "return" : item.IsAcquired ? "acquired" : "needed";
+
                 _context.Items.Remove(item);
+                await _context.SaveChangesAsync();
+
+                TempData["SuccessMessage"] = $"\"{item.Name}\" deleted successfully.";
+
+                return RedirectToAction("Details", "Projects", new 
+                {
+                    id = projectId,
+                    section = section
+                });
             }
 
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction("Index", "Projects");
         }
 
         private bool ItemExists(int id)
