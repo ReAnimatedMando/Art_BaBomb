@@ -731,6 +731,12 @@ button[aria-expanded="true"] .collapse-icon {
   margin-bottom: 0;
 }
 
+.empty-state-text, .project-empty-state {
+  color: var(--art-muted) !important;
+  font-style: italic;
+  margin-bottom: 0;
+}
+
 .receipt-action-btn {
   min-width: 150px;
 }
@@ -787,8 +793,14 @@ button[aria-expanded="true"] .collapse-icon {
   transition: background 0.2s ease;
 }
 
+.project-group-card:hover,
+.project-index-card:hover {
+  border-color: rgba(249, 115, 22, 0.25);
+  box-shadow: 0 1rem 2.25rem rgba(0, 0, 0, 0.24);
+}
+
 .project-group-card .card-header:hover {
-  background: rgba(255,255,255,0.03);
+  background: rgba(249,115,22,0.08);
 }
 
 .project-group-card .card-body {
@@ -1241,6 +1253,13 @@ button[aria-expanded="true"] .collapse-icon {
   border-color: rgba(220, 53, 69, 0.35);
 }
 
+.form-section-card,
+.project-group-card,
+.project-index-card,
+.project-index-toolbar {
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+}
+
 .form-hero {
   padding: 1.5rem;
 }
@@ -1332,6 +1351,33 @@ button[aria-expanded="true"] .collapse-icon {
 .form-section-card .small.text-muted,
 .form-section-card .empty-state-text {
   color: var(--art-muted) !important;
+}
+
+/* =========================
+   Final Polish Utilities
+========================= */
+
+.stack-sm {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.stack-md {
+  display: grid;
+  gap: 1rem;
+}
+
+.stack-lg {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.section-gap {
+  margin-bottom: 1.5rem;
+}
+
+.page-gap {
+  margin-bottom: 2rem;
 }
 
 /* =========================

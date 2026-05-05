@@ -30,7 +30,7 @@
         <form asp-action="PurchaseReceipt" asp-route-id="@Model.Id" method="post" enctype="multipart/form-data">
             @Html.AntiForgeryToken()
 
-            <div class="mb-3">
+            <div class="stack-md">
                 <label class="form-label">Purchase Receipt</label>
 
                 <div id="purchaseReceiptDropZone" class="receipt-drop-zone" role="button" tabindex="0">
@@ -97,7 +97,7 @@
                 }
             </div>
 
-            <div class="form-actions mt-3">
+            <div class="form-actions stack-md">
                 <form asp-action="DeletePurchaseReceipt" asp-route-id="@Model.Id" method="post">
                     @Html.AntiForgeryToken()
                     <button type="submit"

@@ -45,7 +45,7 @@
                 <h2>Return Workflow</h2>
 
                 <form asp-action="ReturnInfo" enctype="multipart/form-data">
-                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                    <div asp-validation-summary="ModelOnly" class="text-danger stack-md"></div>
 
                     <input type="hidden" asp-for="Id" />
                     <input type="hidden" asp-for="ProjectId" />
@@ -58,25 +58,25 @@
                     <input type="hidden" asp-for="ImageUrl" />
                     <input type="hidden" asp-for="IsReturnRequired" value="true" />
 
-                    <div class="mb-3">
+                    <div class="stack-md">
                         <label asp-for="ReturnLocation" class="form-label"></label>
                         <input asp-for="ReturnLocation" class="form-control" autofocus />
                         <span asp-validation-for="ReturnLocation" class="text-danger"></span>
                     </div>
 
-                    <div class="mb-3">
+                    <div class="stack-md">
                         <label asp-for="ReturnByDate" class="form-label"></label>
                         <input asp-for="ReturnByDate" class="form-control" type="date" />
                         <span asp-validation-for="ReturnByDate" class="text-danger"></span>
                     </div>
 
-                    <div class="mb-3">
+                    <div class="stack-md">
                         <label asp-for="ReturnNotes" class="form-label"></label>
                         <textarea asp-for="ReturnNotes" class="form-control" rows="5"></textarea>
                         <span asp-validation-for="ReturnNotes" class="text-danger"></span>
                     </div>
 
-                    <div class="mb-3">
+                    <div class="stack-md">
                         <label class="form-label">Return Receipt</label>
 
                         <div id="returnReceiptDropZone" class="receipt-drop-zone" role="button" tabindex="0">
@@ -96,7 +96,7 @@
 
                     @if (hasReturnReceipt)
                     {
-                        <div class="form-check mb-3">
+                        <div class="form-check stack-md">
                             <input class="form-check-input" type="checkbox" id="removeReturnReceipt" name="removeReturnReceipt" value="true" />
                             <label class="form-check-label" for="removeReturnReceipt">
                                 Delete current return receipt
@@ -104,7 +104,7 @@
                         </div>
                     }
 
-                    <div class="form-check mb-3">
+                    <div class="form-check stack-md">
                         <input class="form-check-input" asp-for="IsReturned" />
                         <label class="form-check-label" asp-for="IsReturned"></label>
                     </div>
@@ -116,7 +116,7 @@
                         </div>
                     }
 
-                    <div class="item-actions-panel mt-4">
+                    <div class="item-actions-panel stack-md">
                         <div class="item-actions-group">
                             <div class="item-actions-group-label">Save</div>
 
@@ -163,7 +163,7 @@
 
                 @if (hasReturnReceipt)
                 {
-                    <div class="mb-3">
+                    <div class="stack-md">
                         @if (Model.IsReturned)
                         {
                             <span class="badge bg-danger">Returned</span>

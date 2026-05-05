@@ -35,19 +35,19 @@
 
         <div class="col-lg-7">
             <div class="form-shell">
-                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                <div asp-validation-summary="ModelOnly" class="text-danger stack-md"></div>
 
                 <input type="hidden" asp-for="Id" />
 
                 <section class="form-section-card">
                     <h2>Item Basics</h2>
 
-                    <div class="mb-3">
+                    <div class="stack-md">
                         <label asp-for="ProjectId" class="form-label"></label>
                         <select asp-for="ProjectId" class="form-select" asp-items="ViewBag.ProjectId"></select>
                     </div>
 
-                    <div class="mb-3">
+                    <div class="stack-md">
                         <label asp-for="Name" class="form-label">Item Name</label>
                         <input asp-for="Name" class="form-control" />
                         <span asp-validation-for="Name" class="text-danger"></span>
@@ -77,7 +77,7 @@
                         </div>
                     </div>
 
-                    <div class="mt-3">
+                    <div class="stack-md">
                         <label asp-for="Description" class="form-label">Notes / Description</label>
                         <textarea asp-for="Description" class="form-control" rows="4"></textarea>
                         <span asp-validation-for="Description" class="text-danger"></span>
@@ -114,7 +114,7 @@
                 <section class="form-section-card">
                     <h2>Item Image</h2>
 
-                    <div class="mb-3">
+                    <div class="stack-md">
                         <label asp-for="ImageUrl" class="form-label">Image URL</label>
                         <input asp-for="ImageUrl" class="form-control" placeholder="https://..." />
                         <span asp-validation-for="ImageUrl" class="text-danger"></span>
@@ -122,7 +122,7 @@
 
                     @if (!string.IsNullOrWhiteSpace(Model.ImagePath))
                     {
-                        <div class="mb-3">
+                        <div class="stack-md">
                             <label class="form-label">Current Uploaded Image</label>
                             <div>
                                 <img src="@Url.Content(Model.ImagePath)"
@@ -140,7 +140,7 @@
                         </div>
                     }
 
-                    <div>
+                    <div class="stack-md">
                         <label class="form-label">Replace / Upload Image</label>
                         <input type="file"
                                name="imageFile"
@@ -171,7 +171,7 @@
                 <section class="form-section-card">
                     <h2>Purchase Receipt</h2>
 
-                    <div class="mb-3">
+                    <div class="stack-md">
                         <label class="form-label">Upload / Replace Receipt</label>
                         <input type="file"
                                name="purchaseReceiptFile"
