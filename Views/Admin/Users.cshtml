@@ -5,40 +5,57 @@
     var availableRoles = ViewBag.AvailableRoles as List<string> ?? new List<string>();
 }
 
-<h1>User Manager</h1>
-
-@if (TempData["SuccessMessage"] != null)
-{
-    <div class="alert alert-success">
-        @TempData["SuccessMessage"]
+<section class="form-hero page-gap">
+    <div>
+        <div class="eyebrow">Admin Tools</div>
+        <h1 class="form-hero-title">User Manager</h1>
+        <p class="form-hero-subtitle">
+            Manage user access and assign roles for the Art Ba-Bomb workspace.
+        </p>
     </div>
-}
+</section>
 
-@if (TempData["ErrorMessage"] != null)
-{
-    <div class="alert alert-danger">
-        @TempData["ErrorMessage"]
-    </div>
-}
+<div class="page-alert-stack">
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
 
-<div class="card shadow-sm">
-    <div class="card-body">
-        <div class="table-responsive">
-            <table class="table table-striped align-middle mb-0">
-                <thead>
-                    <tr>
-                        <th>Email</th>
-                        <th>Current Role</th>
-                        <th style="width: 260px;">Assign Role</th>
-                        <th style="width: 120px;">Delete</th>
-                    </tr>
-                </thead>
-                <tbody>
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            @TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+</div>
+
+<div class="project-index-card">
+    <div class="table-responsive">
+        <table class="table table-dark table-hover align-middle mb-0 project-index-table">
+            <thead>
+                <tr>
+                    <th>Email</th>
+                    <th>Current Role</th>
+                    <th style="width: 300px;">Assign Role</th>
+                    <th class="text-end" style="width: 120px;">Delete</th>
+                </tr>
+            </thead>
+            <tbody>
                 @foreach (var user in Model)
                 {
                     <tr>
-                        <td>@user.Email</td>
-                        <td>@user.CurrentRole</td>
+                        <td class="fw-semibold">@user.Email</td>
+
+                        <td>
+                            <span class="badge @(user.CurrentRole == "Admin" ? "bg-primary" : "bg-warning text-dark") fs-6">
+                                @user.CurrentRole
+                            </span>
+                        </td>
+
                         <td>
                             <form asp-action="UpdateRole" method="post" class="d-flex gap-2">
                                 @Html.AntiForgeryToken()
@@ -60,12 +77,13 @@
                                     }
                                 </select>
 
-                                <button type="submit" class="btn btn-sm btn-primary">
+                                <button type="submit" class="btn btn-sm btn-art-primary">
                                     Save
                                 </button>
                             </form>
                         </td>
-                        <td>
+
+                        <td class="text-end">
                             @if (!string.Equals(user.Email, User.Identity?.Name, StringComparison.OrdinalIgnoreCase))
                             {
                                 <form asp-action="DeleteUser" method="post">
@@ -73,17 +91,20 @@
                                     <input type="hidden" name="userId" value="@user.UserId" />
 
                                     <button type="submit"
-                                        class="btn btn-sm btn-outline-danger"
-                                        onclick="return confirm('Delete @user.Email? This cannot be undone.');">
+                                            class="btn btn-sm btn-outline-danger"
+                                            onclick="return confirm('Delete @user.Email? This cannot be undone.');">
                                         Delete
                                     </button>
                                 </form>
                             }
+                            else
+                            {
+                                <span class="text-muted small">Current user</span>
+                            }
                         </td>
                     </tr>
                 }
-                </tbody>
-            </table>
-        </div>
+            </tbody>
+        </table>
     </div>
 </div>
