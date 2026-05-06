@@ -221,49 +221,4 @@
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
-
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            const returnInput = document.getElementById("returnReceiptFile");
-            const returnLabel = document.getElementById("returnReceiptSelectedFile");
-            const returnDropZone = document.getElementById("returnReceiptDropZone");
-
-            if (returnInput && returnLabel && returnDropZone) {
-                returnDropZone.addEventListener("click", function () {
-                    returnInput.click();
-                });
-
-                returnInput.addEventListener("change", function () {
-                    returnLabel.textContent = this.files.length > 0
-                        ? `Selected: ${this.files[0].name}`
-                        : "Upload a return receipt image or PDF. Max file size: 10 MB.";
-                });
-
-                ["dragenter", "dragover"].forEach(eventName => {
-                    returnDropZone.addEventListener(eventName, function (e) {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        returnDropZone.classList.add("dragover");
-                    });
-                });
-
-                ["dragleave", "drop"].forEach(eventName => {
-                    returnDropZone.addEventListener(eventName, function (e) {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        returnDropZone.classList.remove("dragover");
-                    });
-                });
-
-                returnDropZone.addEventListener("drop", function (e) {
-                    const files = e.dataTransfer.files;
-                    if (files && files.length > 0) {
-                        returnInput.files = files;
-                        returnLabel.textContent = `Selected: ${files[0].name}`;
-                    }
-                });
-            }
-        });
-
-    </script>
 }
