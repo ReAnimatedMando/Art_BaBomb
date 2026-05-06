@@ -32,6 +32,77 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 });
 
+function setupReceiptDropZone(dropZoneId, inputId, selectedFileId, defaultText) {
+  const fileInput = document.getElementById(inputId);
+  const dropZone = document.getElementById(dropZoneId);
+  const selectedFile = document.getElementById(selectedFileId);
+
+  if (!fileInput || !dropZone || !selectedFile) {
+    return;
+  }
+
+  dropZone.addEventListener("click", function () {
+    fileInput.click();
+  });
+
+  dropZone.addEventListener("keydown", function (e) {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      fileInput.click();
+    }
+  });
+
+  fileInput.addEventListener("change", function () {
+    selectedFile.textContent = fileInput.files.length > 0
+      ? `Selected: ${fileInput.files[0].name}`
+      : defaultText;
+  });
+
+  ["dragenter", "dragover"].forEach(function (eventName) {
+    dropZone.addEventListener(eventName, function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      dropZone.classList.add("dragover");
+    });
+  });
+
+  ["dragleave", "drop"].forEach(function (eventName) {
+    dropZone.addEventListener(eventName, function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      dropZone.classList.remove("dragover");
+    });
+  });
+
+  dropZone.addEventListener("drop", function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+
+    const files = e.dataTransfer.files;
+
+    if (files && files.length > 0) {
+      fileInput.files = files;
+      selectedFile.textContent = `Selected: ${files[0].name}`;
+    }
+  });
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+  setupReceiptDropZone(
+    "purchaseReceiptDropZone",
+    "purchaseReceiptFile",
+    "purchaseReceiptSelectedFile",
+    "Upload purchase receipt image or PDF."
+  );
+
+  setupReceiptDropZone(
+    "returnReceiptDropZone",
+    "returnReceiptFile",
+    "returnReceiptSelectedFile",
+    "Upload a return receipt image or PDF. Max file size: 10 MB."
+  );
+});
+
 document.addEventListener("DOMContentLoaded", function () {
   const projectDetailsPage = document.getElementById("project-details-page");
 
