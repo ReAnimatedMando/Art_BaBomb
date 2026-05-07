@@ -1,10 +1,48 @@
 ﻿@page
 @model AccessDeniedModel
+
 @{
-    ViewData["Title"] = "Access denied";
+    ViewData["Title"] = "Access Denied";
 }
 
-<header>
-    <h1 class="text-danger">@ViewData["Title"]</h1>
-    <p class="text-danger">You do not have access to this resource.</p>
-</header>
+<section class="hero-card text-center">
+    <div class="hero-card-content">
+
+        <div class="eyebrow">Restricted Access</div>
+
+        <h1 class="hero-title text-danger">
+            Access Denied
+        </h1>
+
+        <p class="hero-subtitle">
+            You do not have permission to access this area of the application.
+        </p>
+
+        <div class="form-shell mx-auto" style="max-width: 520px;">
+            <section class="form-section-card text-start">
+                <h2>Why am I seeing this?</h2>
+
+                <p class="mb-0">
+                    Your account does not currently have the required role or permissions
+                    for this action. If you believe this is a mistake, contact your
+                    project administrator.
+                </p>
+            </section>
+        </div>
+
+        <div class="form-actions justify-content-center stack-lg">
+            <a asp-controller="Home"
+               asp-action="Index"
+               class="btn btn-art-primary">
+                Back to Home
+            </a>
+
+            <a asp-controller="Projects"
+               asp-action="Index"
+               class="btn btn-art-outline">
+                View Projects
+            </a>
+        </div>
+
+    </div>
+</section>
