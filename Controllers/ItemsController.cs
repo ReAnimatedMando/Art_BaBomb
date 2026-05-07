@@ -163,6 +163,7 @@ namespace Art_BaBomb.Web.Controllers
         }
 
         // GET: Items/Edit/5
+        [Authorize(Roles = "Admin,Shopper")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -194,6 +195,7 @@ namespace Art_BaBomb.Web.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin,Shopper")]
         public async Task<IActionResult> Edit(
             int id,
             [Bind("Id,ProjectId,Name,Quantity,Scene,Description,EstimatedCost,ActualCost,Status,ImageUrl,PurchaseReceiptFileName,PurchaseReceiptPath")] Item item,
