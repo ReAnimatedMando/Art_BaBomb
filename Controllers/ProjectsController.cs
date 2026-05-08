@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Art_BaBomb.Web.Data;
 using Art_BaBomb.Web.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace Art_BaBomb.Web.Controllers
 {
@@ -69,10 +70,12 @@ namespace Art_BaBomb.Web.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Create([Bind("Id,Name,Department,Description,Budget,CreatedAt")] Project project)
+        public async Task<IActionResult> Create([Bind("Name,Department,Description,Budget")] Project project)
         {
             if (ModelState.IsValid)
             {
+                project.CreatedAt = DateTime.Now;
+                
                 _context.Add(project);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -103,31 +106,29 @@ namespace Art_BaBomb.Web.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Department,Description,Budget,CreatedAt")] Project project)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Department,Description,Budget")] Project project)
         {
             if (id != project.Id)
             {
                 return NotFound();
             }
 
+            var existingProject = await _context.Projects.FindAsync(id);
+
+            if(existingProject == null)
+            {
+                return NotFound();
+            }
+
             if (ModelState.IsValid)
             {
-                try
-                {
-                    _context.Update(project);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!ProjectExists(project.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
+                existingProject.Name = project.Name;
+                existingProject.Department = project.Department;
+                existingProject.Description = project.Description;
+                existingProject.Budget = project.Budget;
+
+                await _context.SaveChangesAsync();
+
                 return RedirectToAction(nameof(Index));
             }
             return View(project);
