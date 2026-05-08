@@ -661,133 +661,130 @@ public async Task<IActionResult> Edit(
             return View(item);
         }
 
-        // POST: ReturnInfo
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin,Shopper")]
-        public async Task<IActionResult> ReturnInfo(
-            int id,
-            [Bind("Id,ProjectId,Name,Scene,Description,EstimatedCost,ActualCost,Status,ImageUrl,IsReturnRequired,ReturnNotes,ReturnLocation,ReturnByDate,IsReturned,ReturnedAt,PurchaseReceiptFileName,PurchaseReceiptPath,ReturnReceiptFileName,ReturnReceiptPath")]
-            Item item,
-            IFormFile? returnReceiptFile,
-            bool removeReturnReceipt = false,
-            bool removeFromReturnWorkflow = false)
+// POST: ReturnInfo
+[HttpPost]
+[ValidateAntiForgeryToken]
+[Authorize(Roles = "Admin,Shopper")]
+public async Task<IActionResult> ReturnInfo(
+    int id,
+    [Bind("Id,ReturnNotes,ReturnLocation,ReturnByDate,IsReturned")]
+    Item item,
+    IFormFile? returnReceiptFile,
+    bool removeReturnReceipt = false,
+    bool removeFromReturnWorkflow = false)
+{
+    if (id != item.Id)
+    {
+        return NotFound();
+    }
+
+    var existingItem = await _context.Items
+        .Include(i => i.Project)
+        .FirstOrDefaultAsync(i => i.Id == id);
+
+    if (existingItem == null)
+    {
+        return NotFound();
+    }
+
+    if (!IsValidReceiptFile(returnReceiptFile, out var receiptError))
+    {
+        ModelState.AddModelError("returnReceiptFile", receiptError);
+    }
+
+    if (ModelState.IsValid)
+    {
+        try
         {
-            if (id != item.Id)
+            existingItem.ReturnNotes = item.ReturnNotes;
+            existingItem.ReturnLocation = item.ReturnLocation;
+            existingItem.ReturnByDate = item.ReturnByDate;
+
+            if (removeReturnReceipt)
             {
-                return NotFound();
+                DeleteUploadedFile(existingItem.ReturnReceiptPath);
+
+                existingItem.ReturnReceiptFileName = null;
+                existingItem.ReturnReceiptPath = null;
+                existingItem.ReturnReceiptSizeBytes = null;
             }
 
-            var existingItem = await _context.Items
-                .AsNoTracking()
-                .FirstOrDefaultAsync(i => i.Id == id);
-
-            if (existingItem == null)
+            if (returnReceiptFile != null && returnReceiptFile.Length > 0)
             {
-                return NotFound();
-            }
+                DeleteUploadedFile(existingItem.ReturnReceiptPath);
 
-            item.PurchaseReceiptFileName = existingItem.PurchaseReceiptFileName;
-            item.PurchaseReceiptPath = existingItem.PurchaseReceiptPath;
-            item.PurchaseReceiptSizeBytes = existingItem.PurchaseReceiptSizeBytes;
-            item.ReturnReceiptFileName = existingItem.ReturnReceiptFileName;
-            item.ReturnReceiptPath = existingItem.ReturnReceiptPath;
-            item.ReturnReceiptSizeBytes = existingItem.ReturnReceiptSizeBytes;
+                var savedFile = await SaveUploadedFileAsync(returnReceiptFile, "returns");
 
-            if (!IsValidReceiptFile(returnReceiptFile, out var receiptError))
-            {
-                ModelState.AddModelError("returnReceiptFile", receiptError);
-            }
-
-            if (ModelState.IsValid)
-            {
-                try
+                if (savedFile.HasValue)
                 {
-                    if (removeReturnReceipt)
-                    {
-                        DeleteUploadedFile(existingItem.ReturnReceiptPath);
-
-                        item.ReturnReceiptFileName = null;
-                        item.ReturnReceiptPath = null;
-                        item.ReturnReceiptSizeBytes = null;
-                    }
-
-                    if (returnReceiptFile != null && returnReceiptFile.Length > 0)
-                    {
-                        DeleteUploadedFile(existingItem.ReturnReceiptPath);
-
-                        var savedFile = await SaveUploadedFileAsync(returnReceiptFile, "returns");
-                        if (savedFile.HasValue)
-                        {
-                            item.ReturnReceiptFileName = savedFile.Value.fileName;
-                            item.ReturnReceiptPath = savedFile.Value.relativePath;
-                            item.ReturnReceiptSizeBytes = returnReceiptFile.Length;
-                        }
-                    }
-
-                    if (removeFromReturnWorkflow)
-                    {
-                        item.IsReturnRequired = false;
-                        item.IsReturned = false;
-                        item.ReturnedAt = null;
-                        item.ReturnLocation = null;
-                        item.ReturnByDate = null;
-                        item.ReturnNotes = null;
-                    }
-                    else
-                    {
-                        item.IsReturnRequired = true;
-
-                        if (item.IsReturned)
-                        {
-                            item.ReturnedAt ??= DateTime.UtcNow;
-                        }   
-                        else
-                        {
-                            item.ReturnedAt = null;
-                        }
-                    }
-
-                    _context.Update(item);
-                    await _context.SaveChangesAsync();
-
-                    if (item.MissingReturnByDate)
-                    {
-                        TempData["WarningMessage"] = $"\"{item.Name}\" is in the return workflow but has no return-by date.";
-                    }
-                    else if (item.HasPastReturnByDate)
-                    {
-                        TempData["WarningMessage"] = $"\"{item.Name}\" has a return-by date in the past.";
-                    }
-                    else if (item.NeedsReturnReceipt)
-                    {
-                        TempData["WarningMessage"] = $"\"{item.Name}\" was marked returned but is missing a return receipt.";
-                    }
-                    else
-                    {
-                        TempData["SuccessMessage"] = $"\"{item.Name}\" return info updated successfully.";
-                    }
-
-                    return RedirectToAction("Details", "Projects", new
-                    {
-                        id = item.ProjectId,
-                        focusItemId = item.Id
-                    });
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!_context.Items.Any(e => e.Id == item.Id))
-                    {
-                        return NotFound();
-                    }
-
-                    throw;
+                    existingItem.ReturnReceiptFileName = savedFile.Value.fileName;
+                    existingItem.ReturnReceiptPath = savedFile.Value.relativePath;
+                    existingItem.ReturnReceiptSizeBytes = returnReceiptFile.Length;
                 }
             }
 
-            item.Project = await _context.Projects.FindAsync(item.ProjectId);
-            return View(item);
+            if (removeFromReturnWorkflow)
+            {
+                existingItem.IsReturnRequired = false;
+                existingItem.IsReturned = false;
+                existingItem.ReturnedAt = null;
+                existingItem.ReturnLocation = null;
+                existingItem.ReturnByDate = null;
+                existingItem.ReturnNotes = null;
+            }
+            else
+            {
+                existingItem.IsReturnRequired = true;
+                existingItem.IsReturned = item.IsReturned;
+
+                if (existingItem.IsReturned)
+                {
+                    existingItem.ReturnedAt ??= DateTime.UtcNow;
+                }
+                else
+                {
+                    existingItem.ReturnedAt = null;
+                }
+            }
+
+            await _context.SaveChangesAsync();
+
+            if (existingItem.MissingReturnByDate)
+            {
+                TempData["WarningMessage"] = $"\"{existingItem.Name}\" is in the return workflow but has no return-by date.";
+            }
+            else if (existingItem.HasPastReturnByDate)
+            {
+                TempData["WarningMessage"] = $"\"{existingItem.Name}\" has a return-by date in the past.";
+            }
+            else if (existingItem.NeedsReturnReceipt)
+            {
+                TempData["WarningMessage"] = $"\"{existingItem.Name}\" was marked returned but is missing a return receipt.";
+            }
+            else
+            {
+                TempData["SuccessMessage"] = $"\"{existingItem.Name}\" return info updated successfully.";
+            }
+
+            return RedirectToAction("Details", "Projects", new
+            {
+                id = existingItem.ProjectId,
+                focusItemId = existingItem.Id
+            });
         }
+        catch (DbUpdateConcurrencyException)
+        {
+            if (!ItemExists(existingItem.Id))
+            {
+                return NotFound();
+            }
+
+            throw;
+        }
+    }
+
+    return View(existingItem);
+}
 
         // POST: Mark as Returned
         [HttpPost]
