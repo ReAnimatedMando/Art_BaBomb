@@ -109,7 +109,7 @@ namespace Art_BaBomb.Web.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin,Shopper")]
-        public async Task<IActionResult> Create([Bind("ProjectId,Name,Quantity,Scene,Description,EstimatedCost,ActualCost,Status,ImageUrl")] Item item, IFormFile? imageFile)
+        public async Task<IActionResult> Create([Bind("ProjectId,Name,Quantity,Scene,Description,EstimatedCost")] Item item, IFormFile? imageFile)
         {
 
             if (!IsValidReceiptFile(imageFile, out var imageError))
@@ -120,6 +120,10 @@ namespace Art_BaBomb.Web.Controllers
             if (ModelState.IsValid)
             {
                 item.Scene = item.Scene?.Trim();
+
+                item.Status = "Needed";
+                item.ActualCost = null;
+                item.ImageUrl = null;
 
                 if (imageFile != null && imageFile.Length > 0)
                 {
