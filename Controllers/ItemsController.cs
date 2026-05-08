@@ -194,126 +194,119 @@ namespace Art_BaBomb.Web.Controllers
             return View(item);
         }
 
-        // POST: Items/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin,Shopper")]
-        public async Task<IActionResult> Edit(
-            int id,
-            [Bind("Id,ProjectId,Name,Quantity,Scene,Description,EstimatedCost,ActualCost,Status,ImageUrl,PurchaseReceiptFileName,PurchaseReceiptPath")] Item item,
-            IFormFile? purchaseReceiptFile, IFormFile? imageFile)
+// POST: Items/Edit/5
+[HttpPost]
+[ValidateAntiForgeryToken]
+[Authorize(Roles = "Admin,Shopper")]
+public async Task<IActionResult> Edit(
+    int id,
+    [Bind("Id,Name,Quantity,Scene,Description,EstimatedCost,ActualCost,Status")] Item item,
+    IFormFile? purchaseReceiptFile,
+    IFormFile? imageFile)
+{
+    if (id != item.Id)
+    {
+        return NotFound();
+    }
+
+    var existingItem = await _context.Items
+        .FirstOrDefaultAsync(i => i.Id == id);
+
+    if (existingItem == null)
+    {
+        return NotFound();
+    }
+
+    if (existingItem.IsReturnRequired || existingItem.IsReturned)
+    {
+        TempData["ErrorMessage"] = "Items in the return workflow must be updated from return info.";
+        return RedirectToAction(nameof(ReturnInfo), new { id = existingItem.Id });
+    }
+
+    if (!IsValidReceiptFile(purchaseReceiptFile, out var purchaseReceiptError))
+    {
+        ModelState.AddModelError("purchaseReceiptFile", purchaseReceiptError);
+    }
+
+    if (!IsValidReceiptFile(imageFile, out var imageError))
+    {
+        ModelState.AddModelError("imageFile", imageError);
+    }
+
+    if (ModelState.IsValid)
+    {
+        existingItem.Name = item.Name;
+        existingItem.Quantity = item.Quantity;
+        existingItem.Scene = item.Scene?.Trim();
+        existingItem.Description = item.Description;
+        existingItem.EstimatedCost = item.EstimatedCost;
+        existingItem.ActualCost = item.ActualCost;
+        existingItem.Status = item.Status;
+
+        if (imageFile != null && imageFile.Length > 0)
         {
-            if (id != item.Id)
+            DeleteUploadedFile(existingItem.ImagePath);
+
+            var savedImage = await SaveUploadedFileAsync(imageFile, "items");
+
+            if (savedImage.HasValue)
             {
-                return NotFound();
+                existingItem.ImageFileName = savedImage.Value.fileName;
+                existingItem.ImagePath = savedImage.Value.relativePath;
+                existingItem.ImageSizeBytes = imageFile.Length;
             }
-
-            var existingItem = await _context.Items
-                .AsNoTracking()
-                .FirstOrDefaultAsync(i => i.Id == id);
-
-            if (existingItem == null)
-            {
-                return NotFound();
-            }
-
-            if (existingItem.IsReturnRequired || existingItem.IsReturned)
-            {
-                TempData["ErrorMessage"] = "Items in the return workflow must be updated from return info.";
-                return RedirectToAction(nameof(ReturnInfo), new { id = existingItem.Id });
-            }
-
-            // Preserve existing receipt values unless a new file is uploaded
-            item.PurchaseReceiptFileName = existingItem.PurchaseReceiptFileName;
-            item.PurchaseReceiptPath = existingItem.PurchaseReceiptPath;
-            item.PurchaseReceiptSizeBytes = existingItem.PurchaseReceiptSizeBytes;
-
-            // Preserve existing image values unless a new file is uploaded
-            item.ImageFileName = existingItem.ImageFileName;
-            item.ImagePath = existingItem.ImagePath;
-            item.ImageSizeBytes = existingItem.ImageSizeBytes;
-
-            if (!IsValidReceiptFile(purchaseReceiptFile, out var purchaseReceiptError))
-            {
-                ModelState.AddModelError("purchaseReceiptFile", purchaseReceiptError);
-            }
-
-            if (!IsValidReceiptFile(imageFile, out var imageError))
-            {
-                ModelState.AddModelError("imageFile", imageError);
-            }
-
-            if (ModelState.IsValid)
-            {
-                // Normalize scene text before saving
-                item.Scene = item.Scene?.Trim();
-
-                if (imageFile != null && imageFile.Length > 0)
-                {
-                    DeleteUploadedFile(existingItem.ImagePath);
-
-                    var savedImage = await SaveUploadedFileAsync(imageFile, "items");
-                    
-                    if (savedImage.HasValue)
-                    {
-                        item.ImageFileName = savedImage.Value.fileName;
-                        item.ImagePath = savedImage.Value.relativePath;
-                        item.ImageSizeBytes = imageFile.Length;
-                    }
-                }
-
-                if (purchaseReceiptFile != null && purchaseReceiptFile.Length > 0)
-                {
-                    DeleteUploadedFile(existingItem.PurchaseReceiptPath);
-
-                    var savedPurchaseFile = await SaveUploadedFileAsync(purchaseReceiptFile, "purchases");
-                    if (savedPurchaseFile.HasValue)
-                    {
-                        item.PurchaseReceiptFileName = savedPurchaseFile.Value.fileName;
-                        item.PurchaseReceiptPath = savedPurchaseFile.Value.relativePath;
-                        item.PurchaseReceiptSizeBytes = purchaseReceiptFile.Length;
-                    }
-                }
-
-                try
-                {
-                    _context.Update(item);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!ItemExists(item.Id))
-                    {
-                        return NotFound();
-                    }
-
-                    throw;
-                }
-
-                if (item.NeedsPurchaseReceipt)
-                {
-                    TempData["WarningMessage"] = $"\"{item.Name}\" has an actual cost but no purchase receipt uploaded.";
-                }
-                else
-                {
-                    TempData["SuccessMessage"] = $"\"{item.Name}\" updated successfully.";
-                }
-
-                return RedirectToAction("Details", "Projects", new
-                {
-                    id = item.ProjectId,
-                    focusItemId = item.Id
-                });
-            }
-
-            ViewData["ProjectId"] = new SelectList(_context.Projects, "Id", "Name", item.ProjectId);
-
-            await LoadSceneOptionAsync(item.ProjectId);
-
-            return View(item);
         }
+
+        if (purchaseReceiptFile != null && purchaseReceiptFile.Length > 0)
+        {
+            DeleteUploadedFile(existingItem.PurchaseReceiptPath);
+
+            var savedPurchaseFile = await SaveUploadedFileAsync(purchaseReceiptFile, "purchases");
+
+            if (savedPurchaseFile.HasValue)
+            {
+                existingItem.PurchaseReceiptFileName = savedPurchaseFile.Value.fileName;
+                existingItem.PurchaseReceiptPath = savedPurchaseFile.Value.relativePath;
+                existingItem.PurchaseReceiptSizeBytes = purchaseReceiptFile.Length;
+            }
+        }
+
+        try
+        {
+            await _context.SaveChangesAsync();
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            if (!ItemExists(existingItem.Id))
+            {
+                return NotFound();
+            }
+
+            throw;
+        }
+
+        if (existingItem.NeedsPurchaseReceipt)
+        {
+            TempData["WarningMessage"] = $"\"{existingItem.Name}\" has an actual cost but no purchase receipt uploaded.";
+        }
+        else
+        {
+            TempData["SuccessMessage"] = $"\"{existingItem.Name}\" updated successfully.";
+        }
+
+        return RedirectToAction("Details", "Projects", new
+        {
+            id = existingItem.ProjectId,
+            focusItemId = existingItem.Id
+        });
+    }
+
+    ViewData["ProjectId"] = new SelectList(_context.Projects, "Id", "Name", existingItem.ProjectId);
+
+    await LoadSceneOptionAsync(existingItem.ProjectId);
+
+    return View(existingItem);
+}
 
         // Get: load existing scenes for selected project
         private async Task LoadSceneOptionAsync(int projectId)
