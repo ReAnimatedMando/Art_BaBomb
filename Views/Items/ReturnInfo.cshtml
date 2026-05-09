@@ -48,15 +48,6 @@
                     <div asp-validation-summary="ModelOnly" class="text-danger stack-md"></div>
 
                     <input type="hidden" asp-for="Id" />
-                    <input type="hidden" asp-for="ProjectId" />
-                    <input type="hidden" asp-for="Name" />
-                    <input type="hidden" asp-for="Scene" />
-                    <input type="hidden" asp-for="Description" />
-                    <input type="hidden" asp-for="EstimatedCost" />
-                    <input type="hidden" asp-for="ActualCost" />
-                    <input type="hidden" asp-for="Status" />
-                    <input type="hidden" asp-for="ImageUrl" />
-                    <input type="hidden" asp-for="IsReturnRequired" value="true" />
 
                     <div class="stack-md">
                         <label asp-for="ReturnLocation" class="form-label"></label>
@@ -96,17 +87,20 @@
 
                     @if (hasReturnReceipt)
                     {
-                        <div class="form-check stack-md">
+                        <div class="form-check form-switch stack-md">
                             <input class="form-check-input" type="checkbox" id="removeReturnReceipt" name="removeReturnReceipt" value="true" />
+
                             <label class="form-check-label" for="removeReturnReceipt">
                                 Delete current return receipt
                             </label>
                         </div>
                     }
 
-                    <div class="form-check stack-md">
+                    <div class="form-check form-switch stack-md">
                         <input class="form-check-input" asp-for="IsReturned" />
-                        <label class="form-check-label" asp-for="IsReturned"></label>
+                        <label class="form-check-label" asp-for="IsReturned">
+                            Mark item as returned
+                        </label>
                     </div>
 
                     @if (Model.IsReturned && Model.ReturnedAt.HasValue)

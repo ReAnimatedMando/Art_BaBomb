@@ -46,7 +46,7 @@ namespace Art_BaBomb.Web.Controllers
             }
 
             var relativePath = $"/uploads/{folderName}/{safeFileName}";
-            return (file.FileName, relativePath);
+            return (Path.GetFileName(file.FileName), relativePath);
         }
 
         // GET: Items
@@ -691,6 +691,10 @@ public async Task<IActionResult> ReturnInfo(
     {
         ModelState.AddModelError("returnReceiptFile", receiptError);
     }
+
+    ModelState.Remove(nameof(Item.ProjectId));
+    ModelState.Remove(nameof(Item.Name));
+    ModelState.Remove(nameof(Item.Project));
 
     if (ModelState.IsValid)
     {
