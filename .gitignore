@@ -1,0 +1,45 @@
+# Build output
+bin/
+obj/
+
+# User / IDE files
+.vs/
+.vscode/
+*.user
+*.suo
+
+# Rider / Resharper
+.idea/
+_ReSharper*/
+*.DotSettings.user
+
+# Logs
+*.log
+
+# OS junk
+.DS_Store
+Thumbs.db
+
+# Local app settings / secrets
+appsettings.Development.json
+
+# Entity Framework local DBs
+*.db
+*.sqlite
+*.sqlite3
+
+# Uploads (keep folders, ignore contents)
+wwwroot/uploads/items/*
+wwwroot/uploads/purchases/*
+wwwroot/uploads/returns/*
+
+# Keep upload folders in Git
+!wwwroot/uploads/items/.gitkeep
+!wwwroot/uploads/purchases/.gitkeep
+!wwwroot/uploads/returns/.gitkeep
+
+# Published files
+publish/
+
+# Node modules (if ever added)
+node_modules/
