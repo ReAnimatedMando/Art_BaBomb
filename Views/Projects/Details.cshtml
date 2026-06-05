@@ -165,9 +165,11 @@
 </div>
 @if (neededGroups.Any())
 {
+    var neededSceneIndex = 0;
+
     @foreach (var group in neededGroups)
     {
-        var sceneCollapseId = $"needed-scene-{group.Key.Replace(" ", "-").Replace("/", "-").Replace(".", "-").ToLower()}";
+        var sceneCollapseId = $"needed-scene-{neededSceneIndex++}";
 
         <div class="card shadow-sm mb-4 project-group-card">
             <button class="card-header d-flex align-items-center justify-content-between w-100 border-0 text-start" type="button" data-bs-toggle="collapse" data-bs-target="#@sceneCollapseId" aria-expanded="false" aria-controls="@sceneCollapseId">
@@ -243,9 +245,11 @@ else
 </div>
 @if (acquiredGroups.Any())
 {
+    var acquiredSceneIndex = 0;
+
     @foreach (var group in acquiredGroups)
     {
-        var sceneCollapseId = $"acquired-scene-{group.Key.Replace(" ", "-").Replace("/", "-").Replace(".", "-").ToLower()}";
+        var sceneCollapseId = $"acquired-scene-{acquiredSceneIndex++}";
 
         <div class="card shadow-sm mb-4 project-group-card">
             <button class="card-header d-flex align-items-center justify-content-between w-100 border-0 text-start" type="button" data-bs-toggle="collapse" data-bs-target="#@sceneCollapseId" aria-expanded="false" aria-controls="@sceneCollapseId">
@@ -320,7 +324,9 @@ else
 {
     @foreach (var group in returnGroups)
     {
-        var sceneCollapseId = $"return-scene-{group.Key.Replace(" ", "-").Replace("/", "-").Replace(".", "-").ToLower()}";
+        var returnSceneIndex = 0;
+
+        var sceneCollapseId = $"return-scene-{returnSceneIndex++}";
         
         <div class="card shadow-sm mb-4 project-group-card">
             <button class="card-header d-flex align-items-center justify-content-between w-100 border-0 text-start" type="button" data-bs-toggle="collapse" data-bs-target="#@sceneCollapseId" aria-expanded="false" aria-controls="@sceneCollapseId">
@@ -393,9 +399,11 @@ else
 </div>
 @if (returnedGroups.Any())
 {
+    var returnedSceneIndex = 0;
+    
     @foreach (var group in returnedGroups)
     {
-        var sceneCollapseId = $"returned-scene-{group.Key.Replace(" ", "-").Replace("/", "-").Replace(".", "-").ToLower()}";
+        var sceneCollapseId = $"returned-scene-{returnedSceneIndex++}";
 
         <div class="card shadow-sm mb-4 project-group-card">
             <button class="card-header d-flex align-items-center justify-content-between w-100 border-0 text-start" type="button" data-bs-toggle="collapse" data-bs-target="#@sceneCollapseId" aria-expanded="false" aria-controls="@sceneCollapseId">
