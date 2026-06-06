@@ -1067,7 +1067,6 @@ button[aria-expanded="true"] .collapse-icon {
 
   .app-navbar .navbar-nav {
     width: 100%;
-    gap: 0.35rem;
     align-items: stretch;
   }
 
