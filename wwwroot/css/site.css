@@ -1055,6 +1055,39 @@ button[aria-expanded="true"] .collapse-icon {
   font-weight: 600;
 }
 
+@media (max-width: 575.98px) {
+  .app-navbar .container-fluid {
+    align-items: flex-start;
+  }
+
+  .app-navbar .navbar-collapse {
+    width: 100%;
+    margin-top: 0.75rem;
+  }
+
+  .app-navbar .navbar-nav {
+    width: 100%;
+    gap: 0.35rem;
+    align-items: stretch;
+  }
+
+  .app-navbar .nav-link,
+  .app-navbar .btn-link {
+    display: block;
+    width: 100%;
+    text-align: left;
+    padding: 0.75rem 0;
+  }
+
+  .app-navbar .navbar-toggler {
+    border-color: rgba(255, 255, 255, 0.35);
+  }
+
+  .app-navbar .navbar-toggler:focus {
+    box-shadow: 0 0 0 0.15rem rgba(255, 255, 255, 0.25);
+  }
+}
+
 .app-brand {
   font-weight: 800;
   letter-spacing: 0.03em;
