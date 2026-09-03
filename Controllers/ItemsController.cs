@@ -140,14 +140,7 @@ namespace Art_BaBomb.Web.Controllers
                 _context.Items.Add(item);
                 await _context.SaveChangesAsync();
 
-                if (item.NeedsPurchaseReceipt)
-                {
-                    TempData["WarningMessage"] = $"\"{item.Name}\" has an actual cost but no purchase receipt uploaded.";
-                }
-                else
-                {
-                    TempData["SuccessMessage"] = $"\"{item.Name}\" created successfully.";
-                }
+                TempData["SuccessMessage"] = $"\"{item.Name}\" created successfully.";
 
                 return RedirectToAction("Details", "Projects", new
                 {
@@ -201,7 +194,6 @@ namespace Art_BaBomb.Web.Controllers
 public async Task<IActionResult> Edit(
     int id,
     [Bind("Id,Name,Quantity,Scene,Description,EstimatedCost,ActualCost,Status")] Item item,
-    IFormFile? purchaseReceiptFile,
     IFormFile? imageFile)
 {
     if (id != item.Id)
@@ -220,12 +212,8 @@ public async Task<IActionResult> Edit(
     if (existingItem.IsReturnRequired || existingItem.IsReturned)
     {
         TempData["ErrorMessage"] = "Items in the return workflow must be updated from return info.";
+        
         return RedirectToAction(nameof(ReturnInfo), new { id = existingItem.Id });
-    }
-
-    if (!IsValidReceiptFile(purchaseReceiptFile, out var purchaseReceiptError))
-    {
-        ModelState.AddModelError("purchaseReceiptFile", purchaseReceiptError);
     }
 
     if (!IsValidReceiptFile(imageFile, out var imageError))
@@ -257,20 +245,6 @@ public async Task<IActionResult> Edit(
             }
         }
 
-        if (purchaseReceiptFile != null && purchaseReceiptFile.Length > 0)
-        {
-            DeleteUploadedFile(existingItem.PurchaseReceiptPath);
-
-            var savedPurchaseFile = await SaveUploadedFileAsync(purchaseReceiptFile, "purchases");
-
-            if (savedPurchaseFile.HasValue)
-            {
-                existingItem.PurchaseReceiptFileName = savedPurchaseFile.Value.fileName;
-                existingItem.PurchaseReceiptPath = savedPurchaseFile.Value.relativePath;
-                existingItem.PurchaseReceiptSizeBytes = purchaseReceiptFile.Length;
-            }
-        }
-
         try
         {
             await _context.SaveChangesAsync();
@@ -285,14 +259,7 @@ public async Task<IActionResult> Edit(
             throw;
         }
 
-        if (existingItem.NeedsPurchaseReceipt)
-        {
-            TempData["WarningMessage"] = $"\"{existingItem.Name}\" has an actual cost but no purchase receipt uploaded.";
-        }
-        else
-        {
-            TempData["SuccessMessage"] = $"\"{existingItem.Name}\" updated successfully.";
-        }
+        TempData["SuccessMessage"] = $"\"{existingItem.Name}\" updated successfully.";
 
         return RedirectToAction("Details", "Projects", new
         {
@@ -496,72 +463,6 @@ public async Task<IActionResult> Edit(
             });
         }
 
-        // GET: Items/PurchaseReceipt/5
-        [Authorize(Roles = "Admin,Shopper")]
-        public async Task<IActionResult> PurchaseReceipt(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var item = await _context.Items
-                .Include(i => i.Project)
-                .FirstOrDefaultAsync(i => i.Id == id);
-
-            if (item == null)
-            {
-                return NotFound();
-            }
-
-            return View(item);
-        }
-
-        // POST: Purchase Receipt
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin,Shopper")]
-        public async Task<IActionResult> PurchaseReceipt(int id, IFormFile? purchaseReceiptFile)
-        {
-            var item = await _context.Items
-                .Include(i => i.Project)
-                .FirstOrDefaultAsync(i => i.Id == id);
-
-            if (item == null)
-            {
-                return NotFound();
-            }
-
-            if (!IsValidReceiptFile(purchaseReceiptFile, out var purchaseReceiptError))
-            {
-                ModelState.AddModelError("purchaseReceiptFile", purchaseReceiptError);
-            }
-
-            if (!ModelState.IsValid)
-            {
-                return View(item);
-            }
-
-            if (purchaseReceiptFile != null && purchaseReceiptFile.Length > 0)
-            {
-                DeleteUploadedFile(item.PurchaseReceiptPath);
-
-                var uploadResult = await SaveUploadedFileAsync(purchaseReceiptFile, "purchases");
-
-                if (uploadResult.HasValue)
-                {
-                    item.PurchaseReceiptFileName = uploadResult.Value.fileName;
-                    item.PurchaseReceiptPath = uploadResult.Value.relativePath;
-                    item.PurchaseReceiptSizeBytes = purchaseReceiptFile.Length;
-                }
-            }
-
-            await _context.SaveChangesAsync();
-
-            TempData["SuccessMessage"] = "Purchase receipt updated successfully.";
-            return RedirectToAction(nameof(Details), new { id = item.Id });
-        }
-
         private static readonly string[] AllowedReceiptExtensions = 
         {
             ".jpg", ".jpeg", ".png", ".webp", ".pdf"
@@ -594,31 +495,6 @@ public async Task<IActionResult> Edit(
             }
 
             return true;
-        }
-
-        // POST: Delete Purchase Receipt
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin,Shopper")]
-        public async Task<IActionResult> DeletePurchaseReceipt(int id)
-        {
-            var item = await _context.Items.FindAsync(id);
-
-            if (item == null)
-            {
-                return NotFound();
-            }
-
-            DeleteUploadedFile(item.PurchaseReceiptPath);
-
-            item.PurchaseReceiptFileName = null;
-            item.PurchaseReceiptPath = null;
-            item.PurchaseReceiptSizeBytes = null;
-
-            await _context.SaveChangesAsync();
-
-            TempData["SuccessMessage"] = "Purchase receipt deleted successfully.";
-            return RedirectToAction(nameof(Details), new { id = item.Id });
         }
 
         // DELETE: Delete Uploaded File

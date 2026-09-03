@@ -64,13 +64,6 @@
     var totalActual = Model.Items.Sum(i => i.ActualCost ?? 0);
     var remainingBudget = Model.Budget - totalActual;
 
-    bool IsImageReceipt(string? path) =>
-        !string.IsNullOrWhiteSpace(path) &&
-        (path.EndsWith(".jpg", StringComparison.OrdinalIgnoreCase)
-        || path.EndsWith(".jpeg", StringComparison.OrdinalIgnoreCase)
-        || path.EndsWith(".png", StringComparison.OrdinalIgnoreCase)
-        || path.EndsWith(".webp", StringComparison.OrdinalIgnoreCase));
-
     var neededAttentionCount = neededItems.Count(i => i.NeedsAttention);
     var acquiredAttentionCount = acquiredItems.Count(i => i.NeedsAttention);
     var returnAttentionCount = returnItems.Count(i => i.NeedsAttention);
@@ -270,7 +263,6 @@ else
                                     <th>Notes</th>
                                     <th class="text-center">Qty</th>
                                     <th>Scene</th>
-                                    <th class="text-nowrap">Receipt</th>
                                     <th class="actions-col"></th>
                                 </tr>
                             </thead>
@@ -347,7 +339,6 @@ else
                                     <th>Notes</th>
                                     <th class="text-center">Qty</th>
                                     <th>Return Location</th>
-                                    <th class="text-nowrap">Purchase Receipt</th>
                                     <th class="actions-col"></th>
                                 </tr>
                             </thead>
@@ -422,8 +413,6 @@ else
                                     <th>Name</th>
                                     <th class="text-center">Qty</th>
                                     <th class="text-nowrap">Returned At</th>
-                                    <th class="text-nowrap">Receipt</th>
-                                    <th class="text-nowrap">Receipt Status</th>
                                     <th class="actions-col"></th>
                                 </tr>
                             </thead>

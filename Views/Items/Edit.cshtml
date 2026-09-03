@@ -3,14 +3,6 @@
 
 @{
     ViewData["Title"] = "Edit Item";
-
-    bool hasPurchaseReceipt = !string.IsNullOrWhiteSpace(Model.PurchaseReceiptPath);
-    bool purchaseIsImage =
-        hasPurchaseReceipt &&
-        (Model.PurchaseReceiptPath.EndsWith(".jpg", StringComparison.OrdinalIgnoreCase)
-        || Model.PurchaseReceiptPath.EndsWith(".jpeg", StringComparison.OrdinalIgnoreCase)
-        || Model.PurchaseReceiptPath.EndsWith(".png", StringComparison.OrdinalIgnoreCase)
-        || Model.PurchaseReceiptPath.EndsWith(".webp", StringComparison.OrdinalIgnoreCase));
 }
 
 <section class="form-hero mb-4">
@@ -18,7 +10,7 @@
         <div class="eyebrow">Update Item</div>
         <h1 class="form-hero-title">Edit Item</h1>
         <p class="form-hero-subtitle">
-            Update item details, cost, image, and purchase receipt for <strong>@Model.Name</strong>.
+            Update item details, cost, and image for <strong>@Model.Name</strong>.
         </p>
     </div>
 </section>
@@ -33,7 +25,7 @@
 <form asp-action="Edit" enctype="multipart/form-data">
     <div class="row g-4">
 
-        <div class="col-lg-7">
+        <div class="col-lg-12">
             <div class="form-shell">
                 <div asp-validation-summary="ModelOnly" class="text-danger stack-md"></div>
 
@@ -163,50 +155,6 @@
                         Back to Project
                     </a>
                 </div>
-            </div>
-        </div>
-
-        <div class="col-lg-5">
-            <div class="form-shell">
-                <section class="form-section-card">
-                    <h2>Purchase Receipt</h2>
-
-                    <div class="stack-md">
-                        <label class="form-label">Upload / Replace Receipt</label>
-                        <input type="file"
-                               name="purchaseReceiptFile"
-                               class="form-control"
-                               accept=".jpg,.jpeg,.png,.webp,.pdf" />
-                        @Html.ValidationMessage("purchaseReceiptFile", new { @class = "text-danger d-block mt-1" })
-                        <div class="form-text">Upload purchase receipt image or PDF.</div>
-                    </div>
-
-                    @if (hasPurchaseReceipt)
-                    {
-                        @if (purchaseIsImage)
-                        {
-                            <a href="#"
-                               data-bs-toggle="modal"
-                               data-bs-target="#receiptPreviewModal"
-                               data-receipt-src="@Model.PurchaseReceiptPath"
-                               data-receipt-title="@Model.Name - Receipt"
-                               class="receipt-preview-trigger">
-                                <img src="@Model.PurchaseReceiptPath"
-                                     alt="Receipt"
-                                     style="width: 44px; height: 44px; object-fit: cover;"
-                                     class="rounded border bg-light" />
-                            </a>
-                        }
-
-                        <div class="small text-muted mt-2">
-                            @Model.PurchaseReceiptFileName
-                        </div>
-                    }
-                    else
-                    {
-                        <p class="empty-state-text">No purchase receipt uploaded.</p>
-                    }
-                </section>
             </div>
         </div>
 

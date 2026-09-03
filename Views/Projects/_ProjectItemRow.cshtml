@@ -192,64 +192,9 @@
         <td class="text-end text-nowrap">@Model.EstimatedCost?.ToString("C")</td>
     }
 
-    @if (isAcquired)
-    {
-        <td class="text-nowrap receipt-cell">
-            @if (IsImageReceipt(Model.PurchaseReceiptPath))
-            {
-                <a href="#"
-                   data-bs-toggle="modal"
-                   data-bs-target="#receiptPreviewModal"
-                   data-receipt-src="@Model.PurchaseReceiptPath"
-                   data-receipt-title="@Model.Name - Purchase Receipt"
-                   class="receipt-preview-trigger">
-                    <img src="@Model.PurchaseReceiptPath"
-                         alt="Purchase Receipt"
-                         class="receipt-thumb" />
-                </a>
-            }
-            else if (!string.IsNullOrWhiteSpace(Model.PurchaseReceiptPath))
-            {
-                <a href="@Model.PurchaseReceiptPath" target="_blank" class="btn btn-sm btn-outline-primary receipt-link-btn">
-                    Receipt
-                </a>
-            }
-            else
-            {
-                <span class="receipt-status-missing">Missing</span>
-            }
-        </td>
-    }
-
     @if (isReturnQueue)
     {
         <td>@Model.ReturnLocation</td>
-
-        <td class="text-nowrap receipt-cell">
-            @if (IsImageReceipt(Model.PurchaseReceiptPath))
-            {
-                <a href="#"
-                   data-bs-toggle="modal"
-                   data-bs-target="#receiptPreviewModal"
-                   data-receipt-src="@Model.PurchaseReceiptPath"
-                   data-receipt-title="@Model.Name - Purchase Receipt"
-                   class="receipt-preview-trigger">
-                    <img src="@Model.PurchaseReceiptPath"
-                         alt="Purchase Receipt"
-                         class="receipt-thumb" />
-                </a>
-            }
-            else if (!string.IsNullOrWhiteSpace(Model.PurchaseReceiptPath))
-            {
-                <a href="@Model.PurchaseReceiptPath" target="_blank" class="btn btn-sm btn-outline-primary receipt-link-btn">
-                    Receipt
-                </a>
-            }
-            else
-            {
-                <span class="receipt-status-missing">Missing</span>
-            }
-        </td>
     }
 
     @if (isReturned)

@@ -158,62 +158,9 @@
             <div><span class="mobile-label">Est.:</span> @Model.EstimatedCost?.ToString("C")</div>
         }
 
-        @if (isAcquired)
-        {
-            <div>
-                <span class="mobile-label">Receipt:</span>
-                @if (IsImageReceipt(Model.PurchaseReceiptPath))
-                {
-                    <a href="#"
-                       data-bs-toggle="modal"
-                       data-bs-target="#receiptPreviewModal"
-                       data-receipt-src="@Model.PurchaseReceiptPath"
-                       data-receipt-title="@Model.Name - Purchase Receipt"
-                       class="receipt-preview-trigger ms-1">
-                        <img src="@Model.PurchaseReceiptPath"
-                             alt="Purchase Receipt"
-                             class="receipt-thumb" />
-                    </a>
-                }
-                else if (!string.IsNullOrWhiteSpace(Model.PurchaseReceiptPath))
-                {
-                    <a href="@Model.PurchaseReceiptPath" target="_blank" class="ms-1">Receipt</a>
-                }
-                else
-                {
-                    <span class="receipt-status-missing">Missing</span>
-                }
-            </div>
-        }
-
         @if (isReturnQueue)
         {
             <div><span class="mobile-label">Return Location:</span> @(string.IsNullOrWhiteSpace(Model.ReturnLocation) ? "—" : Model.ReturnLocation)</div>
-
-            <div>
-                <span class="mobile-label">Purchase Receipt:</span>
-                @if (IsImageReceipt(Model.PurchaseReceiptPath))
-                {
-                    <a href="#"
-                       data-bs-toggle="modal"
-                       data-bs-target="#receiptPreviewModal"
-                       data-receipt-src="@Model.PurchaseReceiptPath"
-                       data-receipt-title="@Model.Name - Purchase Receipt"
-                       class="receipt-preview-trigger ms-1">
-                        <img src="@Model.PurchaseReceiptPath"
-                             alt="Purchase Receipt"
-                             class="receipt-thumb" />
-                    </a>
-                }
-                else if (!string.IsNullOrWhiteSpace(Model.PurchaseReceiptPath))
-                {
-                    <a href="@Model.PurchaseReceiptPath" target="_blank" class="ms-1">Receipt</a>
-                }
-                else
-                {
-                    <span class="receipt-status-missing">Missing</span>
-                }
-            </div>
         }
 
         @if (isReturned)

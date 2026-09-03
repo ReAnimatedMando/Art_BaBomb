@@ -83,12 +83,6 @@ namespace Art_BaBomb.Web.Models
             IsReturnRequired && !IsReturned;
 
         [NotMapped]
-        public bool NeedsPurchaseReceipt =>
-            ActualCost.HasValue &&
-            ActualCost.Value > 0 &&
-            string.IsNullOrWhiteSpace(PurchaseReceiptPath);
-
-        [NotMapped]
         public bool MissingReturnByDate =>
             IsInReturnQueue && !ReturnByDate.HasValue;
 
@@ -104,7 +98,6 @@ namespace Art_BaBomb.Web.Models
 
         [NotMapped]
         public bool NeedsAttention =>
-            NeedsPurchaseReceipt ||
             MissingReturnByDate ||
             HasPastReturnByDate ||
             NeedsReturnReceipt;
@@ -151,11 +144,6 @@ namespace Art_BaBomb.Web.Models
                 if (NeedsReturnReceipt)
                 {
                     return "Missing return receipt.";
-                }
-
-                if (NeedsPurchaseReceipt)
-                {
-                    return "Missing purchase receipt.";
                 }
 
                 return null;

@@ -4,21 +4,15 @@
 @{
     ViewData["Title"] = "Item Details";
 
-    bool hasPurchaseReceipt = !string.IsNullOrWhiteSpace(Model.PurchaseReceiptPath);
-    bool purchaseReceiptIsImage =
-        hasPurchaseReceipt &&
-        (Model.PurchaseReceiptPath.EndsWith(".jpg", StringComparison.OrdinalIgnoreCase)
-        || Model.PurchaseReceiptPath.EndsWith(".jpeg", StringComparison.OrdinalIgnoreCase)
-        || Model.PurchaseReceiptPath.EndsWith(".png", StringComparison.OrdinalIgnoreCase)
-        || Model.PurchaseReceiptPath.EndsWith(".webp", StringComparison.OrdinalIgnoreCase));
-
     bool hasReturnReceipt = !string.IsNullOrWhiteSpace(Model.ReturnReceiptPath);
+
     bool returnReceiptIsImage =
         hasReturnReceipt &&
         (Model.ReturnReceiptPath.EndsWith(".jpg", StringComparison.OrdinalIgnoreCase)
         || Model.ReturnReceiptPath.EndsWith(".jpeg", StringComparison.OrdinalIgnoreCase)
         || Model.ReturnReceiptPath.EndsWith(".png", StringComparison.OrdinalIgnoreCase)
         || Model.ReturnReceiptPath.EndsWith(".webp", StringComparison.OrdinalIgnoreCase));
+
 }
 
 <section class="form-hero mb-4">
@@ -88,12 +82,6 @@
         {
             statusPanelMessage = $"Return by {Model.ReturnByDate.Value:d}.";
         }
-    }
-    else if (Model.ActualCost.HasValue && string.IsNullOrWhiteSpace(Model.PurchaseReceiptPath))
-    {
-        statusPanelClass = "item-status-panel item-status-panel-warning";
-        statusPanelTitle = "Purchase Receipt Needed";
-        statusPanelMessage = "This item has an actual cost but is missing a purchase receipt.";
     }
 
     if (Model.IsReturned && string.IsNullOrWhiteSpace(Model.ReturnReceiptPath))
@@ -205,59 +193,6 @@
     </div>
 
     <div class="col-lg-5 item-details-side-stack">
-        <div class="form-shell">
-            <section class="form-section-card">
-                <h2>Purchase Receipt</h2>
-
-                @if (Model.IsReturned && !hasPurchaseReceipt)
-                {
-                    <div class="alert alert-warning mb-2">
-                        ⚠ Missing purchase receipt for this returned item.
-                    </div>
-                }
-
-                @if (hasPurchaseReceipt)
-                {
-                    @if (purchaseReceiptIsImage)
-                    {
-                        <a href="#" data-bs-toggle="modal" data-bs-target="#receiptPreviewModal" data-receipt-src="@Model.PurchaseReceiptPath" data-receipt-title="@Model.Name - Purchase Receipt" class="receipt-preview-trigger receipt-preview-large">
-                            <span class="receipt-preview-surface">
-                                <img src="@Model.PurchaseReceiptPath" alt="Purchase Receipt" class="receipt-preview-image" />
-                            </span>
-                        </a>
-
-                        <div class="small text-muted mt-2">
-                            Click the receipt preview to enlarge it.
-                        </div>
-                    }
-                    else
-                    {
-                        <div class="receipt-preview-surface receipt-preview-large d-flex align-items-center justify-content-center text-muted small">
-                            Receipt uploaded
-                        </div>
-                    }
-
-                    <div class="small text-muted mt-2">
-                        @Model.PurchaseReceiptFileName
-                        @if (Model.PurchaseReceiptSizeBytes.HasValue)
-                        {
-                            <span>• @FileSizeHelper.FormatFileSize(Model.PurchaseReceiptSizeBytes)</span>
-                        }
-                    </div>
-                }
-                else
-                {
-                    <p class="empty-state-text">No purchase receipt uploaded.</p>
-                }
-            </section>
-        </div>
-
-        <div>
-            <a asp-action="PurchaseReceipt" asp-route-id="@Model.Id" class="btn btn-sm btn-art-primary">
-                Update Purchase Receipt
-            </a>
-        </div>
-
         <div class="form-shell">
             <section class="form-section-card">
                 <h2>Return Receipt</h2>

@@ -88,12 +88,6 @@ function setupReceiptDropZone(dropZoneId, inputId, selectedFileId, defaultText) 
 }
 
 document.addEventListener("DOMContentLoaded", function () {
-  setupReceiptDropZone(
-    "purchaseReceiptDropZone",
-    "purchaseReceiptFile",
-    "purchaseReceiptSelectedFile",
-    "Upload purchase receipt image or PDF."
-  );
 
   setupReceiptDropZone(
     "returnReceiptDropZone",
@@ -101,6 +95,7 @@ document.addEventListener("DOMContentLoaded", function () {
     "returnReceiptSelectedFile",
     "Upload a return receipt image or PDF. Max file size: 10 MB."
   );
+  
 });
 
 document.addEventListener("DOMContentLoaded", function () {
