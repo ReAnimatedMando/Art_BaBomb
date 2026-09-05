@@ -20,5 +20,7 @@ namespace Art_BaBomb.Web.Models
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         public ICollection<Item> Items { get; set; } = new List<Item>();
+
+        public ICollection<Receipt> Receipts { get; set; } = new List<Receipt>();
     }
 }

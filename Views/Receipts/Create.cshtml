@@ -1,0 +1,108 @@
+@model Art_BaBomb.Web.Models.Receipt
+
+@{
+    ViewData["Title"] = "Add Receipt";
+}
+
+<section class="form-hero mb-4">
+    <div>
+        <div class="eyebrow">Budget & Receipts</div>
+        <h1 class="form-hero-title">Add Receipt</h1>
+        <p class="form-hero-subtitle">
+            Add a project-level receipt for <strong>@ViewBag.ProjectName</strong>.
+        </p>
+    </div>
+</section>
+
+<form asp-action="Create" enctype="multipart/form-data">
+    <div class="form-shell">
+
+        <div asp-validation-summary="ModelOnly" class="text-danger stack-md"></div>
+
+        <input type="hidden" asp-for="ProjectId" />
+
+        <section class="form-section-card">
+            <h2>Receipt Information</h2>
+
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label asp-for="Vendor" class="form-label"></label>
+                    <input asp-for="Vendor"
+                           class="form-control"
+                           autofocus />
+                    <span asp-validation-for="Vendor" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-3">
+                    <label asp-for="PurchaseDate" class="form-label">
+                        Purchase Date
+                    </label>
+                    <input asp-for="PurchaseDate"
+                           class="form-control"
+                           type="date" />
+                    <span asp-validation-for="PurchaseDate" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-3">
+                    <label asp-for="TotalAmount" class="form-label">
+                        Total Amount
+                    </label>
+                    <input asp-for="TotalAmount"
+                           class="form-control"
+                           type="number"
+                           step="0.01"
+                           min="0.01" />
+                    <span asp-validation-for="TotalAmount" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="stack-md mt-3">
+                <label asp-for="Notes" class="form-label"></label>
+                <textarea asp-for="Notes"
+                          class="form-control"
+                          rows="4"></textarea>
+                <span asp-validation-for="Notes" class="text-danger"></span>
+            </div>
+        </section>
+
+        <section class="form-section-card">
+            <h2>Receipt Upload</h2>
+
+            <div class="stack-md">
+                <label class="form-label">Receipt File</label>
+
+                <input type="file"
+                       name="receiptFile"
+                       class="form-control"
+                       accept=".jpg,.jpeg,.png,.webp,.pdf" />
+
+                @Html.ValidationMessage(
+                    "receiptFile",
+                    new { @class = "text-danger d-block mt-1" })
+
+                <div class="form-text">
+                    Upload a JPG, JPEG, PNG, WEBP, or PDF file up to 10 MB.
+                </div>
+            </div>
+        </section>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-art-primary">
+                Add Receipt
+            </button>
+
+            <a asp-controller="Projects"
+               asp-action="Details"
+               asp-route-id="@Model.ProjectId"
+               class="btn btn-art-outline">
+                Back to Project
+            </a>
+        </div>
+    </div>
+</form>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

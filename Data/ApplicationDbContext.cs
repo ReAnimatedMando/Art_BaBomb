@@ -13,7 +13,7 @@ namespace Art_BaBomb.Web.Data
 
         public DbSet<Project> Projects { get; set; }
         public DbSet<Item> Items { get; set; }
-
+        public DbSet<Receipt> Receipts { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -21,6 +21,12 @@ namespace Art_BaBomb.Web.Data
             modelBuilder.Entity<Item>()
                 .Property(i => i.Quantity)
                 .HasDefaultValue(1);
+
+            modelBuilder.Entity<Receipt>()
+                .HasOne(r => r.Project)
+                .WithMany(p => p.Receipts)
+                .HasForeignKey(r => r.ProjectId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }
