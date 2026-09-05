@@ -102,6 +102,13 @@
                class="btn btn-art-primary">
                 + Add Item
             </a>
+
+            <a asp-controller="Receipts"
+               asp-action="Create"
+               asp-route-projectId="@Model.Id"
+               class="btn btn-art-primary">
+                + Add Receipt
+            </a>
         }
 
         @if (User.IsInRole("Admin"))
