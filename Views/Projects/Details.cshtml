@@ -103,6 +103,10 @@
                 + Add Item
             </a>
 
+            <a asp-controller="Receipts" asp-action="Index" asp-route-projectId="@Model.Id" class="btn btn-art-outline">
+                Budget & Receipts
+            </a>
+
             <a asp-controller="Receipts"
                asp-action="Create"
                asp-route-projectId="@Model.Id"

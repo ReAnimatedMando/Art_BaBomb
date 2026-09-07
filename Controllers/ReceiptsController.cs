@@ -23,6 +23,34 @@ namespace Art_BaBomb.Web.Controllers
             _environment = environment;
         }
 
+        public async Task<IActionResult> Index(int? projectId)
+        {
+            if (projectId == null)
+            {
+                return NotFound();
+            }
+
+            var project = await _context.Projects
+                .Include(p => p.Receipts)
+                .FirstOrDefaultAsync(p => p.Id == projectId);
+
+            if (project == null)
+            {
+                return NotFound();
+            }
+
+            var receipts = project.Receipts
+                .OrderByDescending(r => r.PurchaseDate)
+                .ThenByDescending(r => r.CreatedAt)
+                .ToList();
+
+            ViewBag.Project = project;
+            ViewBag.TotalSpent = receipts.Sum(r => r.TotalAmount);
+            ViewBag.RemainingBudget = project.Budget - receipts.Sum(r => r.TotalAmount);
+
+            return View(receipts);
+        }
+
         [Authorize(Roles = "Admin,Shopper")]
         public async Task<IActionResult> Create(int? projectId)
         {
