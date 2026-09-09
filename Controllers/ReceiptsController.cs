@@ -51,6 +51,27 @@ namespace Art_BaBomb.Web.Controllers
             return View(receipts);
         }
 
+        private void DeleteUploadedFile(string? relativePath)
+        {
+            if (string.IsNullOrWhiteSpace(relativePath))
+            {
+                return;
+            }
+
+            var trimmedPath = relativePath
+                .TrimStart('/')
+                .Replace('/', Path.DirectorySeparatorChar);
+
+            var fullPath = Path.Combine(
+                _environment.WebRootPath,
+                trimmedPath);
+
+            if (System.IO.File.Exists(fullPath))
+            {
+                System.IO.File.Delete(fullPath);
+            }
+        }
+
         [Authorize(Roles = "Admin,Shopper")]
         public async Task<IActionResult> Create(int? projectId)
         {
@@ -130,6 +151,97 @@ namespace Art_BaBomb.Web.Controllers
             }
 
             ViewBag.ProjectName = project.Name;
+
+            return View(receipt);
+        }
+
+        [Authorize(Roles = "Admin,Shopper")]
+        public async Task<IActionResult> Edit(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var receipt = await _context.Receipts
+                .Include(r => r.Project)
+                .FirstOrDefaultAsync(r => r.Id == id);
+
+            if (receipt == null)
+            {
+                return NotFound();
+            }
+
+            return View(receipt);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin,Shopper")]
+        public async Task<IActionResult> Edit(
+            int id,
+            [Bind("Id,ProjectId,Vendor,PurchaseDate,TotalAmount,Notes")]
+            Receipt receipt,
+            IFormFile? receiptFile)
+        {
+            if (id != receipt.Id)
+            {
+                return NotFound();
+            }
+
+            var existingReceipt = await _context.Receipts
+                .Include(r => r.Project)
+                .FirstOrDefaultAsync(r => r.Id == id);
+
+            if (existingReceipt == null)
+            {
+                return NotFound();
+            }
+
+            if (!IsValidReceiptFile(receiptFile, out var receiptError))
+            {
+                ModelState.AddModelError("receiptFile", receiptError);
+            }
+
+            if (ModelState.IsValid)
+            {
+                existingReceipt.Vendor = receipt.Vendor.Trim();
+                existingReceipt.PurchaseDate = receipt.PurchaseDate;
+                existingReceipt.TotalAmount = receipt.TotalAmount;
+                existingReceipt.Notes = receipt.Notes?.Trim();
+
+                if (receiptFile != null && receiptFile.Length > 0)
+                {
+                    DeleteUploadedFile(existingReceipt.ReceiptPath);
+
+                    var savedFile = await SaveUploadedFileAsync(
+                        receiptFile,
+                        "receipts");
+
+                    if (savedFile.HasValue)
+                    {
+                        existingReceipt.ReceiptFileName =
+                            savedFile.Value.fileName;
+
+                        existingReceipt.ReceiptPath =
+                            savedFile.Value.relativePath;
+
+                        existingReceipt.ReceiptSizeBytes =
+                            receiptFile.Length;
+                    }
+                }
+
+                await _context.SaveChangesAsync();
+
+                TempData["SuccessMessage"] =
+                    $"Receipt from \"{existingReceipt.Vendor}\" updated successfully.";
+
+                return RedirectToAction(
+                    nameof(Details),
+                    new { id = existingReceipt.Id });
+            }
+
+            receipt.Project = existingReceipt.Project;
 
             return View(receipt);
         }

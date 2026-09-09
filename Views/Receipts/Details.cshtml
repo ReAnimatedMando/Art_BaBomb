@@ -1,0 +1,151 @@
+@model Art_BaBomb.Web.Models.Receipt
+@using Art_BaBomb.Web.Helpers
+
+@{
+    ViewData["Title"] = "Receipt Details";
+
+    bool hasReceipt = !string.IsNullOrWhiteSpace(Model.ReceiptPath);
+
+    bool receiptIsImage =
+        hasReceipt &&
+        (Model.ReceiptPath!.EndsWith(".jpg", StringComparison.OrdinalIgnoreCase)
+        || Model.ReceiptPath.EndsWith(".jpeg", StringComparison.OrdinalIgnoreCase)
+        || Model.ReceiptPath.EndsWith(".png", StringComparison.OrdinalIgnoreCase)
+        || Model.ReceiptPath.EndsWith(".webp", StringComparison.OrdinalIgnoreCase));
+}
+
+<section class="form-hero mb-4">
+    <div>
+        <div class="eyebrow">Budget & Receipts</div>
+
+        <h1 class="form-hero-title">
+            @Model.Vendor
+        </h1>
+
+        <p class="form-hero-subtitle">
+            Receipt for <strong>@Model.Project?.Name</strong>
+        </p>
+    </div>
+</section>
+
+<div class="row g-4">
+
+    <div class="col-lg-7">
+        <div class="form-shell">
+            <section class="form-section-card">
+                <h2>Receipt Information</h2>
+
+                <dl class="row mb-0 item-detail-list">
+
+                    <dt class="col-sm-4">Vendor</dt>
+                    <dd class="col-sm-8">@Model.Vendor</dd>
+
+                    <dt class="col-sm-4">Purchase Date</dt>
+                    <dd class="col-sm-8">
+                        @Model.PurchaseDate.ToString("d")
+                    </dd>
+
+                    <dt class="col-sm-4">Total Amount</dt>
+                    <dd class="col-sm-8">
+                        @Model.TotalAmount.ToString("C")
+                    </dd>
+
+                    <dt class="col-sm-4">Notes</dt>
+                    <dd class="col-sm-8">
+                        @(string.IsNullOrWhiteSpace(Model.Notes)
+                            ? "—"
+                            : Model.Notes)
+                    </dd>
+
+                    <dt class="col-sm-4">Created</dt>
+                    <dd class="col-sm-8">
+                        @Model.CreatedAt.ToLocalTime().ToString("g")
+                    </dd>
+
+                </dl>
+            </section>
+        </div>
+    </div>
+
+    <div class="col-lg-5">
+
+        <div class="form-shell">
+            <section class="form-section-card">
+                <h2>Receipt</h2>
+
+                @if (hasReceipt)
+                {
+                    @if (receiptIsImage)
+                    {
+                        <a href="#"
+                           data-bs-toggle="modal"
+                           data-bs-target="#receiptPreviewModal"
+                           data-receipt-src="@Model.ReceiptPath"
+                           data-receipt-title="@Model.Vendor - Receipt"
+                           class="receipt-preview-trigger receipt-preview-large">
+
+                            <span class="receipt-preview-surface">
+                                <img src="@Model.ReceiptPath"
+                                     alt="@Model.Vendor Receipt"
+                                     class="receipt-preview-image" />
+                            </span>
+                        </a>
+
+                        <div class="small text-muted mt-2">
+                            Click the receipt preview to enlarge it.
+                        </div>
+                    }
+                    else
+                    {
+                        <a href="@Model.ReceiptPath"
+                           target="_blank"
+                           class="btn btn-outline-primary">
+                            Open Receipt
+                        </a>
+                    }
+
+                    <div class="small text-muted mt-2">
+                        @Model.ReceiptFileName
+
+                        @if (Model.ReceiptSizeBytes.HasValue)
+                        {
+                            <span>
+                                • @FileSizeHelper.FormatFileSize(Model.ReceiptSizeBytes)
+                            </span>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <p class="empty-state-text">
+                        No receipt file uploaded.
+                    </p>
+                }
+
+            </section>
+        </div>
+
+        <div class="mt-3">
+
+            @if (User.IsInRole("Admin") || User.IsInRole("Shopper"))
+            {
+                <a asp-controller="Receipts"
+                asp-action="Edit"
+                asp-route-id="@Model.Id"
+                class="btn btn-art-primary">
+                    Edit Receipt
+                </a>
+            }
+
+            <a asp-controller="Receipts"
+               asp-action="Index"
+               asp-route-projectId="@Model.ProjectId"
+               class="btn btn-art-outline">
+                Back to Budget & Receipts
+            </a>
+            
+        </div>
+
+    </div>
+
+</div>
