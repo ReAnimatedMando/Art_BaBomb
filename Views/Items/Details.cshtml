@@ -3,16 +3,6 @@
 
 @{
     ViewData["Title"] = "Item Details";
-
-    bool hasReturnReceipt = !string.IsNullOrWhiteSpace(Model.ReturnReceiptPath);
-
-    bool returnReceiptIsImage =
-        hasReturnReceipt &&
-        (Model.ReturnReceiptPath.EndsWith(".jpg", StringComparison.OrdinalIgnoreCase)
-        || Model.ReturnReceiptPath.EndsWith(".jpeg", StringComparison.OrdinalIgnoreCase)
-        || Model.ReturnReceiptPath.EndsWith(".png", StringComparison.OrdinalIgnoreCase)
-        || Model.ReturnReceiptPath.EndsWith(".webp", StringComparison.OrdinalIgnoreCase));
-
 }
 
 <section class="form-hero mb-4">
@@ -83,13 +73,6 @@
             statusPanelMessage = $"Return by {Model.ReturnByDate.Value:d}.";
         }
     }
-
-    if (Model.IsReturned && string.IsNullOrWhiteSpace(Model.ReturnReceiptPath))
-    {
-        statusPanelClass = "item-status-panel item-status-panel-warning";
-        statusPanelTitle = "Return Receipt Needed";
-        statusPanelMessage = "This item is missing a return receipt.";
-    }
 }
 
 @if (!string.IsNullOrWhiteSpace(statusPanelTitle))
@@ -104,7 +87,7 @@
 }
 
 <div class="row g-4">
-    <div class="col-lg-7">
+    <div class="col-lg-12">
         <div class="form-shell">
             <section class="form-section-card">
                 <h2>Item Information</h2>
@@ -193,56 +176,6 @@
     </div>
 
     <div class="col-lg-5 item-details-side-stack">
-        <div class="form-shell">
-            <section class="form-section-card">
-                <h2>Return Receipt</h2>
-
-                @if (hasReturnReceipt)
-                {
-                    @if (returnReceiptIsImage)
-                    {
-                        <a href="#" data-bs-toggle="modal" data-bs-target="#receiptPreviewModal" data-receipt-src="@Model.ReturnReceiptPath" data-receipt-title="@Model.Name - Return Receipt" class="receipt-preview-trigger receipt-preview-large">
-                            <span class="receipt-preview-surface">
-                                <img src="@Model.ReturnReceiptPath" alt="Return Receipt" class="receipt-preview-image" />
-                            </span>
-                        </a>
-
-                        <div class="small text-muted mt-2">
-                            Click the receipt preview to enlarge it.
-                        </div>
-                    }
-                    else
-                    {
-                        <div class="receipt-preview-surface receipt-preview-large d-flex align-items-center justify-content-center text-muted small">
-                            Receipt uploaded
-                        </div>
-                    }
-
-                    <div class="small text-muted mt-2">
-                        @Model.ReturnReceiptFileName
-                        @if (Model.ReturnReceiptSizeBytes.HasValue)
-                        {
-                            <span>• @FileSizeHelper.FormatFileSize(Model.ReturnReceiptSizeBytes)</span>
-                        }
-                    </div>
-                }
-                else
-                {
-                    <p class="empty-state-text">No return receipt uploaded.</p>
-                }
-            </section>
-        </div>
-
-        @if (Model.IsReturnRequired || Model.IsReturned)
-        {
-            <div>
-                <a asp-action="ReturnInfo" asp-route-id="@Model.Id" class="btn btn-sm btn-outline-danger">
-                    Update Return Receipt
-                </a>
-            </div>
-        }
-    
-
         <div class="form-shell">
             <section class="form-section-card">
                 <h2>Actions</h2>

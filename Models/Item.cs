@@ -60,13 +60,7 @@ namespace Art_BaBomb.Web.Models
 
         public DateTime? ReturnedAt { get; set; }
 
-        public string? ReturnReceiptFileName { get; set; }
-
-        public string? ReturnReceiptPath { get; set; }
-
         public long? PurchaseReceiptSizeBytes { get; set; }
-
-        public long? ReturnReceiptSizeBytes { get; set; }
 
         [NotMapped]
         public bool IsNeeded =>
@@ -93,14 +87,9 @@ namespace Art_BaBomb.Web.Models
             ReturnByDate.Value.Date < DateTime.Today;
 
         [NotMapped]
-        public bool NeedsReturnReceipt =>
-            IsReturned && string.IsNullOrWhiteSpace(ReturnReceiptPath);
-
-        [NotMapped]
         public bool NeedsAttention =>
             MissingReturnByDate ||
-            HasPastReturnByDate ||
-            NeedsReturnReceipt;
+            HasPastReturnByDate;
 
         [NotMapped]
         public string WorkflowState
@@ -139,11 +128,6 @@ namespace Art_BaBomb.Web.Models
                 if (MissingReturnByDate)
                 {
                     return "Missing return-by date.";
-                }
-
-                if (NeedsReturnReceipt)
-                {
-                    return "Missing return receipt.";
                 }
 
                 return null;

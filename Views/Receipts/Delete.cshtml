@@ -1,0 +1,64 @@
+@model Art_BaBomb.Web.Models.Receipt
+
+@{
+    ViewData["Title"] = "Delete Receipt";
+}
+
+<section class="form-hero mb-4">
+    <div>
+        <div class="eyebrow">Budget & Receipts</div>
+        <h1 class="form-hero-title">Delete Receipt</h1>
+        <p class="form-hero-subtitle">
+            Confirm removal of this receipt from
+            <strong>@Model.Project?.Name</strong>.
+        </p>
+    </div>
+</section>
+
+<div class="form-shell">
+    <section class="form-section-card">
+        <h2>Receipt Information</h2>
+
+        <dl class="row mb-0 item-detail-list">
+            <dt class="col-sm-4">Vendor</dt>
+            <dd class="col-sm-8">@Model.Vendor</dd>
+
+            <dt class="col-sm-4">Purchase Date</dt>
+            <dd class="col-sm-8">@Model.PurchaseDate.ToString("d")</dd>
+
+            <dt class="col-sm-4">Total Amount</dt>
+            <dd class="col-sm-8">@Model.TotalAmount.ToString("C")</dd>
+
+            <dt class="col-sm-4">Notes</dt>
+            <dd class="col-sm-8">
+                @(string.IsNullOrWhiteSpace(Model.Notes)
+                    ? "—"
+                    : Model.Notes)
+            </dd>
+        </dl>
+    </section>
+
+    <div class="alert alert-danger mt-3">
+        Deleting this receipt will also remove its uploaded file.
+        This action cannot be undone.
+    </div>
+
+    <div class="form-actions">
+        <form asp-action="Delete"
+              asp-route-id="@Model.Id"
+              method="post">
+            @Html.AntiForgeryToken()
+
+            <button type="submit"
+                    class="btn btn-danger">
+                Delete Receipt
+            </button>
+        </form>
+
+        <a asp-action="Details"
+           asp-route-id="@Model.Id"
+           class="btn btn-art-outline">
+            Cancel
+        </a>
+    </div>
+</div>

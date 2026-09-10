@@ -246,6 +246,53 @@ namespace Art_BaBomb.Web.Controllers
             return View(receipt);
         }
 
+        [Authorize(Roles = "Admin,Shopper")]
+        public async Task<IActionResult> Delete(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var receipt = await _context.Receipts
+                .Include(r => r.Project)
+                .FirstOrDefaultAsync(r => r.Id == id);
+
+            if (receipt == null)
+            {
+                return NotFound();
+            }
+
+            return View(receipt);
+        }
+
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin,Shopper")]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            var receipt = await _context.Receipts.FindAsync(id);
+
+            if (receipt == null)
+            {
+                return NotFound();
+            }
+
+            var projectId = receipt.ProjectId;
+
+            DeleteUploadedFile(receipt.ReceiptPath);
+
+            _context.Receipts.Remove(receipt);
+            await _context.SaveChangesAsync();
+
+            TempData["SuccessMessage"] =
+                $"Receipt from \"{receipt.Vendor}\" deleted successfully.";
+
+            return RedirectToAction(
+                nameof(Index),
+                new { projectId });
+        }
+
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)

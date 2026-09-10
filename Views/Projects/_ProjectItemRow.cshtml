@@ -14,13 +14,6 @@
         : "actions-col-cell";
 
     var useStackedActions = isReturnQueue || isReturned;
-
-    bool IsImageReceipt(string? path) =>
-        !string.IsNullOrWhiteSpace(path) &&
-        (path.EndsWith(".jpg", StringComparison.OrdinalIgnoreCase)
-        || path.EndsWith(".jpeg", StringComparison.OrdinalIgnoreCase)
-        || path.EndsWith(".png", StringComparison.OrdinalIgnoreCase)
-        || path.EndsWith(".webp", StringComparison.OrdinalIgnoreCase));
 }
 
 <tr tabindex="0"
@@ -199,43 +192,8 @@
 
     @if (isReturned)
     {
-        <td class="returned-at-cell">@Model.ReturnedAt?.ToLocalTime().ToString("g")</td>
-
-        <td class="text-nowrap receipt-cell">
-            @if (IsImageReceipt(Model.ReturnReceiptPath))
-            {
-                <a href="#"
-                   data-bs-toggle="modal"
-                   data-bs-target="#receiptPreviewModal"
-                   data-receipt-src="@Model.ReturnReceiptPath"
-                   data-receipt-title="@Model.Name - Return Receipt"
-                   class="receipt-preview-trigger">
-                    <img src="@Model.ReturnReceiptPath"
-                         alt="Return Receipt"
-                         class="receipt-thumb" />
-                </a>
-            }
-            else if (!string.IsNullOrWhiteSpace(Model.ReturnReceiptPath))
-            {
-                <a href="@Model.ReturnReceiptPath" target="_blank" class="btn btn-sm btn-outline-primary receipt-link-btn">
-                    Receipt
-                </a>
-            }
-            else
-            {
-                <span class="text-muted">—</span>
-            }
-        </td>
-
-        <td class="text-nowrap">
-            @if (!string.IsNullOrWhiteSpace(Model.ReturnReceiptPath))
-            {
-                <span class="receipt-status-complete">Complete</span>
-            }
-            else
-            {
-                <span class="receipt-status-missing">Missing</span>
-            }
+        <td class="returned-at-cell">
+            @Model.ReturnedAt?.ToLocalTime().ToString("g")
         </td>
     }
 

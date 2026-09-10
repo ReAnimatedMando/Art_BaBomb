@@ -112,7 +112,7 @@ namespace Art_BaBomb.Web.Controllers
         public async Task<IActionResult> Create([Bind("ProjectId,Name,Quantity,Scene,Description,EstimatedCost")] Item item, IFormFile? imageFile)
         {
 
-            if (!IsValidReceiptFile(imageFile, out var imageError))
+            if (!IsValidImageFile(imageFile, out var imageError))
             {
                 ModelState.AddModelError("imageFile", imageError);
             }
@@ -216,7 +216,7 @@ public async Task<IActionResult> Edit(
         return RedirectToAction(nameof(ReturnInfo), new { id = existingItem.Id });
     }
 
-    if (!IsValidReceiptFile(imageFile, out var imageError))
+    if (!IsValidImageFile(imageFile, out var imageError))
     {
         ModelState.AddModelError("imageFile", imageError);
     }
@@ -463,34 +463,35 @@ public async Task<IActionResult> Edit(
             });
         }
 
-        private static readonly string[] AllowedReceiptExtensions = 
+        private static readonly string[] AllowedImageExtensions =
         {
-            ".jpg", ".jpeg", ".png", ".webp", ".pdf"
+            ".jpg", ".jpeg", ".png", ".webp"
         };
 
-        private const long MaxReceiptFileSizeBytes = 10 * 1024 * 1024; // 10 MB
+        private const long MaxImageFileSizeBytes = 10 * 1024 * 1024; // 10 MB
 
-        private bool IsValidReceiptFile(IFormFile? file, out string errorMessage)
+        private bool IsValidImageFile(IFormFile? file, out string errorMessage)
         {
             errorMessage = string.Empty;
 
             if (file == null || file.Length == 0)
             {
-                return true;
+                return true; // No file is considered valid
             }
 
             var extension = Path.GetExtension(file.FileName);
 
-            if (string.IsNullOrWhiteSpace(extension) ||
-                !AllowedReceiptExtensions.Contains(extension, StringComparer.OrdinalIgnoreCase))
+            if (string.IsNullOrWhiteSpace(extension) || !AllowedImageExtensions.Contains(extension, StringComparer.OrdinalIgnoreCase))
             {
-                errorMessage = "Only JPG, JPEG, PNG, WEBP, and PDF files are allowed.";
+                errorMessage = "Only JPG, JPEG, PNG, and WEBP image files are allowed.";
+
                 return false;
             }
 
-            if (file.Length > MaxReceiptFileSizeBytes)
+            if (file.Length > MaxImageFileSizeBytes)
             {
-                errorMessage = "Receipt files must be 10 MB or smaller.";
+                errorMessage = "The image file size must not exceed 10 MB.";
+
                 return false;
             }
 
@@ -545,8 +546,6 @@ public async Task<IActionResult> ReturnInfo(
     int id,
     [Bind("Id,ReturnNotes,ReturnLocation,ReturnByDate,IsReturned")]
     Item item,
-    IFormFile? returnReceiptFile,
-    bool removeReturnReceipt = false,
     bool removeFromReturnWorkflow = false)
 {
     if (id != item.Id)
@@ -563,11 +562,6 @@ public async Task<IActionResult> ReturnInfo(
         return NotFound();
     }
 
-    if (!IsValidReceiptFile(returnReceiptFile, out var receiptError))
-    {
-        ModelState.AddModelError("returnReceiptFile", receiptError);
-    }
-
     ModelState.Remove(nameof(Item.ProjectId));
     ModelState.Remove(nameof(Item.Name));
     ModelState.Remove(nameof(Item.Project));
@@ -579,29 +573,6 @@ public async Task<IActionResult> ReturnInfo(
             existingItem.ReturnNotes = item.ReturnNotes;
             existingItem.ReturnLocation = item.ReturnLocation;
             existingItem.ReturnByDate = item.ReturnByDate;
-
-            if (removeReturnReceipt)
-            {
-                DeleteUploadedFile(existingItem.ReturnReceiptPath);
-
-                existingItem.ReturnReceiptFileName = null;
-                existingItem.ReturnReceiptPath = null;
-                existingItem.ReturnReceiptSizeBytes = null;
-            }
-
-            if (returnReceiptFile != null && returnReceiptFile.Length > 0)
-            {
-                DeleteUploadedFile(existingItem.ReturnReceiptPath);
-
-                var savedFile = await SaveUploadedFileAsync(returnReceiptFile, "returns");
-
-                if (savedFile.HasValue)
-                {
-                    existingItem.ReturnReceiptFileName = savedFile.Value.fileName;
-                    existingItem.ReturnReceiptPath = savedFile.Value.relativePath;
-                    existingItem.ReturnReceiptSizeBytes = returnReceiptFile.Length;
-                }
-            }
 
             if (removeFromReturnWorkflow)
             {
@@ -636,10 +607,6 @@ public async Task<IActionResult> ReturnInfo(
             else if (existingItem.HasPastReturnByDate)
             {
                 TempData["WarningMessage"] = $"\"{existingItem.Name}\" has a return-by date in the past.";
-            }
-            else if (existingItem.NeedsReturnReceipt)
-            {
-                TempData["WarningMessage"] = $"\"{existingItem.Name}\" was marked returned but is missing a return receipt.";
             }
             else
             {
@@ -685,14 +652,7 @@ public async Task<IActionResult> ReturnInfo(
 
             await _context.SaveChangesAsync();
 
-            if (item.NeedsReturnReceipt)
-            {
-                TempData["WarningMessage"] = $"\"{item.Name}\" is marked as returned but is missing a return receipt.";
-            }
-            else
-            {
-                TempData["SuccessMessage"] = $"\"{item.Name}\" marked as returned.";
-            }
+            TempData["SuccessMessage"] = $"\"{item.Name}\" marked as returned.";
 
             return RedirectToAction("Details", "Projects", new
             {

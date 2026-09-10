@@ -137,6 +137,16 @@
                 </a>
             }
 
+            @if (User.IsInRole("Admin") || User.IsInRole("Shopper"))
+            {
+                <a
+                   asp-action="Delete"
+                   asp-route-id="@Model.Id"
+                   class="btn btn-outline-danger">
+                    Delete Receipt
+                </a>
+            }
+
             <a asp-controller="Receipts"
                asp-action="Index"
                asp-route-projectId="@Model.ProjectId"
