@@ -3,6 +3,12 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Art_BaBomb.Web.Models
 {
+    public enum ReceiptStatus
+    {
+        Pending,
+        Reconciled
+    }
+
     public class Receipt
     {
         public int Id { get; set; }
@@ -27,6 +33,9 @@ namespace Art_BaBomb.Web.Models
 
         [StringLength(2000)]
         public string? Notes { get; set; }
+
+        [Required]
+        public ReceiptStatus Status { get; set; } = ReceiptStatus.Pending;
 
         public string? ReceiptFileName { get; set; }
 

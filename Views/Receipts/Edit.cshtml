@@ -84,6 +84,17 @@
             </div>
 
             <div class="stack-md mt-3">
+                <label asp-for="Status" class="form-label"></label>
+
+                <select asp-for="Status" asp-items="Html.GetEnumSelectList<Art_BaBomb.Web.Models.ReceiptStatus>()"
+                        class="form-select">
+                </select>
+
+                <span asp-validation-for="Status"
+                      class="text-danger"></span>
+            </div>
+
+            <div class="stack-md mt-3">
                 <label asp-for="Notes"
                        class="form-label"></label>
 

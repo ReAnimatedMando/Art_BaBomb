@@ -48,6 +48,14 @@ namespace Art_BaBomb.Web.Controllers
             ViewBag.TotalSpent = receipts.Sum(r => r.TotalAmount);
             ViewBag.RemainingBudget = project.Budget - receipts.Sum(r => r.TotalAmount);
 
+            ViewBag.PendingReceiptCount = receipts.Count(r => r.Status == ReceiptStatus.Pending);
+
+            ViewBag.PendingReceiptTotal = receipts
+                .Where(r => r.Status == ReceiptStatus.Pending)
+                .Sum(r => r.TotalAmount);
+
+            ViewBag.ReconciledReceiptCount = receipts.Count(r => r.Status == ReceiptStatus.Reconciled);
+
             return View(receipts);
         }
 
@@ -90,7 +98,8 @@ namespace Art_BaBomb.Web.Controllers
             var receipt = new Receipt
             {
                 ProjectId = project.Id,
-                PurchaseDate = DateTime.Today
+                PurchaseDate = DateTime.Today,
+                Status = ReceiptStatus.Pending
             };
 
             ViewBag.ProjectName = project.Name;
@@ -123,6 +132,7 @@ namespace Art_BaBomb.Web.Controllers
                 receipt.Vendor = receipt.Vendor.Trim();
                 receipt.Notes = receipt.Notes?.Trim();
                 receipt.CreatedAt = DateTime.UtcNow;
+                receipt.Status = ReceiptStatus.Pending;
 
                 if (receiptFile != null && receiptFile.Length > 0)
                 {
@@ -180,7 +190,7 @@ namespace Art_BaBomb.Web.Controllers
         [Authorize(Roles = "Admin,Shopper")]
         public async Task<IActionResult> Edit(
             int id,
-            [Bind("Id,ProjectId,Vendor,PurchaseDate,TotalAmount,Notes")]
+            [Bind("Id,ProjectId,Vendor,PurchaseDate,TotalAmount,Notes,Status")]
             Receipt receipt,
             IFormFile? receiptFile)
         {
@@ -209,6 +219,7 @@ namespace Art_BaBomb.Web.Controllers
                 existingReceipt.PurchaseDate = receipt.PurchaseDate;
                 existingReceipt.TotalAmount = receipt.TotalAmount;
                 existingReceipt.Notes = receipt.Notes?.Trim();
+                existingReceipt.Status = receipt.Status;
 
                 if (receiptFile != null && receiptFile.Length > 0)
                 {

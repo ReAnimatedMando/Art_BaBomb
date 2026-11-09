@@ -50,6 +50,17 @@
                         @Model.TotalAmount.ToString("C")
                     </dd>
 
+                    <dt class="col-sm-4">Status</dt>
+                    <dd class="col-sm-8">
+                        @if (Model.Status == Art_BaBomb.Web.Models.ReceiptStatus.Reconciled)
+                        {
+                            <span class="badge bg-success">Reconciled</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-warning">Pending</span>
+                        }
+                    </dd>
                     <dt class="col-sm-4">Notes</dt>
                     <dd class="col-sm-8">
                         @(string.IsNullOrWhiteSpace(Model.Notes)

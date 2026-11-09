@@ -234,6 +234,9 @@ namespace Art_BaBomb.Web.Migrations
                     b.Property<long?>("ReceiptSizeBytes")
                         .HasColumnType("bigint");
 
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
                     b.Property<decimal>("TotalAmount")
                         .HasColumnType("decimal(10,2)");
 

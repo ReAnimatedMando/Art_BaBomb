@@ -10,6 +10,10 @@
 
     var totalSpent = (decimal?)ViewBag.TotalSpent ?? 0m;
     var remainingBudget = (decimal?)ViewBag.RemainingBudget ?? 0m;
+
+    var pendingReceiptCount = (int?)ViewBag.PendingReceiptCount ?? 0;
+    var pendingReceiptTotal = (decimal?)ViewBag.PendingReceiptTotal ?? 0m;
+    var reconciledReceiptCount = (int?)ViewBag.ReconciledReceiptCount ?? 0;
 }
 
 <section class="project-hero mb-4">
@@ -37,7 +41,7 @@
 
         <a asp-controller="Projects" asp-action="Details" asp-route-id="@project?.Id" class="btn btn-art-outline">
             Back to shopping
-        </a>"
+        </a>
     </div>
 
 </section>
@@ -61,7 +65,7 @@
 </div>
 
 <div class="row g-3 mb-4">
-    <div class="col-md-3">
+    <div class="col-md-4 col-xl-2">
         <div class="card shadow-sm h-100">
             <div class="card-body">
                 <h6 class="text-muted">Project Budget</h6>
@@ -72,7 +76,7 @@
         </div>
     </div>
 
-    <div class="col-md-3">
+    <div class="col-md-4 col-xl-2">
         <div class="card shadow-sm h-100">
             <div class="card-body">
                 <h6 class="text-muted">Receipt Total</h6>
@@ -83,7 +87,7 @@
         </div>
     </div>
 
-    <div class="col-md-3">
+    <div class="col-md-4 col-xl-2">
         <div class="card shadow-sm h-100 @(remainingBudget < 0 ? "border-danger" : "")">
             <div class="card-body">
                 <h6 class="text-muted">Remaining</h6>
@@ -94,16 +98,39 @@
         </div>
     </div>
 
-    <div class="col-md-3">
-        <div class="card shadow-sm h-100">
+    <div class="col-md-4 col-xl-2">
+        <div class="card shadow-sm h-100 @(pendingReceiptCount > 0 ? "border-warning" : "")">
             <div class="card-body">
-                <h6 class="text-muted">Receipts</h6>
+                <h6 class="text-muted">Pending</h6>
                 <div class="fw-bold fs-4 text-end">
-                    @receipts.Count
+                    @pendingReceiptCount
                 </div>
             </div>
         </div>
     </div>
+
+    <div class="col-md-4 col-xl-2">
+        <div class="card shadow-sm h-100>
+            <div class="card-body">
+                <h6 class="text-muted">Pending Value</h6>
+                <div class="fw-bold fs-4 text-end">
+                    @pendingReceiptTotal.ToString("C")
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4 col-xl-2">
+        <div class="card shadow-sm h-100">
+            <div class="card-body">
+                <h6 class="text-muted">Reconciled</h6>
+                <div class="fw-bold fs-4 text-end">
+                    @reconciledReceiptCount
+                </div>
+            </div>
+        </div>
+    </div>
+
 </div>
 
 <div class="card shadow-sm">
@@ -120,6 +147,7 @@
                         <th>Date</th>
                         <th>Vendor</th>
                         <th class="text-end">Amount</th>
+                        <th>Status</th>
                         <th>Receipt</th>
                         <th>Notes</th>
                         <th class="actions-col"></th>
@@ -140,6 +168,17 @@
 
                             <td class="text-end text-nowrap">
                                 @receipt.TotalAmount.ToString("C")
+                            </td>
+
+                            <td>
+                                @if (receipt.Status == ReceiptStatus.Reconciled)
+                                {
+                                    <span class="badge bg-success">Reconciled</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-warning">Pending</span>
+                                }
                             </td>
 
                             <td>
